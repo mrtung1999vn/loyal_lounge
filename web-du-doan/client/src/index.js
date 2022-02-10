@@ -3,10 +3,29 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
+import {
+  Provider as AlertProvider,
+  useAlert,
+  positions,
+  transitions
+} from 'react-alert'
+import AlertTemplate from 'react-alert-template-basic'
+const alertOptions = {
+  offset: '25px',
+  timeout: 5000,
+  transition: transitions.SCALE
+}
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AlertProvider template={AlertTemplate}>
+      <AlertProvider
+        template={AlertTemplate}
+        position={positions.TOP_RIGHT} //default position for all alerts without individual position
+        {...alertOptions}
+      >
+        <App />
+      </AlertProvider>
+    </AlertProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
