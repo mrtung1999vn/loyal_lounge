@@ -1,0 +1,43 @@
+openssl genrsa -out key.pem
+openssl req -new -key key.pem -out csr.pem
+openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
+rm csr.pem
+
+
+
+
+
+
+
+
+=------------------------------------------------------------------======
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+https.createServer(options, function (req, res) {
+  res.writeHead(200);
+  res.end("hello world\n");
+}).listen(8000);
+
+
+
+
+
+
+
+
+
+------------------RUN RAM MEMORY------------
+node --max-old-space-size=1024 index.js #increase to 1gb
+node --max-old-space-size=2048 index.js #increase to 2gb
+node --max-old-space-size=3072 index.js #increase to 3gb
+node --max-old-space-size=4096 index.js #increase to 4gb
+node --max-old-space-size=5120 index.js #increase to 5gb
+node --max-old-space-size=6144 index.js #increase to 6gb
+node --max-old-space-size=7168 index.js #increase to 7gb
+node --max-old-space-size=8192 index.js #increase to 8gb

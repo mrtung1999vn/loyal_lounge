@@ -1,0 +1,18 @@
+***************************
+******** Craw Api *********
+***************************
+
+---api
+        CrawData
+            CrawItemId
+            CrawItemClass
+---controller
+        CrawData.js
+---libs
+        CrawData
+---document
+        paths (Đường dẫn hiển thị API)
+        tags (Hiển thị các API)
+---public
+
+index.js
