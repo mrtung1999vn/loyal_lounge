@@ -1,35 +1,24 @@
-import './App.css';
-import React, { Fragment } from 'react';
-import Login from './page/Login';
-import func from './asset/func';
-import User from './storage/User';
-import Main from './page/Main';
+import React from 'react'
+import {
+  BrowserRouter,
+  BrowserRouter as Router,
+  Route,
+  Switch
+} from 'react-router-dom'
+import TaiKhoan from './pages/TaiKhoan';
+import TrangChu from './pages/TrangChu';
 
 function App() {
-  const [user,setUser] = React.useState(false)
 
-  React.useEffect(async () =>{
-    try {
-      setUser( window.localStorage.getItem(func.Encode_LoopBtoa(10,'UserLogin')).length >= 0 )
-    } catch (error) {
-      setUser(false)
-    }
-  },[])
-  // console.log(  )
-  // if(user){
-  if(true){  
-    return(
-      <Fragment>
-          <Main></Main>
-      </Fragment>
-    )
-  }else{
-    return (
-      <Fragment>
-        <Login></Login>
-      </Fragment>
-    );
-  }
+  return (
+    <BrowserRouter>
+      <Switch>
+        <Route path='/Login' render={() => <TaiKhoan></TaiKhoan>}></Route>
+        <Route path='/' render={() => <TrangChu></TrangChu>}></Route>
+      </Switch>
+    </BrowserRouter>
+  )
+
 }
 
 export default App;
