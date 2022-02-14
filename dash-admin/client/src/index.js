@@ -24,6 +24,7 @@ ReactDOM.render(
         {...alertOptions}
       >
         <App />
+        {/* APP giao diện code xử lý để hiện thị giao diện web app */}
       </AlertProvider>
     </AlertProvider>
   </React.StrictMode>,

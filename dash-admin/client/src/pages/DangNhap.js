@@ -18,7 +18,6 @@ function DangNhap() {
         try {
             console.log( { taiKhoan,matKhau })
             var val = Math.floor(1000 + Math.random() * 9000);
-            setOTP( val )
             var ten_tai_khoan = taiKhoan
             var mat_khau = matKhau
             var subject = 'OTP DashBoard loyal lounge'
@@ -34,6 +33,7 @@ function DangNhap() {
             if( content.status === 1 ){
                 alert('Please check OTP gmail!')
                 setUserHash(content.data)
+                setOTP( val )
             }else{
                 alert('User session error!')
             }

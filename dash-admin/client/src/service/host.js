@@ -154,23 +154,21 @@ var ChiTietSanPham = host + `/1999/ChiTietSanPham`
 
 //#region WebDashBoard-admin
 
+//// User
+var WebDashDanhSachUsers = host + `/WebDash/DanhSachUsers`
 
 //#endregion 
 
 var WebDashDangNhap = host + `/WebDash/DangNhap`
 var WebDuDoanDangNhap = host + `/WebDuDoan/DangNhap`
+var WebDashDanhSachCustomer = host + `/WebDash/DanhSachCustomer`
 
 
 export default {
     WebDashDangNhap,
     WebDuDoanDangNhap,
-
-
-
-
-
-
-
+    WebDashDanhSachUsers,
+    WebDashDanhSachCustomer,
 
 
 

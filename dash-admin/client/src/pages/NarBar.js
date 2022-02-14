@@ -1,8 +1,20 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function NarBar() {
+    
+
+    const onClickExit = async ()=>{
+        try {
+            window.localStorage.clear()
+            window.location.href = "./"
+        } catch (error) {
+            
+        }
+    }
+
     return (
-        <nav className="sidebar dark_sidebar">
+        <nav className="sidebar dark_sidebar" id="nav_bar_id">
             <div className="logo d-flex justify-content-between">
                 <a className="large_logo" href="index-2.html"><img src="img/logo_white.png" alt="" /></a>
                 <a className="small_logo" href="index-2.html"><img src="img/mini_logo.png" alt="" /></a>
@@ -21,12 +33,78 @@ function NarBar() {
                         </div>
                     </a>
                     <ul>
-                        <li><a href="index_2.html">Default</a></li>
-                        <li><a href="index_3.html">Light Sidebar</a></li>
-                        <li><a href="index-2.html">Dark Sidebar</a></li>
+                        <Link to="/Users" style={{ backgroundColor: '#091023', color: 'white' }}>Users</Link>
+                        <Link to="/Customer" style={{ backgroundColor: '#091023', color: 'white' }}>Customer</Link>
+                        <Link to="/Table" style={{ backgroundColor: '#091023', color: 'white' }}>Table</Link>
+                        {/* <Link to="/Table" style={{backgroundColor:'#091023',color:'white'}}>Table</Link> */}
+
                     </ul>
                 </li>
+
                 <li className>
+                    <a className="has-arrow" href="#" aria-expanded="false">
+                        <div className="nav_icon_small">
+                            <img src="img/menu-icon/1.svg" alt="" />
+                        </div>
+                        <div className="nav_title">
+                            <span>Product </span>
+                        </div>
+                    </a>
+                    <ul>
+                        <Link to="/Type-Product" style={{ backgroundColor: '#091023', color: 'white' }}>Type-Product</Link>
+                        <Link to="/Product" style={{ backgroundColor: '#091023', color: 'white' }}>Product</Link>
+                        <Link to="/Table" style={{ backgroundColor: '#091023', color: 'white' }}>Table</Link>
+                    </ul>
+                </li>
+
+                <li className>
+                    <a className="has-arrow" href="#" aria-expanded="false">
+                        <div className="nav_icon_small">
+                            <img src="img/menu-icon/1.svg" alt="" />
+                        </div>
+                        <div className="nav_title">
+                            <span>General activities </span>
+                        </div>
+                    </a>
+                    <ul>
+                        <Link to="/Event" style={{ backgroundColor: '#091023', color: 'white' }}>Event</Link>
+                        <Link to="/Gallery" style={{ backgroundColor: '#091023', color: 'white' }}>Gallery</Link>
+                        <Link to="/Reservations" style={{ backgroundColor: '#091023', color: 'white' }}>Reservations</Link>
+                    </ul>
+                </li>
+
+                <li className=''>
+                    <a className="has-arrow" href="#" aria-expanded="false">
+                        <div className="nav_icon_small">
+                            <img src="img/menu-icon/1.svg" alt="" />
+                        </div>
+                        <div className="nav_title"
+                        onClick={()=>onClickExit()}
+                        >
+                            <span>Exit </span>
+                        </div>
+                    </a>
+                </li>
+
+
+                {/* <li className>
+                    <a className="has-arrow" href="#" aria-expanded="false">
+                        <div className="nav_icon_small">
+                            <img src="img/menu-icon/1.svg" alt="" />
+                        </div>
+                        <div className="nav_title">
+                            <span>General activities </span>
+                        </div>
+                    </a>
+                    <ul>
+                        <Link to="/Event" style={{backgroundColor:'#091023',color:'white'}}>Event</Link>
+                        <Link to="/Gallery" style={{backgroundColor:'#091023',color:'white'}}>Gallery</Link>
+                        <Link to="/Table" style={{backgroundColor:'#091023',color:'white'}}>Table</Link>
+                        <Link to="/Reservations" style={{backgroundColor:'#091023',color:'white'}}>Reservations</Link>
+                    </ul>
+                </li> */}
+
+                {/* <li className>
                     <a href="crypto_wallet.html" aria-expanded="false">
                         <div className="nav_icon_small">
                             <img src="img/menu-icon/2.svg" alt="" />
@@ -291,7 +369,7 @@ function NarBar() {
                         <li><a href="mapjs.html">Maps JS</a></li>
                         <li><a href="vector_map.html">Vector Maps</a></li>
                     </ul>
-                </li>
+                </li> */}
             </ul>
         </nav>
 
