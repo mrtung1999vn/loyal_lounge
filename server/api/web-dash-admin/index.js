@@ -9,9 +9,38 @@ const pool = require('../../pgconnect')
 const encode_decode = require('../../assets/encode_decode')
 const { timeNowDB } = require('../../assets/TimeLibary')
 
-const moment = require('moment')
+const moment = require('moment');
+const dashboard = require('./dashboard');
 
 module.exports = function(app) {
+
+
+    // Dash
+
+    dashboard(app)
+
+    // API get, post, put, delete
+    // get hien thi du lieu
+    // post them du lieu vao co so du lieu
+    // put sua du lieu trong co so du lieu
+    // delete xoa du lieu trong co so du lieu
+
+    app.get('/DanhSachNguoiDung', async (req,res)=>{
+        try{
+            // Chay cau lenh query trong co so du lieu
+
+            const ExcuteQuery = await pool.query(`select * from tai_khoan_admin`) 
+
+            // Hien thi lien server // trinh duyet
+
+            res.json({
+                status:1,
+                data: ExcuteQuery.rows
+            })
+            
+        }catch(error){}
+    })
+
     app.post('/WebDash/DangNhap', async(req, res) => {
         try {
             const { ten_tai_khoan, mat_khau, subject, text } = req.body
@@ -19,7 +48,9 @@ module.exports = function(app) {
             if (checkRequest(req.headers.origin)) {
 
                 if (FunctionSqlInjection(ten_tai_khoan) ||
-                    FunctionSqlInjection(mat_khau)
+                    FunctionSqlInjection(mat_khau) ||
+                    FunctionSqlInjection(subject) ||
+                    FunctionSqlInjection(text)
                 ) {
                     res.json({
                         status: 0,
@@ -45,6 +76,7 @@ module.exports = function(app) {
                         })
                     } else {
                         res.json({
+
                             status: 0,
                             data: [],
                             msg: "Sai ten tai khoan hoac mat khau"

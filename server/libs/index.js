@@ -37,7 +37,7 @@ const SendMailGoogle = async(email, subject, text) => {
 const FunctionSqlInjection = (data) => {
     var SqlInjectionArray = ["'", "-", " "]
         // Check cái ' với cái - ( ' 1=1 -- ) check cả rỗng với underfined
-    console.log(data)
+    // console.log(data)
     let checkSQLInjection = false
     if (data === undefined && data === null) {
         return true
