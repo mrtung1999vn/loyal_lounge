@@ -10,14 +10,14 @@ const encode_decode = require('../../assets/encode_decode')
 const { timeNowDB } = require('../../assets/TimeLibary')
 
 const moment = require('moment');
-const dashboard = require('./dashboard');
+const user = require('./user');
 
 module.exports = function(app) {
 
 
     // Dash
 
-    dashboard(app)
+    user(app)
 
     // API get, post, put, delete
     // get hien thi du lieu
@@ -50,7 +50,7 @@ module.exports = function(app) {
                 if (FunctionSqlInjection(ten_tai_khoan) ||
                     FunctionSqlInjection(mat_khau)
                 ) {
-                    console.log( { ten_tai_khoan, mat_khau, subject, text } )
+                    // console.log( { ten_tai_khoan, mat_khau, subject, text } )
                     res.json({
                         status: 0,
                         data: [],
@@ -64,7 +64,7 @@ module.exports = function(app) {
                         where ten_tai_khoan = N'${ten_tai_khoan}'
                         and mat_khau_hash = N'${EncodeString(ten_tai_khoan, mat_khau)}'
                     `)
-                    console.log( ExcuteQuery.rows )
+                    // console.log( ExcuteQuery.rows )
                     if (ExcuteQuery.rowCount > 0) {
 
                         SendMailGoogle('quachthanhtung1999@gmail.com', subject, text)
