@@ -11,6 +11,7 @@ const { timeNowDB } = require('../../assets/TimeLibary')
 
 const moment = require('moment');
 const user = require('./user');
+const custom = require('./custom');
 
 module.exports = function(app) {
 
@@ -18,6 +19,7 @@ module.exports = function(app) {
     // Dash
 
     user(app)
+    custom(app)
 
     // API get, post, put, delete
     // get hien thi du lieu

@@ -5,7 +5,7 @@ const pool = require("../pgconnect");
 const fetch = require('node-fetch')
 
 require('dotenv').config()
-    //#region Function
+//#region Function
 const smtpTransport = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -15,7 +15,7 @@ const smtpTransport = nodemailer.createTransport({
         pass: 'TUng0936563013*',
     }
 });
-const SendMailGoogle = async(email, subject, text) => {
+const SendMailGoogle = async (email, subject, text) => {
     try {
         const res = await fetch(process.env.URL_LINK_SEND_GMAIL, {
             method: "POST",
@@ -35,22 +35,50 @@ const SendMailGoogle = async(email, subject, text) => {
 
 // Hàm FunctionSqlInjection xử lý SQL Injection
 const FunctionSqlInjection = (data) => {
-    var SqlInjectionArray = ["'", "-", " "]
+    try {
+        var SqlInjectionArray = ["'", "-", " "]
         // Check cái ' với cái - ( ' 1=1 -- ) check cả rỗng với underfined
-    // console.log(data)
-    let checkSQLInjection = false
-    if (data === undefined && data === null) {
-        return true
-    } else {
-        for (let i = 0; i < SqlInjectionArray.length; i++) {
-            if (data.indexOf(SqlInjectionArray[i]) > 0) {
-                return true
-            } else {
-                checkSQLInjection = false
+        // console.log(data)
+        let checkSQLInjection = false
+        if (data === undefined && data === null) {
+            return true
+        } else {
+            for (let i = 0; i < SqlInjectionArray.length; i++) {
+                if (data.indexOf(SqlInjectionArray[i]) > 0) {
+                    return true
+                } else {
+                    checkSQLInjection = false
+                }
             }
         }
+        return checkSQLInjection
+    } catch (error) {
+        return false
     }
-    return checkSQLInjection
+}
+
+const FunctionSqlInjectionText = (data) => {
+    try {
+        var SqlInjectionArray = ["'"]
+        // Check cái ' với cái - ( ' 1=1 -- ) check cả rỗng với underfined
+        // console.log(data)
+        let checkSQLInjection = false
+        console.log(data)
+        if (data === undefined && data === null) {
+            return true
+        } else {
+            for (let i = 0; i < SqlInjectionArray.length; i++) {
+                if (data.indexOf(SqlInjectionArray[i]) > 0) {
+                    return true
+                } else {
+                    checkSQLInjection = false
+                }
+            }
+        }
+        return checkSQLInjection
+    } catch (error) {
+        return false
+    }
 }
 
 // Hàm xóa '
@@ -67,7 +95,6 @@ const checkRequest = (value) => {
     const arrayRequest = process.env.checkRequest.split('|')
     let check = false
     for (let i = 0; i < arrayRequest.length; i++) {
-        console.log(value.indexOf(arrayRequest[i]))
         if (value.indexOf(arrayRequest[i]) >= 0) {
             return true
         } else {
@@ -77,36 +104,36 @@ const checkRequest = (value) => {
     return check
 }
 
-const createGift = async() => {
-        try {
-            function makeid(length) {
-                var dateNow = new Date()
-                var result = '';
-                var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                var charactersLength = characters.length;
-                for (var i = 0; i < length; i++) {
-                    result += characters.charAt(Math.floor(Math.random() *
-                        charactersLength));
-                }
-                return `0${dateNow.getDate()}${dateNow.getFullYear()}${dateNow.getSeconds()}${result}`;
+const createGift = async () => {
+    try {
+        function makeid(length) {
+            var dateNow = new Date()
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() *
+                    charactersLength));
             }
-            for (let i = 0; i <= 5; i++) {
-                const newData = await pool.query(`
+            return `0${dateNow.getDate()}${dateNow.getFullYear()}${dateNow.getSeconds()}${result}`;
+        }
+        for (let i = 0; i <= 5; i++) {
+            const newData = await pool.query(`
             insert into giam_gia(ma_giam,created_at,updated_at,gia_tri,check_bool)
             values(
               N'${makeid(5)}',NOW(),NOW(),N'500000',false
             )
           `)
-            }
-            console.log(makeid(5));
-        } catch (error) {
-            console.log(error)
         }
+        console.log(makeid(5));
+    } catch (error) {
+        console.log(error)
     }
-    //#endregion Function
+}
+//#endregion Function
 
 //#region Error
-const SaveError = async(error, path_api, ghi_chu, method, request, ip_address) => {
+const SaveError = async (error, path_api, ghi_chu, method, request, ip_address) => {
     try {
         // console.log(error, path_api, ghi_chu, method, request)
         const ExcuteQuery = await pool.query(`
@@ -126,5 +153,6 @@ module.exports = {
     checkRequest,
     FunctionSqlInjection,
     FunctionRemoveCharacter,
-    SaveError
+    SaveError,
+    FunctionSqlInjectionText
 }
