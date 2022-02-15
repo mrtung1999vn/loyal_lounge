@@ -7,6 +7,7 @@ const { EncodeJson, DecodeJson } = require("../assets/encode_decode");
 
 require('dotenv').config()
 
+// Tạo Block-chains
 const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian) => {
     try {
         var next_string = '_string_next'
@@ -83,6 +84,7 @@ const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, t
     }
 }
 
+// Check Block-chains
 const CheckBlockChains = async ({ id_kh }) => {
     try {
         // Check block-chains bao gồm :
@@ -95,7 +97,7 @@ const CheckBlockChains = async ({ id_kh }) => {
         // var next_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, next_string, ngay, thang, nam, thoi_gian })
         // console.log(next_hash)
 
-        
+
         const ExcuteQuery = await pool.query(`
         select * from coin_bc where id_kh = ${id_kh}
         `)
