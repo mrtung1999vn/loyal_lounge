@@ -17,9 +17,10 @@ module.exports = function(app) {
 
 
     // Dash
-
     user(app)
     custom(app)
+    
+    // 
 
     // API get, post, put, delete
     // get hien thi du lieu

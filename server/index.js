@@ -19,7 +19,8 @@ app.use(express.json());
 
 
 const document = require('./document');
-const controller = require('./controller')
+const controller = require('./controller');
+const { CheckBlockChains, AddBlockChains } = require('./libs/block_chains');
 
 //#region OPTIONS
 const options = {
@@ -61,6 +62,12 @@ controller.Controller(app, io)
 //#endregion API SERVER
 
 
+// Block-Chains
+
+// AddBlockChains(11,'Send money','+1000','15','02','2022','17:30:30')
+
+
+// 
 
 // const { LiveChat } = require("youtube-chat")
 

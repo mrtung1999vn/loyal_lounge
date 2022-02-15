@@ -91,6 +91,8 @@ const FunctionRemoveCharacter = (data) => {
 }
 
 // SendMailGoogle('quachthanhtung1999@gmail.com','demo012','demo222')
+
+
 const checkRequest = (value) => {
     const arrayRequest = process.env.checkRequest.split('|')
     let check = false
