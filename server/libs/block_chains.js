@@ -85,7 +85,32 @@ const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, t
 }
 
 // Check Block-chains
-const CheckBlockChains = async ({ id_kh }) => {
+const CheckJsonChains = ( data01, data02 )=>{
+    try {
+        let check = false
+        if( data01.id_kh === data02.id_kh){
+            check = true
+        }else if( data01.noi_dung === data02.noi_dung){
+            check = true
+        }else if( data01.coin_tranfer === data02.coin_tranfer){
+            check = true
+        }else if( data01.ngay === data02.ngay){
+            check = true
+        }else if( data01.thang === data02.thang){
+            check = true
+        }else if( data01.nam === data02.nam){
+            check = true
+        }else if( data01.thoi_gian === data02.thoi_gian){
+            check = true
+        }else{
+            check = false
+        }
+        return check
+    } catch (error) {
+        return false
+    }
+}
+const CheckBlockChains = async ( id_kh ) => {
     try {
         // Check block-chains bao gồm :
 
@@ -96,15 +121,63 @@ const CheckBlockChains = async ({ id_kh }) => {
         // console.log(json_hash)
         // var next_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, next_string, ngay, thang, nam, thoi_gian })
         // console.log(next_hash)
-
+        let checkBlockChains = false
 
         const ExcuteQuery = await pool.query(`
-        select * from coin_bc where id_kh = ${id_kh}
+            select * from coin_bc_loyal
+            where id_kh = ${ id_kh }
+            order by created_at asc
         `)
+
+
+        for(let i=0;i< ExcuteQuery.rowCount;i++){
+
+            // Check Json
+            if (i === 0){
+                if( JSON.parse( ExcuteQuery.rows[0].json_hash ).coin_tranfer === ExcuteQuery.rows[0].coin_tranfer ){
+                    checkBlockChains = true
+                }else{
+                    checkBlockChains = false
+                }
+            }else if( i + 1 !== ExcuteQuery.rowCount ){
+                var block_hash = DecodeJson( ExcuteQuery.rows[i].block_hash )
+                var json_hash = JSON.parse( ExcuteQuery.rows[i].json_hash )
+                var next_hash = DecodeJson( ExcuteQuery.rows[i].next_hash )
+
+                var pre_hash = DecodeJson( ExcuteQuery.rows[i+1].pre_hash )
+                // console.log( CheckJsonChains( next_hash,json_hash ) )
+                if( CheckJsonChains(block_hash,json_hash) && CheckJsonChains( next_hash,json_hash ) ){
+                    checkBlockChains = true
+                }
+                else if( CheckBlockChains(block_hash,pre_hash  ) ){
+                    checkBlockChains = true
+                }else{
+                    checkBlockChains = false
+                }
+            }else{
+                var block_hash = DecodeJson( ExcuteQuery.rows[i].block_hash )
+                var json_hash = JSON.parse( ExcuteQuery.rows[i].json_hash )
+                var next_hash = DecodeJson( ExcuteQuery.rows[i].next_hash )
+
+                if( CheckJsonChains(block_hash,json_hash) && CheckJsonChains( next_hash,json_hash ) ){
+                    checkBlockChains = true
+                }else{
+                    checkBlockChains = false
+                }
+            }
+            // //Check block_hash, json_hash pre_hash
+
+            // ExcuteQuery.rows[i].block_hash
+            // ExcuteQuery.rows[i].json_hash
+            // ExcuteQuery.rows[i + 1].pre_hash
+        }
+        console.log( checkBlockChains  )
+        return checkBlockChains
         // Check block-chains
-        console.log(ExcuteQuery.rows)
+        // console.log(ExcuteQuery.rows)
     } catch (error) {
         console.log(error)
+        return false
     }
 }
 

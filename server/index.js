@@ -66,6 +66,8 @@ controller.Controller(app, io)
 
 // AddBlockChains(11,'Send money','+1000','15','02','2022','17:30:30')
 
+CheckBlockChains( 11 )
+
 
 // 
 
