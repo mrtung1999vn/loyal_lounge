@@ -5,9 +5,9 @@ import { storage } from '../../firebase'
 import Select from 'react-select'
 
 
-function DeleteCustomer({ EditData, onHandleDelete }) {
+function DeleteTable({ EditData, onHandleDelete }) {
 
-  const [IDCustomer, setIDCustomer] = React.useState(EditData.id_kh)
+  const [IDTable, setIDTable] = React.useState(EditData.id_kh)
   const [Email, setEmail] = React.useState(EditData.email)
   const [Password, setPassword] = React.useState('')
   const [RePassword, setRePassword] = React.useState('')
@@ -87,11 +87,11 @@ function DeleteCustomer({ EditData, onHandleDelete }) {
       var mat_khau = RePassword === '' && Password === '' ? EditData.mat_khau : RePassword
       var so_dt = PhoneNumber
       var status = Status
-      var id_kh = IDCustomer
+      var id_kh = IDTable
       var image = url === '' ? `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460` : url
       var dia_chi = Address
 
-      const res = await fetch(host.WebDashDanhSachCustomer, {
+      const res = await fetch(host.WebDashDanhSachTable, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, mat_khau, status, dia_chi, so_dt, image, id_kh })
@@ -125,9 +125,9 @@ function DeleteCustomer({ EditData, onHandleDelete }) {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Delete customer id {EditData.id_kh} </Modal.Title>
+          <Modal.Title>Delete Table id {EditData.id_kh} </Modal.Title>
         </Modal.Header>
-        <Modal.Body>Do you want to delete customer {Email} (ID: {IDCustomer}) ?</Modal.Body>
+        <Modal.Body>Do you want to delete Table {Email} (ID: {IDTable}) ?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             No
@@ -141,4 +141,4 @@ function DeleteCustomer({ EditData, onHandleDelete }) {
   )
 }
 
-export default DeleteCustomer
+export default DeleteTable

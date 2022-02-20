@@ -2,33 +2,73 @@ import React from 'react'
 import MUIDataTable from "mui-datatables";
 import Backdrop from '@material-ui/core/Backdrop';
 import { makeStyles } from '@material-ui/core/styles';
-import EditCustomer from './EditCustomer';
-import DeleteCustomer from './DeleteCustomer';
+import EditEvent from './EditEvent';
+import DeleteEvent from './DeleteEvent';
 
 const data = new Date()
 var ngay_gio_hien_tai = data.toString().split(' ')[0] + ' ' + data.toString().split(' ')[2] + '-' + data.toString().split(' ')[1] + ' ' + data.toString().split(' ')[3]
 
 
 
-function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiDanhMuc}) {
+function ListEvent( { ListDataEvent , onHandleEdit , onHandleDelete, LoaiDanhMuc}) {
     const [Data,setData] = React.useState([])
     const columns = [
         {
-            name: "id_kh",
-            label: "ID_CUSTOMER",
+            name: "id_su_kien",
+            label: "ID_Event",
             options: {
                 filter: true,
                 sort: true,
             }
         },
         {
-            name: "email",
-            label: "Email",
+            name: "ten_su_kien",
+            label: "Event",
             options: {
                 filter: true,
                 sort: false,
             }
         },        
+        {
+            name: "thoi_gian_dien",
+            label: "Name Event",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },  
+        {
+            name: "gia",
+            label: "Price",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        }, 
+        {
+            name: "the_loai",
+            label: "Type",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },  
+        {
+            name: "noi_dung",
+            label: "Description",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        }, 
+        {
+            name: "nguoi_tham_gia",
+            label: "Actors",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        }, 
         {
             name: "status",
             label: "status",
@@ -43,7 +83,7 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
                     return (
                         // <Edit todo={dataSate[rowIndex]} OnSubmit={EditSubmit}></Edit>
                         // <>sua</>
-                        <>{ListDataCustomer[data].status.toString()}</>
+                        <>{ListDataEvent[data].status.toString()}</>
                         // <SuaDonHangSanPham DuLieuSua={DanhSachDonHangSanPham[data]} DuLieuSuaMoi={DuLieuSuaMoi}
                         //     onClickSua={_onClickSua} LoaiDanhMuc={LoaiDanhMuc}
                         // ></SuaDonHangSanPham>
@@ -65,7 +105,7 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
                     return (
                         // <Edit todo={dataSate[rowIndex]} OnSubmit={EditSubmit}></Edit>
                         // <>sua</>
-                        <EditCustomer EditData={ListDataCustomer[data]} onHandleEdit={onHandleEdit}></EditCustomer>
+                        <EditEvent EditData={ListDataEvent[data]} onHandleEdit={onHandleEdit}></EditEvent>
                         // <SuaDonHangSanPham DuLieuSua={DanhSachDonHangSanPham[data]} DuLieuSuaMoi={DuLieuSuaMoi}
                         //     onClickSua={_onClickSua} LoaiDanhMuc={LoaiDanhMuc}
                         // ></SuaDonHangSanPham>
@@ -86,7 +126,7 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
                     return (
                         // <Edit todo={dataSate[rowIndex]} OnSubmit={EditSubmit}></Edit>
                         // <>sua</>
-                        <DeleteCustomer EditData={ListDataCustomer[data]} onHandleDelete={onHandleDelete}></DeleteCustomer>
+                        <DeleteEvent EditData={ListDataEvent[data]} onHandleDelete={onHandleDelete}></DeleteEvent>
                         // <SuaDonHangSanPham DuLieuSua={DanhSachDonHangSanPham[data]} DuLieuSuaMoi={DuLieuSuaMoi}
                         //     onClickSua={_onClickSua} LoaiDanhMuc={LoaiDanhMuc}
                         // ></SuaDonHangSanPham>
@@ -119,29 +159,29 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
         viewColumns: true,
         download: true,
         downloadOptions: {
-            filename: 'ListCustomer(' + ngay_gio_hien_tai + ').csv',
+            filename: 'ListEvent(' + ngay_gio_hien_tai + ').csv',
             filterOptions: {
                 useDisplayedRowsOnly: true,
                 useDisplayedColumnsOnly: true,
             }
         },
-        selectableRows: false // <===== will turn off checkboxes in rows
+        selecEventRows: false // <===== will turn off checkboxes in rows
     }
 
 
     React.useEffect(()=>{
         try{
-            setData(ListDataCustomer)
+            setData(ListDataEvent)
         }catch(error){
 
         }
     },[])
-    // console.log(ListDataCustomer)
+    // console.log(ListDataEvent)
     // console.log(Data)
     return (
         <MUIDataTable
-                title={"List Customer"}
-                data={ListDataCustomer}
+                title={"List Event"}
+                data={ListDataEvent}
                 columns={columns}
                 options={options}
         />
@@ -152,4 +192,4 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
 
 
 
-export default ListCustomer
+export default ListEvent

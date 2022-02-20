@@ -2,28 +2,28 @@ import React from 'react'
 import MUIDataTable from "mui-datatables";
 import Backdrop from '@material-ui/core/Backdrop';
 import { makeStyles } from '@material-ui/core/styles';
-import EditCustomer from './EditCustomer';
-import DeleteCustomer from './DeleteCustomer';
+import EditTable from './EditTable';
+import DeleteTable from './DeleteTable';
 
 const data = new Date()
 var ngay_gio_hien_tai = data.toString().split(' ')[0] + ' ' + data.toString().split(' ')[2] + '-' + data.toString().split(' ')[1] + ' ' + data.toString().split(' ')[3]
 
 
 
-function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiDanhMuc}) {
+function ListTable( { ListDataTable , onHandleEdit , onHandleDelete, LoaiDanhMuc}) {
     const [Data,setData] = React.useState([])
     const columns = [
         {
-            name: "id_kh",
-            label: "ID_CUSTOMER",
+            name: "id_ban",
+            label: "ID_Table",
             options: {
                 filter: true,
                 sort: true,
             }
         },
         {
-            name: "email",
-            label: "Email",
+            name: "ten_ban",
+            label: "Name Table",
             options: {
                 filter: true,
                 sort: false,
@@ -43,7 +43,7 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
                     return (
                         // <Edit todo={dataSate[rowIndex]} OnSubmit={EditSubmit}></Edit>
                         // <>sua</>
-                        <>{ListDataCustomer[data].status.toString()}</>
+                        <>{ListDataTable[data].status.toString()}</>
                         // <SuaDonHangSanPham DuLieuSua={DanhSachDonHangSanPham[data]} DuLieuSuaMoi={DuLieuSuaMoi}
                         //     onClickSua={_onClickSua} LoaiDanhMuc={LoaiDanhMuc}
                         // ></SuaDonHangSanPham>
@@ -65,7 +65,7 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
                     return (
                         // <Edit todo={dataSate[rowIndex]} OnSubmit={EditSubmit}></Edit>
                         // <>sua</>
-                        <EditCustomer EditData={ListDataCustomer[data]} onHandleEdit={onHandleEdit}></EditCustomer>
+                        <EditTable EditData={ListDataTable[data]} onHandleEdit={onHandleEdit}></EditTable>
                         // <SuaDonHangSanPham DuLieuSua={DanhSachDonHangSanPham[data]} DuLieuSuaMoi={DuLieuSuaMoi}
                         //     onClickSua={_onClickSua} LoaiDanhMuc={LoaiDanhMuc}
                         // ></SuaDonHangSanPham>
@@ -86,7 +86,7 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
                     return (
                         // <Edit todo={dataSate[rowIndex]} OnSubmit={EditSubmit}></Edit>
                         // <>sua</>
-                        <DeleteCustomer EditData={ListDataCustomer[data]} onHandleDelete={onHandleDelete}></DeleteCustomer>
+                        <DeleteTable EditData={ListDataTable[data]} onHandleDelete={onHandleDelete}></DeleteTable>
                         // <SuaDonHangSanPham DuLieuSua={DanhSachDonHangSanPham[data]} DuLieuSuaMoi={DuLieuSuaMoi}
                         //     onClickSua={_onClickSua} LoaiDanhMuc={LoaiDanhMuc}
                         // ></SuaDonHangSanPham>
@@ -119,7 +119,7 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
         viewColumns: true,
         download: true,
         downloadOptions: {
-            filename: 'ListCustomer(' + ngay_gio_hien_tai + ').csv',
+            filename: 'ListTable(' + ngay_gio_hien_tai + ').csv',
             filterOptions: {
                 useDisplayedRowsOnly: true,
                 useDisplayedColumnsOnly: true,
@@ -131,17 +131,17 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
 
     React.useEffect(()=>{
         try{
-            setData(ListDataCustomer)
+            setData(ListDataTable)
         }catch(error){
 
         }
     },[])
-    // console.log(ListDataCustomer)
+    // console.log(ListDataTable)
     // console.log(Data)
     return (
         <MUIDataTable
-                title={"List Customer"}
-                data={ListDataCustomer}
+                title={"List Table"}
+                data={ListDataTable}
                 columns={columns}
                 options={options}
         />
@@ -152,4 +152,4 @@ function ListCustomer( { ListDataCustomer , onHandleEdit , onHandleDelete, LoaiD
 
 
 
-export default ListCustomer
+export default ListTable

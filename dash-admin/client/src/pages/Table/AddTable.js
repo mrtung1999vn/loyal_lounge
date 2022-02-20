@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import host from '../../service/host'
 import { storage } from '../../firebase'
 import Select from 'react-select'
-function AddCustomer({ handleAddCustomer }) {
+function AddTable({ handleAddTable }) {
 
     const [Email, setEmail] = React.useState('')
     const [Password, setPassword] = React.useState('')
@@ -83,7 +83,7 @@ function AddCustomer({ handleAddCustomer }) {
 
 
     //#endregion
-    const onClickAddCustomer = async () => {
+    const onClickAddUser = async () => {
         try {
             if (Status === '') {
                 alert('Status cannot be blank!')
@@ -109,7 +109,7 @@ function AddCustomer({ handleAddCustomer }) {
                 var image = url === '' ? `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460` : url
                 var dia_chi = Address
 
-                const res = await fetch(host.WebDashDanhSachCustomer, {
+                const res = await fetch(host.WebDashDanhSachTable, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, mat_khau, status, dia_chi, so_dt, image })
@@ -117,7 +117,7 @@ function AddCustomer({ handleAddCustomer }) {
                 const content = await res.json()
                 if (content.status === 1) {
                     alert(content.msg_en)
-                    handleAddCustomer(true)
+                    handleAddTable(true)
                     defaultValue()
                 } else {
                     alert(content.msg_en)
@@ -132,7 +132,7 @@ function AddCustomer({ handleAddCustomer }) {
     return (
         <div className="white_card_body">
             <div className="row">
-                <div className="col-lg-6">
+                {/* <div className="col-lg-6">
                     <label>Email</label>
                     <div className="common_input mb_20">
                         <input type="text" placeholder="Email"
@@ -149,8 +149,8 @@ function AddCustomer({ handleAddCustomer }) {
                             onChange={e => setPassword(e.target.value)}
                         />
                     </div>
-                </div>
-                <div className="col-lg-6">
+                </div> */}
+                {/* <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <label>Address</label>
                         <input type="text" placeholder="Address"
@@ -167,16 +167,7 @@ function AddCustomer({ handleAddCustomer }) {
                             onChange={e => setRePassword(e.target.value)}
                         />
                     </div>
-                </div>
-                <div className="col-lg-6">
-                    <div className="common_input mb_20">
-                        <label>Phone Number</label>
-                        <input type="text" placeholder="Phone Number"
-                            value={PhoneNumber}
-                            onChange={e => setPhoneNumber(e.target.value)}
-                        />
-                    </div>
-                </div>
+                </div> */}
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <label>Status :{Status}</label>
@@ -189,7 +180,19 @@ function AddCustomer({ handleAddCustomer }) {
 
                     </div>
                 </div>
-                <div className="col-lg-6">
+                {/* <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                        <label>Status :{Status}</label>
+                        <Select options={options}
+                            onChange={e => setStatus(e.value)}
+                            styles={{
+                                width: '100%',
+                                height: '100px'
+                            }} />
+
+                    </div>
+                </div> */}
+                {/* <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <div className='row'>
                             <div className='col-lg-6'>
@@ -205,12 +208,12 @@ function AddCustomer({ handleAddCustomer }) {
                             }
                             src={url  || "http://via.placeholder.com/300"} alt="firebase-image" />
                     </div>
-                </div>
+                </div> */}
                 <div className="col-12">
                     <div className="create_report_btn mt_30">
                         <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
-                            onClick={() => onClickAddCustomer()}
-                        >Add Customer</a>
+                            onClick={() => onClickAddUser()}
+                        >Add Table</a>
                     </div>
                 </div>
             </div>
@@ -218,4 +221,4 @@ function AddCustomer({ handleAddCustomer }) {
     )
 }
 
-export default AddCustomer
+export default AddTable

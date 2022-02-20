@@ -162,13 +162,16 @@ var WebDashDanhSachUsers = host + `/WebDash/DanhSachUsers`
 var WebDashDangNhap = host + `/WebDash/DangNhap`
 var WebDuDoanDangNhap = host + `/WebDuDoan/DangNhap`
 var WebDashDanhSachCustomer = host + `/WebDash/DanhSachCustomer`
-
+var WebDashDanhSachTable = host + `/WebDash/DanhSachTable`
+var WebDashDanhSachEvent = host + `/WebDash/DanhSachEvent`
 
 export default {
     WebDashDangNhap,
     WebDuDoanDangNhap,
     WebDashDanhSachUsers,
+    WebDashDanhSachTable,
     WebDashDanhSachCustomer,
+    WebDashDanhSachEvent,
 
 
 

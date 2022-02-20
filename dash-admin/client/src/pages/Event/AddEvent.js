@@ -2,15 +2,22 @@ import React, { useState } from 'react'
 import host from '../../service/host'
 import { storage } from '../../firebase'
 import Select from 'react-select'
-function AddCustomer({ handleAddCustomer }) {
+function AddEvent({ handleAddEvent }) {
 
-    const [Email, setEmail] = React.useState('')
+    const [NameEvent, setNameEvent] = React.useState('')
     const [Password, setPassword] = React.useState('')
     const [RePassword, setRePassword] = React.useState('')
     const [Address, setAddress] = React.useState('')
     const [PhoneNumber, setPhoneNumber] = React.useState('')
-
     const [Status, setStatus] = React.useState('')
+
+    const [Price, setPrice] = React.useState(0)
+    const [Type, setType] = React.useState('')
+    const [Actors, setActors] = React.useState('')
+    const [Description, setDescription] = React.useState('')
+
+    const [Date, setDate] = React.useState('')
+    const [Time, setTime] = React.useState('')
 
 
     // 
@@ -27,12 +34,11 @@ function AddCustomer({ handleAddCustomer }) {
 
     const defaultValue = async () => {
         try {
-            setEmail(''); setPassword(''); setRePassword(''); setAddress('')
+            setNameEvent(''); setPassword(''); setRePassword(''); setAddress('')
             setPhoneNumber(''); setStatus(''); setImage(null); setUrl('')
+            setPrice(0); setType(''); setActors(''); setDescription(''); setDate(''); setTime('')
             setProgress(0)
-        } catch (error) {
-
-        }
+        } catch (error) { }
     }
 
     const handleChange = e => {
@@ -83,46 +89,49 @@ function AddCustomer({ handleAddCustomer }) {
 
 
     //#endregion
-    const onClickAddCustomer = async () => {
+    const onClickAddEvent = async () => {
         try {
-            if (Status === '') {
-                alert('Status cannot be blank!')
-            } else if (PhoneNumber === '') {
-                alert('PhoneNumber cannot be blank!')
-            } else if (Address === '') {
-                alert('Address cannot be blank!')
-            } else if (RePassword !== Password) {
-                alert('Enter a password that does not match!')
-            } else if (Email === '') {
-                alert('Email cannot be blank!')
-            } else if (Password === '') {
-                alert('Password cannot be blank!')
-            } else if (RePassword === '') {
-                alert('RePassword cannot be blank!')
-            } else {
-                // email,mat_khau,created_at,updated_at,status,dia_chi,so_dt,mat_khau_hash,image
-                var email = Email
-                var mat_khau = RePassword
-                var so_dt = PhoneNumber
-                var status = Status
 
-                var image = url === '' ? `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460` : url
-                var dia_chi = Address
+            console.log({ Type, Price, Actors, Description, Date, Time })
 
-                const res = await fetch(host.WebDashDanhSachCustomer, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, mat_khau, status, dia_chi, so_dt, image })
-                })
-                const content = await res.json()
-                if (content.status === 1) {
-                    alert(content.msg_en)
-                    handleAddCustomer(true)
-                    defaultValue()
-                } else {
-                    alert(content.msg_en)
-                }
-            }
+            // if (Status === '') {
+            //     alert('Status cannot be blank!')
+            // } else if (PhoneNumber === '') {
+            //     alert('PhoneNumber cannot be blank!')
+            // } else if (Address === '') {
+            //     alert('Address cannot be blank!')
+            // } else if (RePassword !== Password) {
+            //     alert('Enter a password that does not match!')
+            // } else if (NameEvent === '') {
+            //     alert('Email cannot be blank!')
+            // } else if (Password === '') {
+            //     alert('Password cannot be blank!')
+            // } else if (RePassword === '') {
+            //     alert('RePassword cannot be blank!')
+            // } else {
+            //     // email,mat_khau,created_at,updated_at,status,dia_chi,so_dt,mat_khau_hash,image
+            //     var ten_su_kien = NameEvent
+            //     var mat_khau = RePassword
+            //     var so_dt = PhoneNumber
+            //     var status = Status
+
+            //     var image = url === '' ? `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460` : url
+            //     var dia_chi = Address
+
+            //     const res = await fetch(host.WebDashDanhSachEvent, {
+            //         method: "POST",
+            //         headers: { "Content-Type": "application/json" },
+            //         body: JSON.stringify({ ten_su_kien, mat_khau, status, dia_chi, so_dt, image })
+            //     })
+            //     const content = await res.json()
+            //     if (content.status === 1) {
+            //         alert(content.msg_en)
+            //         handleAddEvent(true)
+            //         defaultValue()
+            //     } else {
+            //         alert(content.msg_en)
+            //     }
+            // }
         } catch (error) {
             console.log(error)
         }
@@ -133,47 +142,39 @@ function AddCustomer({ handleAddCustomer }) {
         <div className="white_card_body">
             <div className="row">
                 <div className="col-lg-6">
-                    <label>Email</label>
+                    <label>Name Event</label>
                     <div className="common_input mb_20">
                         <input type="text" placeholder="Email"
-                            value={Email}
-                            onChange={e => setEmail(e.target.value)}
+                            value={NameEvent}
+                            onChange={e => setNameEvent(e.target.value)}
                         />
                     </div>
                 </div>
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Password</label>
-                        <input type="password" placeholder="Password"
-                            value={Password}
-                            onChange={e => setPassword(e.target.value)}
+                        <label>Price</label>
+                        <input type="text" placeholder="Password"
+                            value={Price}
+                            onChange={e => setPrice(e.target.value)}
+                        />
+                    </div>
+                    {`${Price} $`}
+                </div>
+                <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                        <label>Date</label>
+                        <input type="date" placeholder="Address"
+                            value={Date}
+                            onChange={e => setDate(e.target.value)}
                         />
                     </div>
                 </div>
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Address</label>
-                        <input type="text" placeholder="Address"
-                            value={Address}
-                            onChange={e => setAddress(e.target.value)}
-                        />
-                    </div>
-                </div>
-                <div className="col-lg-6">
-                    <div className="common_input mb_20">
-                        <label>Re-Password</label>
-                        <input type="password" placeholder="RePassword"
-                            value={RePassword}
-                            onChange={e => setRePassword(e.target.value)}
-                        />
-                    </div>
-                </div>
-                <div className="col-lg-6">
-                    <div className="common_input mb_20">
-                        <label>Phone Number</label>
-                        <input type="text" placeholder="Phone Number"
-                            value={PhoneNumber}
-                            onChange={e => setPhoneNumber(e.target.value)}
+                        <label>Time</label>
+                        <input type="time" placeholder="Address"
+                            value={Time}
+                            onChange={e => setTime(e.target.value)}
                         />
                     </div>
                 </div>
@@ -189,7 +190,19 @@ function AddCustomer({ handleAddCustomer }) {
 
                     </div>
                 </div>
-                <div className="col-lg-6">
+                {/* <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                        <label>Status :{Status}</label>
+                        <Select options={options}
+                            onChange={e => setStatus(e.value)}
+                            styles={{
+                                width: '100%',
+                                height: '100px'
+                            }} />
+
+                    </div>
+                </div> */}
+                {/* <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <div className='row'>
                             <div className='col-lg-6'>
@@ -205,12 +218,12 @@ function AddCustomer({ handleAddCustomer }) {
                             }
                             src={url  || "http://via.placeholder.com/300"} alt="firebase-image" />
                     </div>
-                </div>
+                </div> */}
                 <div className="col-12">
                     <div className="create_report_btn mt_30">
                         <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
-                            onClick={() => onClickAddCustomer()}
-                        >Add Customer</a>
+                            onClick={() => onClickAddEvent()}
+                        >Add Event</a>
                     </div>
                 </div>
             </div>
@@ -218,4 +231,4 @@ function AddCustomer({ handleAddCustomer }) {
     )
 }
 
-export default AddCustomer
+export default AddEvent

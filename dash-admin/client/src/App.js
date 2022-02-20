@@ -16,6 +16,8 @@ import User from './storage/User';
 import $ from 'jquery'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Customer from './pages/Customer';
+import Table from './pages/Table';
+import Event from './pages/Event';
 
 
 function App() {
@@ -189,6 +191,8 @@ function App() {
             {/* <Route path='/Login' render={() => <TaiKhoan></TaiKhoan>}></Route> */}
 
             <Route path='/Users' render={() => <Users></Users>}></Route>
+            <Route path='/Event' render={() => <Event></Event>}></Route>
+            <Route path='/Table' render={() => <Table></Table>}></Route>
             <Route path='/Customer' render={() => <Customer></Customer>}></Route>
             <Route path='/' render={() => <Default></Default>}></Route>
           </Switch>

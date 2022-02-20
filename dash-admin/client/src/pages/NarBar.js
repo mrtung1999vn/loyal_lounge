@@ -53,7 +53,6 @@ function NarBar() {
                     <ul>
                         <Link to="/Type-Product" style={{ backgroundColor: '#091023', color: 'white' }}>Type-Product</Link>
                         <Link to="/Product" style={{ backgroundColor: '#091023', color: 'white' }}>Product</Link>
-                        <Link to="/Table" style={{ backgroundColor: '#091023', color: 'white' }}>Table</Link>
                     </ul>
                 </li>
 
