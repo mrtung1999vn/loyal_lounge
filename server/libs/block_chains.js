@@ -110,6 +110,8 @@ const CheckJsonChains = ( data01, data02 )=>{
         return false
     }
 }
+
+
 const CheckBlockChains = async ( id_kh ) => {
     try {
         // Check block-chains bao gồm :
@@ -182,7 +184,10 @@ const CheckBlockChains = async ( id_kh ) => {
 }
 
 
+
+
+
 //#endregion
 module.exports = {
-    AddBlockChains, CheckBlockChains
+    AddBlockChains, CheckBlockChains,
 }

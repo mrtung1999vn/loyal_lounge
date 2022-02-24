@@ -10,8 +10,11 @@ const encode_decode = require('../../assets/encode_decode')
 const { timeNowDB } = require('../../assets/TimeLibary')
 
 const moment = require('moment');
+
 const user = require('./user');
 const custom = require('./custom');
+const table = require('./table');
+const event = require('./event');
 
 module.exports = function(app) {
 
@@ -19,7 +22,8 @@ module.exports = function(app) {
     // Dash
     user(app)
     custom(app)
-    
+    table(app)
+    event(app)
     // 
 
     // API get, post, put, delete

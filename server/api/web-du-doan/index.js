@@ -88,11 +88,37 @@ module.exports = function(app) {
         }
     })
 
-    app.get(`/a/:idd`, async(req, res) => {
-        try {
 
-        } catch (error) {
+    // app.get(`/WebDuDoan/APINBA` , async (req,res)=>{
+    //     try {
+    //         const res = await fetch(`https://api-basketball.p.rapidapi.com/timezone`,{
+    //             method:'GET',
+    //             headers: {
+    //                 'x-rapidapi-host': 'api-basketball.p.rapidapi.com',
+    //                 'x-rapidapi-key': '01646dd5bfmsh1192931205fde26p199d4djsn8e1d2a68bf59'
+    //             }
+    //         })
+    //         const content = await res.json()
 
-        }
-    })
+    //         console.log( content )
+    //     } catch (error) {
+    //         console.log( error )
+    //     }
+    // })
+    // app.get(`/a/:idd`, async(req, res) => {
+    //     try {
+    //         const res = await 
+    //         var options = {
+    //             method: 'GET',
+    //             url: 'https://api-basketball.p.rapidapi.com/timezone',
+    //             headers: {
+    //               'x-rapidapi-host': 'api-basketball.p.rapidapi.com',
+    //               'x-rapidapi-key': '01646dd5bfmsh1192931205fde26p199d4djsn8e1d2a68bf59'
+    //             }
+    //           };
+              
+    //     } catch (error) {
+
+    //     }
+    // })
 }

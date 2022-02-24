@@ -16,7 +16,7 @@ module.exports = function (app) {
             if (checkRequest(req.headers.origin)) {
 
                 const ExcuteQuery = await pool.query(`
-                    select id_tk_admin,mat_khau_hash,ten_tai_khoan,mat_khau from tai_khoan_admin
+                    select * from ban
                 `)
 
                 res.json({
