@@ -39,7 +39,9 @@ module.exports = function (app) {
     app.post(`/WebDash/DanhSachUsers`, async (req, res) => {
         try {
             const { ten_tai_khoan, mat_khau } = req.body
-            if (FunctionSqlInjection(ten_tai_khoan) ||
+            if (
+                !checkRequest(req.headers.origin) ||
+                FunctionSqlInjection(ten_tai_khoan) ||
                 FunctionSqlInjection(mat_khau)
             ) {
                 res.json({
@@ -91,7 +93,9 @@ module.exports = function (app) {
     app.put(`/WebDash/DanhSachUsers`, async (req, res) => {
         try {
             const { id_tk_admin,ten_tai_khoan, mat_khau } = req.body
-            if (FunctionSqlInjection(ten_tai_khoan) ||
+            if (
+                !checkRequest(req.headers.origin) ||
+                FunctionSqlInjection(ten_tai_khoan) ||
                 FunctionSqlInjection(mat_khau) ||
                 FunctionSqlInjection(id_tk_admin)
             ) {
@@ -130,7 +134,9 @@ module.exports = function (app) {
     app.delete(`/WebDash/DanhSachUsers`, async (req, res) => {
         try {
             const { id_tk_admin,ten_tai_khoan, mat_khau } = req.body
-            if (FunctionSqlInjection(ten_tai_khoan) ||
+            if (
+                !checkRequest(req.headers.origin) ||
+                FunctionSqlInjection(ten_tai_khoan) ||
                 FunctionSqlInjection(mat_khau) ||
                 FunctionSqlInjection(id_tk_admin)
             ) {

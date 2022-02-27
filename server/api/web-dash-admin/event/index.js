@@ -41,7 +41,7 @@ module.exports = function (app) {
             const { NameEvent, Type, Price, Actors, Description, DateValue, Time, image, url } = req.body
 
             if (
-                
+                !checkRequest(req.headers.origin) ||
                 FunctionSqlInjectionText(NameEvent) ||
                 FunctionSqlInjectionText(Type) ||
                 FunctionSqlInjection(Price) ||
@@ -105,6 +105,7 @@ module.exports = function (app) {
 
             console.log( { NameEvent, Type, Price, Actors, Description, DateValue, Time, image, url, id_su_kien,status } )
             if (
+                !checkRequest(req.headers.origin) ||
                 FunctionSqlInjectionText(id_su_kien) ||
                 FunctionSqlInjectionText(status) ||
                 FunctionSqlInjectionText(NameEvent) ||
@@ -153,7 +154,9 @@ module.exports = function (app) {
     app.delete(`/WebDash/DanhSachEvent`, async (req, res) => {
         try {
             const { id_su_kien } = req.body
-            if (FunctionSqlInjection(id_su_kien)) {
+            if (
+                !checkRequest(req.headers.origin) ||
+                FunctionSqlInjection(id_su_kien)) {
                 res.json({
                     status: 0,
                     data: [],

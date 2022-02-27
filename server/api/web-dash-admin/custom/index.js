@@ -41,7 +41,9 @@ module.exports = function (app) {
 
             const { email,mat_khau,created_at,updated_at,status,dia_chi,so_dt,mat_khau_hash,image } = req.body
             
-            if (FunctionSqlInjection(email) ||
+            if (
+                !checkRequest(req.headers.origin) ||
+                FunctionSqlInjection(email) ||
                 FunctionSqlInjection(mat_khau) ||
                 FunctionSqlInjectionText( dia_chi ) ||
                 FunctionSqlInjectionText( so_dt ) ||
@@ -100,7 +102,9 @@ module.exports = function (app) {
 
             const { email, mat_khau, status, dia_chi, so_dt, image, id_kh} = req.body
 
-            if (FunctionSqlInjection(email) ||
+            if (
+                !checkRequest(req.headers.origin) ||
+                FunctionSqlInjection(email) ||
                 FunctionSqlInjection(mat_khau) ||
                 FunctionSqlInjectionText( status ) ||
                 FunctionSqlInjectionText( dia_chi ) ||
@@ -146,6 +150,7 @@ module.exports = function (app) {
             const { email,mat_khau,created_at,updated_at,status,dia_chi,so_dt,mat_khau_hash,image,id_kh } = req.body
 
             if (
+                !checkRequest(req.headers.origin) ||
                 FunctionSqlInjection(id_kh) ||
                 FunctionSqlInjection(email) ||
                 FunctionSqlInjection(mat_khau) 

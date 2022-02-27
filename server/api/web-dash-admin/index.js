@@ -15,15 +15,19 @@ const user = require('./user');
 const custom = require('./custom');
 const table = require('./table');
 const event = require('./event');
+const type_product = require('./type_product');
+const product = require('./product');
+const cashmoney = require('./cashmoney');
+const paymoney = require('./paymoney');
 
 module.exports = function(app) {
 
 
     // Dash
-    user(app)
-    custom(app)
-    table(app)
-    event(app)
+    user(app);custom(app);table(app);event(app);type_product(app);product(app)
+
+
+    cashmoney(app);paymoney(app)
     // 
 
     // API get, post, put, delete
