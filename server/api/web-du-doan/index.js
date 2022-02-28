@@ -11,9 +11,9 @@ const { timeNowDB } = require('../../assets/TimeLibary')
 
 const moment = require('moment')
 
-module.exports = function(app) {
+module.exports = function (app) {
 
-    app.post(`/WebDuDoan/DangNhap`, async(req, res) => {
+    app.post(`/WebDuDoan/DangNhap`, async (req, res) => {
         try {
             const { email, mat_khau, subject, text } = req.body
             if (checkRequest(req.headers.origin)) {
@@ -26,11 +26,25 @@ module.exports = function(app) {
 
                 if (ExcuteQuery.rowCount > 0) {
 
-                    SendMailGoogle('quachthanhtung1999@gmail.com', subject, text)
+                    SendMailGoogle(email, subject, text)
+                    const CoinQuery = await pool.query(`
+                        select sum(coin_tranfer::int8)"coin" from coin_bc_loyal
+                        where status = true and id_kh = (
+                        select id_kh from tai_khoan where email = N'${email}'
+                        )
+                    `)
 
+                    const DataCoin = await pool.query(`
+                    select * from coin_bc_loyal
+                        where id_kh = (
+                        select id_kh from tai_khoan where email = N'${email}'
+                    )
+                    `)
                     res.json({
                         status: 1,
-                        data: ExcuteQuery.rows,
+                        data: encode_decode.EncodeJson(ExcuteQuery.rows),
+                        data_j_coin: encode_decode.EncodeJson(CoinQuery.rows),
+                        data_coin: encode_decode.EncodeJson(DataCoin.rows),
                         // token:'',
                     })
                 } else {
@@ -49,7 +63,7 @@ module.exports = function(app) {
         }
     })
 
-    app.post(`/WebDuDoan/DangKyTaiKhoan`, async(req, res) => {
+    app.post(`/WebDuDoan/DangKyTaiKhoan`, async (req, res) => {
         try {
             if (checkRequest(req.headers.origin)) {
                 const { email, mat_khau, dia_chi, so_dt } = req.body
@@ -89,6 +103,29 @@ module.exports = function(app) {
     })
 
 
+    app.get(`/WebDuDoan/Match`, async (req, res) => {
+        try {
+            if (checkRequest(req.headers.origin)) {
+                const newDataFooball = await pool.query(`
+                    select * from "match"
+                    where created_at > now() - interval '2 day'
+                    and coast_result = '-'
+                    order by created_at asc
+                `)
+                const newDataBasketball = await pool.query(`
+                    select * from "match"
+                    where created_at > now() - interval '2 day'
+                    and coast_result = '-'
+                    order by created_at asc
+                `)
+
+                res.json({ status: 1, newDataFooball: encode_decode.EncodeJson(newDataFooball.rows) })
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
     // app.get(`/WebDuDoan/APINBA` , async (req,res)=>{
     //     try {
     //         const res = await fetch(`https://api-basketball.p.rapidapi.com/timezone`,{
@@ -116,7 +153,7 @@ module.exports = function(app) {
     //               'x-rapidapi-key': '01646dd5bfmsh1192931205fde26p199d4djsn8e1d2a68bf59'
     //             }
     //           };
-              
+
     //     } catch (error) {
 
     //     }
