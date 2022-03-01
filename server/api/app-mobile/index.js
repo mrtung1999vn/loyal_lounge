@@ -15,6 +15,8 @@ const { timeNowDB } = require('../../assets/TimeLibary')
 const moment = require('moment');
 const manchinh = require('./manchinh');
 const loaisanpham = require('./loaisanpham');
+const taikhoan = require('./taikhoan');
+const { DefautBlockChains } = require('../../libs/block_chains');
 
 
 
@@ -133,6 +135,12 @@ module.exports = function (app) {
                     )
                 `)
 
+                const ExcuteQuery = await pool.query(`
+                        select * from tai_khoan where email = N'${email}'
+                `)
+
+                DefautBlockChains(ExcuteQuery.rows[0].id_kh,'','','','','','')
+                
                 res.json({
                     status: 1,
                     data: [],
@@ -178,9 +186,8 @@ module.exports = function (app) {
     })
 
 
-    //#region Màn chính
     manchinh(app)
     loaisanpham(app)
-    //#endregion
+    taikhoan(app)
 
 }

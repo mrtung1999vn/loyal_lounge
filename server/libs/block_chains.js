@@ -17,41 +17,6 @@ const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, t
         console.log(json_hash)
         var next_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, next_string, ngay, thang, nam, thoi_gian })
         console.log(next_hash)
-
-        // Tạo mặc định coin demo
-        const CheckCoin = await pool.query(`
-            select * from tai_khoan
-        `)
-
-        for (let i = 0; i < CheckCoin.rowCount; i++) {
-            try {
-                const CoinUser = await pool.query(`
-                select * from coin_bc_loyal
-                where id_kh = ${CheckCoin.rows[i].id_kh}
-            `)
-                if (CoinUser.rowCount === 0) {
-                    var id_kh = CheckCoin.rows[i].id_kh
-                    var noi_dung = ''
-                    var coin_tranfer = 0
-                    var block_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian })
-                    var json_hash = JSON.stringify({ id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian })
-                    var next_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, next_string, ngay, thang, nam, thoi_gian })
-                    await pool.query(
-                        `
-                insert into coin_bc_loyal (
-                    id_kh,block_hash,json_hash,created_at,updated_at,noi_dung,coin_tranfer,pre_hash,next_hash,ngay,thang,nam,thoi_gian,status
-                )values(
-                    ${CheckCoin.rows[i].id_kh},N'${block_hash}',N'${json_hash}',now(),now(),N'',N'0',N'pre_hash',N'${next_hash}',N'${ngay}',N'${thang}',N'${nam}',N'${thoi_gian}',true
-                )
-                `
-                    )
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        // Tạo mặc định coin demo
         
         // Tạo block-chains
         const CheckAddBlockChains = await pool.query(`
@@ -84,6 +49,47 @@ const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, t
     }
 }
 
+
+const DefautBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian)=>{
+    try {
+                // Tạo mặc định coin demo
+            const CheckCoin = await pool.query(`
+                select * from tai_khoan
+            `)
+    
+            for (let i = 0; i < CheckCoin.rowCount; i++) {
+                try {
+                    const CoinUser = await pool.query(`
+                    select * from coin_bc_loyal
+                    where id_kh = ${CheckCoin.rows[i].id_kh}
+                `)
+                    if (CoinUser.rowCount === 0) {
+                        var id_kh = CheckCoin.rows[i].id_kh
+                        var noi_dung = ''
+                        var coin_tranfer = 0
+                        var block_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian })
+                        var json_hash = JSON.stringify({ id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian })
+                        var next_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, next_string, ngay, thang, nam, thoi_gian })
+                        await pool.query(
+                            `
+                    insert into coin_bc_loyal (
+                        id_kh,block_hash,json_hash,created_at,updated_at,noi_dung,coin_tranfer,pre_hash,next_hash,ngay,thang,nam,thoi_gian,status
+                    )values(
+                        ${CheckCoin.rows[i].id_kh},N'${block_hash}',N'${json_hash}',now(),now(),N'',N'0',N'pre_hash',N'${next_hash}',N'${ngay}',N'${thang}',N'${nam}',N'${thoi_gian}',true
+                    )
+                    `
+                        )
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+    
+            // Tạo mặc định coin demo
+    } catch (error) {
+        
+    }
+}
 // Check Block-chains
 const CheckJsonChains = ( data01, data02 )=>{
     try {
@@ -189,5 +195,5 @@ const CheckBlockChains = async ( id_kh ) => {
 
 //#endregion
 module.exports = {
-    AddBlockChains, CheckBlockChains,
+    AddBlockChains, CheckBlockChains,DefautBlockChains
 }
