@@ -18,5 +18,44 @@ const moment = require('moment')
 
 
 module.exports = function(app) {
-    app.post(`/App`)
+
+    app.post(`/App/DanhSachSuKien` , async(req,res)=>{
+        try {
+            const {authorization} = req.headers
+            const {email} = req.body
+            
+            let check = await CheckToken( email, authorization)
+
+            if( check ){
+                const ExcuteQueryEventWeek = await pool.query(`
+                    select * from su_kien 
+                    where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
+                    order by thoi_gian_dien asc 
+                `)
+                const ExcuteQueryEventLimit = await pool.query(`
+                    select * from su_kien 
+                    where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
+                    order by thoi_gian_dien asc
+                    limit 3 
+                `)
+
+                res.json({
+                    status:1,
+                    data_event_week: ExcuteQueryEventWeek.rows,
+                    data_event_week_limit: ExcuteQueryEventLimit.rows,
+                    msg_vn:'danh sach su kien trong tuan',
+                    msg_en:'Events list in week'
+                })
+            }
+
+        } catch (error) {
+            SaveError('app-mobile', '/DangKyTaiKhoan', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
+            res.json({
+                status: 0,
+                data: [],
+                msg: 'Loi he thong'
+            })
+        }
+    })
+    
 }
