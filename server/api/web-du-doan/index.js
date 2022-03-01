@@ -1,7 +1,7 @@
 const { lib } = require('crypto-js')
 const fetch = require('node-fetch')
 const { EncodeJson, DecodeString_AES, DecodeJson, DecodeJsonRequest, EncodeString, EncodeString_AES, DecodeString } = require('../../assets/encode_decode')
-const { SendMailGoogle, checkRequest } = require('../../libs')
+const { SendMailGoogle, checkRequest, FunctionSqlInjectionText } = require('../../libs')
 
 const jwt = require('jsonwebtoken');
 
@@ -103,6 +103,35 @@ module.exports = function (app) {
     })
 
 
+    app.get('/WebDuDoan/CoinEmail/:email' , async (req,res)=>{
+        try{
+            if (
+                checkRequest(req.headers.origin)
+                || !FunctionSqlInjectionText(email)
+                ) {
+                const {email} = req.params
+                
+                const ExcuteQuery = await pool.query(`
+                    select * from tai_khoan
+                    where email = N'${email}'
+                `)
+
+                const CoinQuery = await pool.query(`
+                    select sum(coin_tranfer::int8)"coin" from coin_bc_loyal
+                    where status = true and id_kh = (
+                    select id_kh from tai_khoan where email = N'${email}'
+                    )
+                `)
+                res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
+            }
+        }catch(error){
+            res.json({
+                status:0,
+                data:[]
+            })
+        }
+    })
+
     app.get(`/WebDuDoan/Match`, async (req, res) => {
         try {
             if (checkRequest(req.headers.origin)) {
@@ -123,6 +152,15 @@ module.exports = function (app) {
             }
         } catch (error) {
             console.log(error)
+        }
+    })
+
+
+    app.post('/WebDuDoan/Match' ,async (req,res)=>{
+        try{
+
+        }catch(error){
+
         }
     })
 

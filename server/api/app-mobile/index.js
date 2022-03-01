@@ -1,7 +1,8 @@
 const { lib } = require('crypto-js')
 const fetch = require('node-fetch')
 const { EncodeJson, DecodeString_AES, DecodeJson, DecodeJsonRequest, EncodeString, EncodeString_AES, DecodeString } = require('../../assets/encode_decode')
-const { SendMailGoogle, FunctionSqlInjection, SaveError } = require('../../libs')
+const { SendMailGoogle, FunctionSqlInjection, SaveError, SignToken, CheckToken } = require('../../libs')
+var jwt = require('jsonwebtoken');
 
 var token = "Token k0iI4jjVSEtdddZkIG4naDOW4kcZLbz0"
 var token_01 = "Token ALfPoYpBJh1TUVilppJKCsgMX362Gtfx"
@@ -13,7 +14,31 @@ const { timeNowDB } = require('../../assets/TimeLibary')
 
 const moment = require('moment')
 
+
+
 module.exports = function(app) {
+    function makeid(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+          result += characters.charAt(Math.floor(Math.random() * 
+     charactersLength));
+       }
+       return result;
+    }
+
+    app.post('/SignAgainToken' , async(req,res)=>{
+        try {
+            const { email, token, subject, text } = req.body
+            if (FunctionSqlInjection(email) ||
+            FunctionSqlInjection(mat_khau)) {
+
+            }
+        } catch (error) {
+            
+        }
+    })
     app.post(`/DangNhap`, async(req, res) => {
         try {
             const { email, mat_khau, subject, text } = req.body
@@ -36,11 +61,19 @@ module.exports = function(app) {
 
             if (ExcuteQuery.rowCount > 0) {
 
-                SendMailGoogle('quachthanhtung1999@gmail.com', subject, text)
+                SendMailGoogle(email, subject, text)
+
+                let token_sign = jwt.sign({
+                    exp: Math.floor(Date.now() / 1000) + (60 * 60),
+                    data: email + makeid(10)
+                  }, 'secret');
+
+                SignToken(email,token_sign)
 
                 res.json({
                     status: 1,
                     data: ExcuteQuery.rows,
+                    token: token_sign,
                     msg: "Thanh cong"
                 })
             } else {
@@ -77,7 +110,7 @@ module.exports = function(app) {
                 select email from tai_khoan
                 where email = N'${email}'
             `)
-            console.log(checkData.rows)
+            
             if (checkData.rowCount > 0) {
                 res.json({
                     status: 0,
@@ -109,5 +142,38 @@ module.exports = function(app) {
             })
         }
     })
+
+    app.post(`/TestToken` , async(req,res)=>{
+        try {
+            const {authorization} = req.headers
+            const {email} = req.body
+
+            let check = await CheckToken( email, authorization)
+            if( check ){
+                const newData = await pool.query(`
+                    select * from "token"
+                `) 
+                res.json({
+                    status:1,
+                    data:newData.rows
+                })
+            }else{
+                res.json({
+                    status:0,
+                    msg_vn: 'loi phien token',
+                    msg_en: 'session expires'
+                })
+            }
+            
+
+        } catch (error) {
+            
+        }
+    })
+
+
+    //#region Màn chính
+    
+    //#endregion
 
 }

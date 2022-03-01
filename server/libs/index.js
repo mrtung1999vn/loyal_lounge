@@ -134,6 +134,80 @@ const createGift = async () => {
 }
 //#endregion Function
 
+
+//#region Token
+const SignToken = async (email,token)=>{
+    try {
+        const CheckToken = await pool.query(`
+            select * from "token"
+            where email = N'${email}'
+        `)
+        if( CheckToken.rowCount > 0 ){
+            const UpdateData = await pool.query(`
+            update "token" set "token" = N'${token}',
+            created_at = now(),updated_at= now(),
+            email =N'${email}'
+            where id_token = (
+                select id_token from "token"
+                where email = N'${email}'
+                limit 1
+            )
+            `)
+        }else{
+            const newData = await pool.query(`
+                insert into "token" (token,created_at,updated_at,email)
+                values( N'${token}',now(),now(),N'${email}' )
+            `)
+        }
+    } catch (error) {
+        console.log(error )
+    }
+}
+
+const SignAgainToken = async(email,token_old,token_new)=>{
+    try {
+        const newData = await pool.query(`
+            update "token" set "token" = N'${token_new}',
+            created_at = now(),updated_at= now(),
+            email =N'${email}'
+            where id_token = (
+                select id_token from "token"
+                where created_at + interval '2 minute' <= now() and 
+                "token" = N'${token_old}'
+                and email = N'${email}'
+                limit 1
+            )
+        `)
+    } catch (error) {
+        
+    }
+}
+
+const CheckToken = async (email,token)=>{
+    try {
+
+        if( token.indexOf('Token') >= 0){
+            const CheckData = await pool.query(`
+                select * from "token"
+                where created_at + interval '2 minute' >= now() and 
+                "token" = N'${token.split(' ')[1]}'
+                and email = N'${email}'
+            `)
+            if( CheckData.rowCount > 0 ){
+                return true
+            }else{
+                return false
+            }
+        }
+    } catch (error) {
+        console.log( error )
+        return false
+    }
+}
+//#endregion
+
+
+
 //#region Error
 const SaveError = async (error, path_api, ghi_chu, method, request, ip_address) => {
     try {
@@ -151,10 +225,12 @@ const SaveError = async (error, path_api, ghi_chu, method, request, ip_address) 
 
 //#endregion
 module.exports = {
+    SignAgainToken,
     SendMailGoogle,
     checkRequest,
     FunctionSqlInjection,
     FunctionRemoveCharacter,
     SaveError,
-    FunctionSqlInjectionText
+    FunctionSqlInjectionText,
+    SignToken,CheckToken
 }
