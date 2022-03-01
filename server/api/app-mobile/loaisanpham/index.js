@@ -19,7 +19,7 @@ const moment = require('moment')
 
 module.exports = function(app) {
 
-    app.post(`/App/DanhSachSuKien` , async(req,res)=>{
+    app.post(`/App/LoaiSanPham` , async(req,res)=>{
         try {
             
             const {authorization} = req.headers

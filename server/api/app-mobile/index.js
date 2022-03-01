@@ -16,30 +16,35 @@ const moment = require('moment')
 
 
 
-module.exports = function(app) {
+module.exports = function (app) {
     function makeid(length) {
-        var result           = '';
-        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-          result += characters.charAt(Math.floor(Math.random() * 
-     charactersLength));
-       }
-       return result;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() *
+                charactersLength));
+        }
+        return result;
     }
 
-    app.post('/SignAgainToken' , async(req,res)=>{
+
+    app.post('/SignAgainToken', async (req, res) => {
         try {
             const { email, token, subject, text } = req.body
-            if (FunctionSqlInjection(email) ||
-            FunctionSqlInjection(mat_khau)) {
-
+            if (FunctionSqlInjection(email)) {
+                let token_sign = jwt.sign({
+                    exp: Math.floor(Date.now() / 1000) + (60 * 60),
+                    data: email + makeid(10)
+                }, 'secret');
+                SignToken(email, token_sign)
             }
         } catch (error) {
-            
+
         }
     })
-    app.post(`/DangNhap`, async(req, res) => {
+
+    app.post(`/DangNhap`, async (req, res) => {
         try {
             const { email, mat_khau, subject, text } = req.body
 
@@ -62,13 +67,11 @@ module.exports = function(app) {
             if (ExcuteQuery.rowCount > 0) {
 
                 SendMailGoogle(email, subject, text)
-
                 let token_sign = jwt.sign({
                     exp: Math.floor(Date.now() / 1000) + (60 * 60),
                     data: email + makeid(10)
-                  }, 'secret');
-
-                SignToken(email,token_sign)
+                }, 'secret');
+                SignToken(email, token_sign)
 
                 res.json({
                     status: 1,
@@ -84,6 +87,7 @@ module.exports = function(app) {
                 })
             }
         } catch (error) {
+            console.log(error)
             SaveError('app-mobile', '/DangNhap', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
             res.json({
                 status: 0,
@@ -93,7 +97,7 @@ module.exports = function(app) {
         }
     })
 
-    app.post(`/DangKyTaiKhoan`, async(req, res) => {
+    app.post(`/DangKyTaiKhoan`, async (req, res) => {
         try {
 
             const { email, mat_khau, dia_chi, so_dt } = req.body
@@ -110,7 +114,7 @@ module.exports = function(app) {
                 select email from tai_khoan
                 where email = N'${email}'
             `)
-            
+
             if (checkData.rowCount > 0) {
                 res.json({
                     status: 0,
@@ -143,37 +147,37 @@ module.exports = function(app) {
         }
     })
 
-    app.post(`/TestToken` , async(req,res)=>{
+    app.post(`/TestToken`, async (req, res) => {
         try {
-            const {authorization} = req.headers
-            const {email} = req.body
+            const { authorization } = req.headers
+            const { email } = req.body
 
-            let check = await CheckToken( email, authorization)
-            if( check ){
+            let check = await CheckToken(email, authorization)
+            if (check) {
                 const newData = await pool.query(`
                     select * from "token"
-                `) 
+                `)
                 res.json({
-                    status:1,
-                    data:newData.rows
+                    status: 1,
+                    data: newData.rows
                 })
-            }else{
+            } else {
                 res.json({
-                    status:0,
+                    status: 0,
                     msg_vn: 'loi phien token',
                     msg_en: 'session expires'
                 })
             }
-            
+
 
         } catch (error) {
-            
+
         }
     })
 
 
     //#region Màn chính
-    
+
     //#endregion
 
 }
