@@ -25,27 +25,31 @@ module.exports = function(app) {
             
             const {authorization} = req.headers
             const {id_kh, email, tien_nap,noi_dung } = req.body
-
+            
             let check = await CheckToken( email, authorization)
-
+            
             if( check ){
-
                 if( 
                     FunctionSqlInjectionText( tien_nap ) || 
                     FunctionSqlInjectionText( noi_dung ) ||
                     FunctionSqlInjectionText( email )
-                    )
-                AddBlockChains(id_kh, noi_dung, tien_nap, date.getDate(), date.getMonth() + 1, date.getFullYear(), `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`  )
-                const ExcuteQuery = await pool.query(`
-                    select * from loai_sp
-                `)
+                ){
+                    res.json({
+                        status:0,
+                        data: [],
+                        msg_vn:'loi he thong',
+                        msg_en:'system error'
+                    })
+                }else{
 
-                res.json({
-                    status:1,
-                    data: ExcuteQuery.rows,
-                    msg_vn:'loai san pham',
-                    msg_en:'type product'
-                })
+                    await AddBlockChains(id_kh, noi_dung, tien_nap, date.getDate().toString(), (date.getMonth() + 1).toString(), date.getFullYear().toString(), `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`  )
+
+                    res.json({
+                        status:1,
+                        msg_vn:'them thanh cong',
+                        msg_en:'success'
+                    })
+                }
             }else{
                 res.json({
                     status:0,

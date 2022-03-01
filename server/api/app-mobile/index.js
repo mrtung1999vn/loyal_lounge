@@ -32,7 +32,7 @@ module.exports = function (app) {
         return result;
     }
 
-
+    // Sau 2p hoặc hết phiên không sử dụng được api nào thì gọi API /SignAgainToken
     app.post('/SignAgainToken', async (req, res) => {
         try {
             const { email, token, subject, text } = req.body
@@ -140,7 +140,7 @@ module.exports = function (app) {
                 `)
 
                 DefautBlockChains(ExcuteQuery.rows[0].id_kh,'','','','','','')
-                
+
                 res.json({
                     status: 1,
                     data: [],

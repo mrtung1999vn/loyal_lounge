@@ -10,6 +10,8 @@ require('dotenv').config()
 // Tạo Block-chains
 const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian) => {
     try {
+        // console.log({id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian})
+        
         var next_string = '_string_next'
         var block_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian })
         console.log(block_hash)
@@ -25,7 +27,8 @@ const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, t
 
         
         if( CheckAddBlockChains.rowCount > 0 ){
-            const ExcuteQuery = await pool.query(
+
+            await pool.query(
                 `
                 insert into coin_bc_loyal (
                     id_kh,block_hash,json_hash,created_at,updated_at,noi_dung,coin_tranfer,pre_hash,next_hash,ngay,thang,nam,thoi_gian,status
@@ -39,6 +42,22 @@ const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, t
                 )
                 `
             )
+
+            await pool.query(`
+                insert into cashmoney (
+                    money,ghi_chu,trang_thai,created_at,updated_at,kieu_thanh_toan,ten_nguoi_dung,status,money_vnd,id_coin
+                )
+                values(
+                    N'${coin_tranfer}',N'${noi_dung}',N'Waiting for progressing',now(),now(),
+                    N'Send money',(
+                        select email from tai_khoan where id_kh = ${id_kh}
+                    ),false,N'${parseInt(coin_tranfer)*21000}', (
+                        select id_coin_bc from coin_bc_loyal
+                        where block_hash = N'${block_hash}'
+                        limit 1
+                    )
+                )
+            `)
             return true
         }else{
             return false
