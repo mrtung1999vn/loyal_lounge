@@ -12,7 +12,9 @@ const pool = require('../../pgconnect')
 const encode_decode = require('../../assets/encode_decode')
 const { timeNowDB } = require('../../assets/TimeLibary')
 
-const moment = require('moment')
+const moment = require('moment');
+const manchinh = require('./manchinh');
+const loaisanpham = require('./loaisanpham');
 
 
 
@@ -177,7 +179,8 @@ module.exports = function (app) {
 
 
     //#region Màn chính
-
+    manchinh(app)
+    loaisanpham(app)
     //#endregion
 
 }

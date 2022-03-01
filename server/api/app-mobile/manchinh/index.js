@@ -21,7 +21,7 @@ module.exports = function(app) {
 
     app.post(`/App/DanhSachSuKien` , async(req,res)=>{
         try {
-            
+
             const {authorization} = req.headers
             const {email} = req.body
             
@@ -47,10 +47,16 @@ module.exports = function(app) {
                     msg_vn:'danh sach su kien trong tuan',
                     msg_en:'Events list in week'
                 })
+            }else{
+                res.json({
+                    status:0,
+                    data:[],
+                    msg_vn:'het phien',
+                    msg_en:'end of session'
+                })
             }
-
         } catch (error) {
-            SaveError('app-mobile', '/DangKyTaiKhoan', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
+            SaveError('app-mobile', '/App/DanhSachSuKien', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
             res.json({
                 status: 0,
                 data: [],

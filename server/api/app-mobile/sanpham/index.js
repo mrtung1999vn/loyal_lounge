@@ -19,24 +19,24 @@ const moment = require('moment')
 
 module.exports = function(app) {
 
-    app.post(`/App/LoaiSanPham` , async(req,res)=>{
+    app.post(`/App/SanPham` , async(req,res)=>{
         try {
             
             const {authorization} = req.headers
-            const {email} = req.body
+            const {email,id_loai_sp} = req.body
 
             let check = await CheckToken( email, authorization)
-
+            
             if( check ){
                 const ExcuteQuery = await pool.query(`
-                    select * from loai_sp
+                    select * from san_pham where id_loai_sp = ${id_loai_sp}
                 `)
 
                 res.json({
                     status:1,
                     data: ExcuteQuery.rows,
-                    msg_vn:'loai san pham',
-                    msg_en:'type product'
+                    msg_vn:'san pham',
+                    msg_en:'product'
                 })
             }else{
                 res.json({
@@ -48,8 +48,8 @@ module.exports = function(app) {
             }
 
         } catch (error) {
-            console.log( error)
-            SaveError('app-mobile', '/App/LoaiSanPham', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
+
+            SaveError('app-mobile', '/App/SanPham', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
             res.json({
                 status: 0,
                 data: [],
