@@ -1,19 +1,55 @@
+import MUIDataTable from 'mui-datatables';
 import React from 'react'
 import { Link } from 'react-router-dom'
+import func from '../asset/func';
+import host from '../service/host';
+import Default from './Default';
 
 function TrangChu() {
-    
 
+    const [coin,setCoin] = React.useState(0)
+    const [User,setUser] = React.useState([])
 
-
-    
-    React.useEffect(async ()=>{
+    const defaultCointEmail = async (email)=>{
         try {
+            const res = await fetch(host.WebDuDoanCoinEmail+`/${email}`)
+            const content = await res.json()
+
+            if( content.status === 1 ){
+                let JsonData = []
+                let JsonDataUser = []
+                JsonData = func.DecodeJson_RESPONSE( content.data )
+                JsonDataUser = func.DecodeJson_RESPONSE( content.dataUser )
+                console.log(  func.DecodeJson_RESPONSE( content.data ) )
+                if( JsonData.length > 0 &&  JsonDataUser.length >0 ){
+                    setCoin( JsonData[0].coin )
+                    setUser(  JsonDataUser )
+                }
+            }
+        } catch (error) {
+            
+        }
+    }
+
+
+    React.useEffect(async () => {
+        try {
+
+            if( window.localStorage.getItem('__dir') !== null || window.localStorage.getItem('__dir') !== undefined || window.localStorage.getItem('__dir') !== '' ){
+                setUser( 
+                  func.DecodeJson_RESPONSE( window.localStorage.getItem('__dir') )
+                )
+            }
+            let newData = []
+            
+            newData = func.DecodeJson_RESPONSE( window.localStorage.getItem('__dir') )
+            defaultCointEmail( newData[0]?.email )
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.log(error)
         }
-    },[])
+    }, [])
     return (
         <React.Fragment>
             <div>
@@ -73,8 +109,8 @@ function TrangChu() {
                                     <div className="row">
                                         <div className="col-xl-12 col-lg-12 col-6 d-xl-block d-lg-block d-flex align-items-center">
                                             <div className="logo">
-                                                <a href="index.html">
-                                                    <img src="assets/img/logo.png" alt="logo" />
+                                                <a href="./">
+                                                    <img src="https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/471.png?alt=media&token=86cc07ae-d8e7-427f-9f8f-2353466e0393" alt="logo" />
                                                 </a>
                                             </div>
                                         </div>
@@ -90,25 +126,7 @@ function TrangChu() {
                                         <nav className="navbar navbar-expand-lg">
                                             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                                                 <ul className="navbar-nav ml-auto">
-                                                    <li className="nav-item dropdown">
-                                                        <a className="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                            Home
-                                                        </a>
-                                                        {/* <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                            <a className="dropdown-item" href="index.html">Home One</a>
-                                                            <a className="dropdown-item" href="index-2.html">Home Two</a>
-                                                        </div> */}
-                                                    </li>
-                                                    <Link className="nav-item" to='/About'>
-                                                        <a className="nav-link">About</a>
-                                                    </Link>
-                                                    <Link className="nav-item" to='/Login'>
-                                                        <a className="nav-link">Login</a>
-                                                    </Link>
-
-                                                    <li className="nav-item">
-                                                        <a className="nav-link" href="contact.html">Contact US</a>
-                                                    </li>
+                                                    <Default email={User[0]?.email} coin={coin}></Default>
                                                 </ul>
                                             </div>
                                         </nav>
@@ -132,10 +150,10 @@ function TrangChu() {
                                         <div className="banner-button">
                                             <ul>
                                                 <li>
-                                                    <a href="#" className="bet-btn bet-btn-base">Predict now</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" className="bet-btn bet-btn-border">explore more</a>
+                                                    <Link to='/Login'>
+                                                        <a className="bet-btn bet-btn-base" style={{color:'white'}}>Betting Now</a>
+                                                    </Link>
+                                                    
                                                 </li>
                                             </ul>
                                         </div>
@@ -150,33 +168,10 @@ function TrangChu() {
                         </div>
                     </div>
                 </div>
-                {/* banner end */}
-                {/* about begin */}
-                <div className="about">
-                    <div className="container">
-                        <div className="row no-gutters">
-                            <div className="col-xl-8 col-lg-8">
-                                <div className="part-img">
-                                    <img src="assets/img/about.jpg" alt="" />
-                                </div>
-                            </div>
-                            <div className="col-xl-4 col-lg-4 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div>
-                                    <div className="part-text">
-                                        <h2>Introducing Our Words</h2>
-                                        <p>The bigger the sports event the more interest, excitement and media attention on the action. And the more betting markets we have available here at Peredion to turn your opinions into winning bets. And few events come any bigger than the World Cup and the Olympics.</p>
-                                    </div>
-                                    <a href="#" className="about-btn">Predict Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* about end */}
-                {/* cta begin */}
+
                 <div className="cta">
                     <div className="container">
-                        <h3>PerediOn shows real time odds for betting with the higher stakes you can get.</h3>
+                        <h3>Lvaction shows real time odds for betting with the higher stakes you can get.</h3>
                         <div className="cta-btn-group">
                             <a href="#" className="bet-btn bet-btn-base">Predict Now</a>
                             <a href="#" className="bet-btn bet-btn-border">Explore More</a>
@@ -184,14 +179,92 @@ function TrangChu() {
                     </div>
                 </div>
                 {/* cta end */}
+                {/* betting begin */}
+                <div className="betting" id="in_play">
+                    <div className="container">
+                        <div className="row justify-content-center">
+                            <div className="col-xl-6 col-lg-8 col-md-8">
+                                <div className="section-title">
+                                    <h2>Live Match   {' '}
+                                        <Link to='/Login'><a> BETTING NOW</a></Link>
+                                        </h2>
+                                    <p>Lvaction shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="betting-table">
+                            <div className="row">
+                                <div className="col-xl-2 col-lg-2">
+                                    <div className="bett-menu">
+                                        <ul className="nav nav-tabs" id="myTab" role="tablist">
+                                            <li className="nav-item">
+                                                <a className="nav-link active" id="football-tab" data-toggle="tab" href="#football" role="tab" aria-controls="football" aria-selected="false">
+                                                    <i className="flaticon-football" />
+                                                    <span className="text">
+                                                        football
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li className="nav-item">
+                                                <a className="nav-link" id="basketball-tab" data-toggle="tab" href="#basketball" role="tab" aria-controls="basketball" aria-selected="false">
+                                                    <i className="flaticon-basketball-ball-variant" />
+                                                    <span className="text">
+                                                        Basketball
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div className="col-xl-10 col-lg-10">
+                                    <div className="tab-content bet-tab-content" id="myTabContent">
+                                        <div className="tab-pane fade show active" id="football" role="tabpanel" aria-labelledby="football-tab">
+                                            <div className="sport-content-title">
+                                                <h3>Football
+                                                    <span className="sport-content-conter">[3]</span>
+                                                </h3>
+                                            </div>
+                                            <div className="sports-list">
+                                                <iframe src='https://www.goaloo1.com/free/FreeSoccer/'
+                                                    style={{ width: '100%', height: '100vh' }}>
+
+                                                </iframe>
+                                             
+                                            </div>
+                                        </div>
+                                        <div className="tab-pane fade" id="basketball" role="tabpanel" aria-labelledby="basketball-tab">
+                                            <div className="sport-content-title">
+                                                <h3>basketball
+                                                    <span className="sport-content-conter">[3]</span>
+                                                </h3>
+                                            </div>
+
+                                            <div className="">
+                                                <iframe src='https://www.goaloo1.com/free/FreeBasketball/?t=basketball'
+                                                    style={{ width: '100%', height: '100vh' }}>
+
+                                                </iframe>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* betting end */}
+                {/* upcoming match begin */}
+                {/* upcoming match end */}
+                {/* statics begin */}
                 {/* feature begin */}
                 <div className="feature" id="feature_section">
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-xl-6 col-lg-6 col-md-8">
                                 <div className="section-title">
-                                    <h2>PerediOn Features</h2>
-                                    <p>PerediOn shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p>
+                                    <h2>Lvaction Features</h2>
+                                    <p>Lvaction shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p>
                                 </div>
                             </div>
                         </div>
@@ -203,7 +276,7 @@ function TrangChu() {
                                     </div>
                                     <div className="part-text">
                                         <h3 className="title">Live Prediction</h3>
-                                        <p>PerediOn has a quality in-play Prediction service and the live console has extensive coverage from sporting events and prediction markets.</p>
+                                        <p>Lvaction has a quality in-play Prediction service and the live console has extensive coverage from sporting events and prediction markets.</p>
                                     </div>
                                 </div>
                             </div>
@@ -214,7 +287,7 @@ function TrangChu() {
                                     </div>
                                     <div className="part-text">
                                         <h3 className="title">Daily Promotions</h3>
-                                        <p>PerediOn offers a huge range of different promotions, every day. These include money-back offers when your horse is beaten by a nose.</p>
+                                        <p>Lvaction offers a huge range of different promotions, every day. These include money-back offers when your horse is beaten by a nose.</p>
                                     </div>
                                 </div>
                             </div>
@@ -236,7 +309,7 @@ function TrangChu() {
                                     </div>
                                     <div className="part-text">
                                         <h3 className="title">Prediction browser</h3>
-                                        <p>PerediOn on an arbitrage or value predict is extremely easy. All the information you need is gathered on one single Prediction Browser using the software.</p>
+                                        <p>Lvaction on an arbitrage or value predict is extremely easy. All the information you need is gathered on one single Prediction Browser using the software.</p>
                                     </div>
                                 </div>
                             </div>
@@ -266,1978 +339,6 @@ function TrangChu() {
                     </div>
                 </div>
                 {/* feature end */}
-                {/* betting begin */}
-                <div className="betting" id="in_play">
-                    <div className="container">
-                        <div className="row justify-content-center">
-                            <div className="col-xl-6 col-lg-8 col-md-8">
-                                <div className="section-title">
-                                    <h2>Predict &amp; Playing Now</h2>
-                                    <p>PerediOn shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="betting-table">
-                            <div className="row">
-                                <div className="col-xl-2 col-lg-2">
-                                    <div className="bett-menu">
-                                        <ul className="nav nav-tabs" id="myTab" role="tablist">
-                                            <li className="nav-item">
-                                                <a className="nav-link active" id="all-sports-tab" data-toggle="tab" href="#all-sports" role="tab" aria-controls="all-sports" aria-selected="true">
-                                                    <i className="flaticon-medal" />
-                                                    <span className="text">
-                                                        all sports
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="nav-link" id="football-tab" data-toggle="tab" href="#football" role="tab" aria-controls="football" aria-selected="false">
-                                                    <i className="flaticon-football" />
-                                                    <span className="text">
-                                                        football
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="nav-link" id="tennis-tab" data-toggle="tab" href="#tennis" role="tab" aria-controls="tennis" aria-selected="false">
-                                                    <i className="flaticon-tennis-ball" />
-                                                    <span className="text">
-                                                        tennis
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="nav-link" id="basketball-tab" data-toggle="tab" href="#basketball" role="tab" aria-controls="basketball" aria-selected="false">
-                                                    <i className="flaticon-basketball-ball-variant" />
-                                                    <span className="text">
-                                                        Basketball
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="nav-link" id="hockey-tab" data-toggle="tab" href="#hockey" role="tab" aria-controls="hockey" aria-selected="false">
-                                                    <i className="flaticon-ice-hockey" />
-                                                    <span className="text">
-                                                        Ice hockey
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="nav-link" id="volleyball-tab" data-toggle="tab" href="#volleyball" role="tab" aria-controls="volleyball" aria-selected="false">
-                                                    <i className="flaticon-volleyball" />
-                                                    <span className="text">
-                                                        VOLLEYBALL
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="nav-link" id="badminton-tab" data-toggle="tab" href="#badminton" role="tab" aria-controls="badminton" aria-selected="false">
-                                                    <i className="flaticon-badminton" />
-                                                    <span className="text">
-                                                        BADMINTON
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li className="nav-item">
-                                                <a className="nav-link" id="baseball-tab" data-toggle="tab" href="#baseball" role="tab" aria-controls="baseball" aria-selected="false">
-                                                    <i className="flaticon-baseball" />
-                                                    <span className="text">
-                                                        BASEBALL
-                                                    </span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div className="col-xl-10 col-lg-10">
-                                    <div className="tab-content bet-tab-content" id="myTabContent">
-                                        <div className="tab-pane fade show active" id="all-sports" role="tabpanel" aria-labelledby="all-sports-tab">
-                                            <div className="sport-content-title">
-                                                <h3>All Sports
-                                                    <span className="sport-content-conter">[30]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">England International League</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-football" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    arsenal
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    everton
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    4
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.00</span>
-                                                                <span className="result-for-final">
-                                                                    arsenal
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">5.75</span>
-                                                                <span className="result-for-final">
-                                                                    everton
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-football" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Aston Villa
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    4
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Norwich City
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.52</span>
-                                                                <span className="result-for-final">
-                                                                    Aston Villa
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.35</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.65</span>
-                                                                <span className="result-for-final">
-                                                                    Norwich City
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-football" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    West Ham United
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    1
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Bournemouth
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.50</span>
-                                                                <span className="result-for-final">
-                                                                    West Ham United
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.45</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.75</span>
-                                                                <span className="result-for-final">
-                                                                    Bournemouth
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">France National tennis</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-tennis-ball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-tennis-ball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-tennis-ball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">League of europe</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-basketball-ball-variant" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-basketball-ball-variant" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-basketball-ball-variant" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane fade" id="football" role="tabpanel" aria-labelledby="football-tab">
-                                            <div className="sport-content-title">
-                                                <h3>Football
-                                                    <span className="sport-content-conter">[3]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">England International League</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-football" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    arsenal
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    everton
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    4
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.00</span>
-                                                                <span className="result-for-final">
-                                                                    arsenal
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">5.75</span>
-                                                                <span className="result-for-final">
-                                                                    everton
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-football" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Aston Villa
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    4
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Norwich City
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.52</span>
-                                                                <span className="result-for-final">
-                                                                    Aston Villa
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.35</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.65</span>
-                                                                <span className="result-for-final">
-                                                                    Norwich City
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-football" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    West Ham United
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    1
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Bournemouth
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.50</span>
-                                                                <span className="result-for-final">
-                                                                    West Ham United
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.45</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.75</span>
-                                                                <span className="result-for-final">
-                                                                    Bournemouth
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane fade" id="tennis" role="tabpanel" aria-labelledby="tennis-tab">
-                                            <div className="sport-content-title">
-                                                <h3>tennis
-                                                    <span className="sport-content-conter">[3]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">France National tennis</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-tennis-ball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-tennis-ball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-tennis-ball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane fade" id="basketball" role="tabpanel" aria-labelledby="basketball-tab">
-                                            <div className="sport-content-title">
-                                                <h3>basketball
-                                                    <span className="sport-content-conter">[3]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">League of europe</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-basketball-ball-variant" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-basketball-ball-variant" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-basketball-ball-variant" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane fade" id="hockey" role="tabpanel" aria-labelledby="hockey-tab">
-                                            <div className="sport-content-title">
-                                                <h3>ice hockey
-                                                    <span className="sport-content-conter">[3]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">Hocky Tour'20</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-ice-hockey" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-ice-hockey" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-ice-hockey" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane fade" id="volleyball" role="tabpanel" aria-labelledby="volleyball-tab">
-                                            <div className="sport-content-title">
-                                                <h3>volleyball
-                                                    <span className="sport-content-conter">[3]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">Hocky Tour'20</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-volleyball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-volleyball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-volleyball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane fade" id="badminton" role="tabpanel" aria-labelledby="badminton-tab">
-                                            <div className="sport-content-title">
-                                                <h3>badminton
-                                                    <span className="sport-content-conter">[3]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">Hocky Tour'20</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-badminton" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-badminton" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-badminton" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane fade" id="baseball" role="tabpanel" aria-labelledby="baseball-tab">
-                                            <div className="sport-content-title">
-                                                <h3>baseball
-                                                    <span className="sport-content-conter">[3]</span>
-                                                </h3>
-                                            </div>
-                                            <div className="sports-list">
-                                                <h4 className="title">Hocky Tour'20</h4>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-baseball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Quentin Robert
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    6
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.25</span>
-                                                                <span className="result-for-final">
-                                                                    Kenny Schepper
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.62</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.44</span>
-                                                                <span className="result-for-final">
-                                                                    Quentin Robert
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-baseball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Christian Langmo
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    5
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    2
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">1.70</span>
-                                                                <span className="result-for-final">
-                                                                    Christian Langmo
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.30</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.05</span>
-                                                                <span className="result-for-final">
-                                                                    Manuel Pena Lopez
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                                <div className="single-sport-box">
-                                                    <div className="part-icon">
-                                                        <i className="flaticon-baseball" />
-                                                    </div>
-                                                    <div className="part-team">
-                                                        <ul>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                            <li>
-                                                                <span className="team-name">
-                                                                    Nantes II
-                                                                </span>
-                                                                <span className="score-number">
-                                                                    3
-                                                                </span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="part-match">
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">3.22</span>
-                                                                <span className="result-for-final">
-                                                                    Stade Bordelais
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">4.00</span>
-                                                                <span className="result-for-final">
-                                                                    draw
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div className="single-place-to-bet">
-                                                            <a href="#">
-                                                                <span className="bet-price">2.45</span>
-                                                                <span className="result-for-final">
-                                                                    Nantes II
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div className="part-bnonus">
-                                                        <span className="bonus-number">+336</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* betting end */}
-                {/* upcoming match begin */}
-                <div className="upcoming-match" id="upcoming_match">
-                    <div className="container">
-                        <div className="row justify-content-center">
-                            <div className="col-xl-6 col-lg-6 col-md-8">
-                                <div className="section-title">
-                                    <h2>Upcoming Match</h2>
-                                    <p>PerediOn shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-xl-6 col-lg-6">
-                                <div className="single-match">
-                                    <div className="part-head">
-                                        <h5 className="match-title">BBPL 2019 Semi Final</h5>
-                                        <span className="match-venue">Venue : Sher-e-Bangla National Stadium. Mirpur, Dhaka</span>
-                                    </div>
-                                    <div className="part-team">
-                                        <div className="single-team">
-                                            <div className="logo">
-                                                <img src="assets/img/team-1.png" alt="" />
-                                            </div>
-                                            <span className="team-name">Khulna Tigers</span>
-                                        </div>
-                                        <div className="match-details">
-                                            <div className="match-time">
-                                                <span className="date">Fri 09 Oct 2019</span>
-                                                <span className="time">09:00 am</span>
-                                            </div>
-                                            <span className="versase">vs</span>
-                                            <div className="buttons">
-                                                <a href="#" className="buy-ticket bet-btn bet-btn-dark-light">buy ticket</a>
-                                            </div>
-                                        </div>
-                                        <div className="single-team">
-                                            <div className="logo">
-                                                <img src="assets/img/team-2.png" alt="" />
-                                            </div>
-                                            <span className="team-name">Dhaka Platoon</span>
-                                        </div>
-                                    </div>
-                                    <span className="to-begin-time">
-                                        Starting on
-                                    </span>
-                                    <div className="part-timer timer" data-date="30 April 2020 9:56:00 GMT+01:00">
-                                        <div className="single-time">
-                                            <span className="number day">01</span>
-                                            <span className="title">Days</span>
-                                        </div>
-                                        <div className="single-time">
-                                            <span className="number hour">24</span>
-                                            <span className="title">Hours</span>
-                                        </div>
-                                        <div className="single-time">
-                                            <span className="number minute">48</span>
-                                            <span className="title">Minutes</span>
-                                        </div>
-                                        <div className="single-time">
-                                            <span className="number second">11</span>
-                                            <span className="title">Seconds</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-xl-6 col-lg-6">
-                                <div className="upcoming-match-list">
-                                    <div className="single-upcoming-match">
-                                        <div className="single-team">
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-1.png" alt="" />
-                                            </div>
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    Khulna tigers
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="versase">vs</span>
-                                        <div className="single-team">
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    dhaka platoon
-                                                </span>
-                                            </div>
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-2.png" alt="" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="single-upcoming-match">
-                                        <div className="single-team">
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-3.png" alt="" />
-                                            </div>
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    Cumilla Viking
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="versase">vs</span>
-                                        <div className="single-team">
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    Barishal Bulls
-                                                </span>
-                                            </div>
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-4.png" alt="" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="single-upcoming-match">
-                                        <div className="single-team">
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-5.png" alt="" />
-                                            </div>
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    CG challenge
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="versase">vs</span>
-                                        <div className="single-team">
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    r.shahi royals
-                                                </span>
-                                            </div>
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-6.png" alt="" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="single-upcoming-match">
-                                        <div className="single-team">
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-7.png" alt="" />
-                                            </div>
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    Khulna tigers
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="versase">vs</span>
-                                        <div className="single-team">
-                                            <div className="part-text">
-                                                <span className="team-name">
-                                                    dhaka platoon
-                                                </span>
-                                            </div>
-                                            <div className="part-logo">
-                                                <img src="assets/img/team-8.png" alt="" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-center">
-                            <a href="#" className="vew-more-news bet-btn bet-btn-dark-light">
-                                <i className="fas fa-redo" /> See More match
-                            </a>
-                        </div>
-                        <span className="text-special">
-                            <b>Note:</b>  The timing of each match will depend on the weather conditions.
-                        </span>
-                    </div>
-                </div>
-                {/* upcoming match end */}
-                {/* statics begin */}
                 <div className="statics">
                     <div className="container">
                         <div className="row">
@@ -2270,203 +371,13 @@ function TrangChu() {
                 </div>
                 {/* statics end */}
                 {/* testimonial begin */}
-                <div className="testimonial" id="testimonial">
-                    <div className="container">
-                        <div className="row justify-content-center">
-                            <div className="col-xl-7 col-lg-7">
-                                <div className="section-title">
-                                    <h2>Feedback to PerediOn</h2>
-                                    {/* <p>PerediOn shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p> */}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row justify-content-center">
-                            <div className="col-xl-8 col-lg-8">
-                                <div className="testimonial-slider owl-carousel owl-theme">
-                                    <div className="single-testimonial">
-                                        <div className="part-img">
-                                            <img src="assets/img/testi-user-1.jpg" alt="" />
-                                        </div>
-                                        <div className="part-text">
-                                            <i className="icon-for-quot fas fa-quote-left" />
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint nesciunt dignissimos laborum praesentium illo dolorem, fuga commodi? Laudantium totam porro quod nihil eius!</p>
-                                            <span className="position">
-                                                Player
-                                            </span>
-                                            <span className="user-name">
-                                                Illustino Calibia
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="single-testimonial">
-                                        <div className="part-img">
-                                            <img src="assets/img/testi-user-1.jpg" alt="" />
-                                        </div>
-                                        <div className="part-text">
-                                            <i className="icon-for-quot fas fa-quote-left" />
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint nesciunt dignissimos laborum praesentium illo dolorem, fuga commodi? Laudantium totam porro quod nihil eius!</p>
-                                            <span className="position">
-                                                Player
-                                            </span>
-                                            <span className="user-name">
-                                                Illustino Calibia
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="single-testimonial">
-                                        <div className="part-img">
-                                            <img src="assets/img/testi-user-1.jpg" alt="" />
-                                        </div>
-                                        <div className="part-text">
-                                            <i className="icon-for-quot fas fa-quote-left" />
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint nesciunt dignissimos laborum praesentium illo dolorem, fuga commodi? Laudantium totam porro quod nihil eius!</p>
-                                            <span className="position">
-                                                Player
-                                            </span>
-                                            <span className="user-name">
-                                                Illustino Calibia
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 {/* testimonial end */}
                 {/* download app begin */}
-                <div className="download-app">
-                    <div className="container">
-                        <img className="shape" src="assets/img/app-feature-bg.png" alt="" />
-                        <div className="row justify-content-xl-between justify-content-lg-between justify-content-md-center">
-                            <div className="col-xl-5 col-lg-5">
-                                <div className="part-img">
-                                    <img className="app" src="assets/img/app.png" alt="" />
-                                    <img className="app" src="assets/img/app.png" alt="" />
-                                </div>
-                            </div>
-                            <div className="col-xl-6 col-lg-7 col-md-10 d-xl-flex d-lg-flex d-block align-items-xl-baseline align-items-lg-center">
-                                <div>
-                                    <div className="part-text">
-                                        <h4>enjoy your favourites right now</h4>
-                                        <h3>download our app</h3>
-                                        <p>Predict you love anywhere, on any device with <span><img src="assets/img/small-logo.png" alt="" /></span> stream app. included at no additional cost, exclusively for PerediOn customers. It comes with two variations. Dark &amp; Light. You can get to download <span><img src="assets/img/small-logo.png" alt="" /></span> on google play store an apple mobile store.</p>
-                                        <ul>
-                                            <li>
-                                                <a href="#">
-                                                    <img src="assets/img/apple.png" alt="" />
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <img src="assets/img/and.png" alt="" />
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="app-features">
-                                        <div className="single-feature">
-                                            <div className="part-icon">
-                                                <img src="assets/img/svg/ram.svg" alt="" />
-                                            </div>
-                                            <span className="title">
-                                                lite weight
-                                            </span>
-                                        </div>
-                                        <div className="single-feature">
-                                            <div className="part-icon">
-                                                <img src="assets/img/svg/memory-card.svg" alt="" />
-                                            </div>
-                                            <span className="title">
-                                                2MB size
-                                            </span>
-                                        </div>
-                                        <div className="single-feature">
-                                            <div className="part-icon">
-                                                <img src="assets/img/svg/dark-and-light.svg" alt="" />
-                                            </div>
-                                            <span className="title">
-                                                light &amp; dark
-                                            </span>
-                                        </div>
-                                        <div className="single-feature">
-                                            <div className="part-icon">
-                                                <img src="assets/img/svg/easy-return.svg" alt="" />
-                                            </div>
-                                            <span className="title">
-                                                easy to use
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 {/* download app end */}
                 {/* sponsor begin */}
-                <div className="sponsor">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-1.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-2.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-3.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-6.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-5.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-4.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-7.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="col-xl-3 col-lg-3 d-xl-flex d-lg-flex d-block align-items-center">
-                                <div className="single-sponsor">
-                                    <a href="#">
-                                        <img src="assets/img/sponsor-8.png" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 {/* sponsor end */}
                 {/* news letter begin */}
                 <div className="newsletter">
@@ -2479,8 +390,8 @@ function TrangChu() {
                             </div>
                             <div className="col-xl-8 col-lg-10">
                                 <div className="part-text">
-                                    <h4>PerediOn Newsletter</h4>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident et repellendus deleniti dolor aperiam, magni est tenetur ullam omnis eius illo cum cupiditate, eligendi aspernatur praesentium fuga.</p>
+                                    <h4>Lvaction Newsletter</h4>
+                                    <p>Users enter gmail to receive the latest notifications.</p>
                                     <div className="part-form">
                                         <form>
                                             <input type="text" placeholder="Input Your Mail Here" />
@@ -2496,13 +407,13 @@ function TrangChu() {
                 </div>
                 {/* news letter end */}
                 {/* blog begin */}
-                <div className="blog">
+                {/* <div className="blog">
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-xl-6 col-lg-6 col-md-8">
                                 <div className="section-title">
                                     <h2>Our Latest news</h2>
-                                    <p>PerediOn shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p>
+                                    <p>Lvaction shows real time odds for betting with the higher stakes you can get. We place your bets in various bMakers to do highest liquidity</p>
                                 </div>
                             </div>
                         </div>
@@ -2594,7 +505,7 @@ function TrangChu() {
                             </a>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 {/* blog end */}
                 {/* footer begin */}
                 <div className="footer" id="contact">
@@ -2602,10 +513,10 @@ function TrangChu() {
                         <div className="row justify-content-between">
                             <div className="col-xl-4 col-lg-5 col-md-10">
                                 <div className="about-widget">
-                                    <a className="logo" href="index.html">
-                                        <img src="assets/img/logo.png" alt="" />
+                                    <a className="logo" href="./">
+                                        <img src="https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/471.png?alt=media&token=86cc07ae-d8e7-427f-9f8f-2353466e0393" alt="" />
                                     </a>
-                                    <p>PerediOn offers you all the best online prediction from every corner of the planet with thousands of online prediction markets.</p>
+                                    <p>Lvaction offers you all the best online prediction from every corner of the planet with thousands of online prediction markets.</p>
                                     <div className="social">
                                         <ul>
                                             <li>
@@ -2653,90 +564,47 @@ function TrangChu() {
                             </div>
                             <div className="col-xl-2 col-lg-2 col-md-3">
                                 <div className="useful-links">
-                                    <h3>Useful links</h3>
+                                    <h3>Connect With Us</h3>
                                     <ul>
-                                        <li>
-                                            <a href="#">IN-PLAY</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">PROMOTIONS</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">STATICS</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">RESULTS</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Predict now</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">GAME RESULTS</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">STANDINGS</a>
-                                        </li>
+                                        <Link to="/"><a style={{color:'white'}}>Home</a></Link>
+                                        <br></br>
+                                        <br></br>
+                                        <Link to="/Login"><a style={{color:'white'}}>Login</a></Link>
+                                        <br></br>
+                                        <br></br>
+                                        <Link to="/Login"><a style={{color:'white'}}>Betting</a></Link>
                                     </ul>
                                 </div>
                             </div>
                             <div className="col-xl-2 col-lg-3 col-md-3">
                                 <div className="useful-links">
-                                    <h3>Connect With Us</h3>
+                                    <h3>About Us</h3>
                                     <ul>
-                                        <li>
-                                            <a href="#">About Us</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Blog</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Blog Details</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Service</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Contact us</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">TEAM OVERVIEW</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">SCHEDULE</a>
-                                        </li>
+                                    <label style={{color:'white',textAlign:'left'}}>Whether you're a sports bettor, a horse racing fan, or casino player, lvaction is your number one source of online gambling entertainment. From our industry-leading odds, world-class sportsbook and feature-rich casino games, to our fully-loaded racebook, we've been providing players from around the world with an unparalleled gaming experience for several years. </label>
                                     </ul>
                                 </div>
                             </div>
-                            <div className="col-xl-2 col-lg-2 col-md-3">
+
+                            <div className="col-xl-2 col-lg-3 col-md-3">
                                 <div className="useful-links">
-                                    <h3>All Sports</h3>
+                                    <h3>Why Play With Us</h3>
                                     <ul>
-                                        <li>
-                                            <a href="#">FOOTBALL</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">TENNIS</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">BASKETBALL</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">ICE HOCKEY</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">VOLLEYBALL</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">BADMINTON</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">BASEBALL</a>
-                                        </li>
+                                    <label style={{color:'white',textAlign:'left'}}>lvaction is the gold standard in online gaming, dedicated to provide its customers with a rewarding, exciting and secure environment for online wagering. With top-of-the-line software and unique gaming opportunities, lvaction takes its players to the next level in online gambling. </label>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="col-xl-2 col-lg-3 col-md-3">
+                                <div className="useful-links">
+                                    <h3>Our Services</h3>
+                                    <ul>
+                                    <label style={{color:'white',textAlign:'left'}}>Our Sportsbook page offers the best odds in all major sports and leagues including the NBA, NHL, MLB, NCAA basketball and football, golf, soccer, boxing and much more.
+
+                                    Our Racebook page is the best in the world, with up-to-post-time odds and the most major/minor track listings offered in the industry.</label>
                                     </ul>
                                 </div>
                             </div>
                         </div>
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="container">
                                 <div className="row">
                                     <div className="col-xl-12 col-lg-12">
@@ -2768,7 +636,7 @@ function TrangChu() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
                 {/* footer end */}
@@ -2777,7 +645,7 @@ function TrangChu() {
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-xl-10 col-lg-10">
-                                PerediOn is a sports prediction html template, published by autworks throgh envato marketplace. You can use this template on any kind of sports prediction in the world. as like football, baseball, soccer, cricket etc. all rights reserved by autworks © 2020.
+                                Lvaction is a sports prediction html template, published by autworks throgh envato marketplace. You can use this template on any kind of sports prediction in the world. as like football, baseball, soccer, cricket etc. all rights reserved by autworks © 2020.
                             </div>
                         </div>
                     </div>
@@ -2789,12 +657,12 @@ function TrangChu() {
                         <div className="row justify-content-between">
                             <div className="col-xl-5 col-md-6 col-lg-6 d-lg-flex d-lg-flex d-block align-items-center">
                                 <p className="copyright-text">
-                                    <a href="#">PerediOn</a> © 2020. PRIVACY POLICY
+                                    <a href="#">Lvaction</a> © 2022. PRIVACY POLICY
                                 </p>
                             </div>
                             <div className="text-right col-md-6 col-xl-4 col-lg-6 d-xl-flex d-lg-flex d-block align-items-center">
                                 <p className="copyright-text">
-                                    Powerd By <a href="https://themeforest.net/user/autworks/portfolio">Autworks ( Envato Author )</a>
+                                    Powerd By <a href="AnonymousLink">Anonymous</a>
                                 </p>
                             </div>
                         </div>

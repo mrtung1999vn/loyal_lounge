@@ -158,9 +158,15 @@ var ChiTietSanPham = host + `/1999/ChiTietSanPham`
 var WebDuDoanDangNhap = host + `/WebDuDoan/DangNhap`
 
 
+var WebDuDoanMatch = host + `/WebDuDoan/Match`
+var WebDuDoanCoinEmail = host + `/WebDuDoan/CoinEmail`
+var WebDuDoanNapTienKhachHang = host + `/WebDuDoan/NapTienKhachHang`
+
 export default {
     WebDuDoanDangNhap,
-
+    WebDuDoanMatch,
+    WebDuDoanCoinEmail,
+    WebDuDoanNapTienKhachHang,
 
 
 
