@@ -10,7 +10,7 @@ const port = process.env.PORT || 1999;
 // Create app
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
-    // Create Doc-API
+// Create Doc-API
 var swaggerJsdoc = require("swagger-jsdoc")
 var swaggerUi = require("swagger-ui-express")
 
@@ -47,7 +47,7 @@ app.use(
 //#region CREATE_SERVER
 // const server =  https.createServer(optionsHTTPS,app)
 const server = http.createServer(app)
-    //#endregion
+//#endregion
 
 //#region SOCKET IO
 const io = require("socket.io")(server, {
@@ -57,14 +57,14 @@ const io = require("socket.io")(server, {
 });
 
 //#region API & SOCKET-IO SERVER 
-              //    app, io
+//    app, io
 controller.Controller(app, io)
 //#endregion API SERVER
 
 
 // Block-Chains
 
-// AddBlockChains(11,'Send money','+1000','15','02','2022','17:30:30')
+// AddBlockChains(11,'WithDraw Money','-1000','15','02','2022','17:30:30')
 
 // CheckBlockChains( 11 )
 
@@ -85,19 +85,19 @@ controller.Controller(app, io)
 // liveChat.on("start", (liveId) => {
 //     /* Your code here! */
 //   })
-  
+
 //   // Emit at end of observation chat.
 //   // reason: string?
 //   liveChat.on("end", (reason) => {
 //     /* Your code here! */
 //   })
-  
+
 //   // Emit at receive chat.
 //   // chat: ChatItem
 //   liveChat.on("chat", (chatItem) => {
 //     /* Your code here! */
 //   })
-  
+
 //   // Emit when an error occurs
 //   // err: Error or any
 //   liveChat.on("error", (err) => {

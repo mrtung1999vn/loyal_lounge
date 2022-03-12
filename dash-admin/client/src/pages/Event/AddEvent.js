@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import host from '../../service/host'
 import { storage } from '../../firebase'
 import Select from 'react-select'
+
+
+
 function AddEvent({ handleAddEvent }) {
 
     const [NameEvent, setNameEvent] = React.useState('')
@@ -16,7 +19,7 @@ function AddEvent({ handleAddEvent }) {
     const [Actors, setActors] = React.useState('')
     const [Description, setDescription] = React.useState('')
 
-    const [Date, setDate] = React.useState('')
+    const [DateValue, setDate] = React.useState('')
     const [Time, setTime] = React.useState('')
 
 
@@ -35,9 +38,11 @@ function AddEvent({ handleAddEvent }) {
     const defaultValue = async () => {
         try {
             setNameEvent(''); setPassword(''); setRePassword(''); setAddress('')
-            setPhoneNumber(''); setStatus(''); setImage(null); setUrl('')
-            setPrice(0); setType(''); setActors(''); setDescription(''); setDate(''); setTime('')
-            setProgress(0)
+            setPhoneNumber(''); setStatus(''); setImage(null); setUrl('');
+
+            setPrice(0); setType(''); setActors(''); setDescription('');
+            setDate(''); setTime(''); setProgress(0)
+
         } catch (error) { }
     }
 
@@ -92,46 +97,42 @@ function AddEvent({ handleAddEvent }) {
     const onClickAddEvent = async () => {
         try {
 
-            console.log({ Type, Price, Actors, Description, Date, Time })
+            if (Type === '') {
+                alert('Type cannot be blank!')
+            } else if (Price === 0) {
+                alert('Price other price 0')
+            } else if (Actors === '') {
+                alert('Actors cannot be blank!')
+            } else if (Description === '') {
+                alert('Description cannot be blank!')
+            } else if (DateValue === '') {
+                alert('Date cannot be blank!')
+            } else if (Time === '') {
+                alert('Time cannot be blank!')
+            } else if (url === '') {
+                alert('Image cannot be blank!')
+            } else {
 
-            // if (Status === '') {
-            //     alert('Status cannot be blank!')
-            // } else if (PhoneNumber === '') {
-            //     alert('PhoneNumber cannot be blank!')
-            // } else if (Address === '') {
-            //     alert('Address cannot be blank!')
-            // } else if (RePassword !== Password) {
-            //     alert('Enter a password that does not match!')
-            // } else if (NameEvent === '') {
-            //     alert('Email cannot be blank!')
-            // } else if (Password === '') {
-            //     alert('Password cannot be blank!')
-            // } else if (RePassword === '') {
-            //     alert('RePassword cannot be blank!')
-            // } else {
-            //     // email,mat_khau,created_at,updated_at,status,dia_chi,so_dt,mat_khau_hash,image
-            //     var ten_su_kien = NameEvent
-            //     var mat_khau = RePassword
-            //     var so_dt = PhoneNumber
-            //     var status = Status
+                console.log({ NameEvent, Type, Price, Actors, Description, DateValue, Time, image, url })
 
-            //     var image = url === '' ? `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460` : url
-            //     var dia_chi = Address
+                const res = await fetch(host.WebDashDanhSachEvent, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ NameEvent, Type, Price, Actors, Description, DateValue, Time, image, url })
+                })
 
-            //     const res = await fetch(host.WebDashDanhSachEvent, {
-            //         method: "POST",
-            //         headers: { "Content-Type": "application/json" },
-            //         body: JSON.stringify({ ten_su_kien, mat_khau, status, dia_chi, so_dt, image })
-            //     })
-            //     const content = await res.json()
-            //     if (content.status === 1) {
-            //         alert(content.msg_en)
-            //         handleAddEvent(true)
-            //         defaultValue()
-            //     } else {
-            //         alert(content.msg_en)
-            //     }
-            // }
+                const content = await res.json()
+                if (content.status === 1) {
+                    alert(content.msg_en)
+                    handleAddEvent(true)
+                    defaultValue()
+                } else {
+                    alert(content.msg_en)
+                }
+
+
+            }
+
         } catch (error) {
             console.log(error)
         }
@@ -144,7 +145,7 @@ function AddEvent({ handleAddEvent }) {
                 <div className="col-lg-6">
                     <label>Name Event</label>
                     <div className="common_input mb_20">
-                        <input type="text" placeholder="Email"
+                        <input type="text" placeholder="Name Event"
                             value={NameEvent}
                             onChange={e => setNameEvent(e.target.value)}
                         />
@@ -153,7 +154,7 @@ function AddEvent({ handleAddEvent }) {
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <label>Price</label>
-                        <input type="text" placeholder="Password"
+                        <input type="text" placeholder=""
                             value={Price}
                             onChange={e => setPrice(e.target.value)}
                         />
@@ -163,8 +164,8 @@ function AddEvent({ handleAddEvent }) {
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <label>Date</label>
-                        <input type="date" placeholder="Address"
-                            value={Date}
+                        <input type="date" placeholder="Date"
+                            value={DateValue}
                             onChange={e => setDate(e.target.value)}
                         />
                     </div>
@@ -172,15 +173,46 @@ function AddEvent({ handleAddEvent }) {
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <label>Time</label>
-                        <input type="time" placeholder="Address"
+                        <input type="time" placeholder="Time"
                             value={Time}
                             onChange={e => setTime(e.target.value)}
                         />
                     </div>
                 </div>
+
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Status :{Status}</label>
+                        <label>Actors</label>
+                        <input type="text" placeholder="Actors"
+                            value={Actors}
+                            onChange={e => setActors(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                        <label>Description</label>
+                        <input type="text" placeholder="Description"
+                            value={Description}
+                            onChange={e => setDescription(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                        <label>Type</label>
+                        <input type="text" placeholder="Type"
+                            value={Type}
+                            onChange={e => setType(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {/* <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                        <label>Status {Status}</label>
                         <Select options={options}
                             onChange={e => setStatus(e.value)}
                             styles={{
@@ -189,7 +221,7 @@ function AddEvent({ handleAddEvent }) {
                             }} />
 
                     </div>
-                </div>
+                </div> */}
                 {/* <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <label>Status :{Status}</label>
@@ -202,14 +234,20 @@ function AddEvent({ handleAddEvent }) {
 
                     </div>
                 </div> */}
-                {/* <div className="col-lg-6">
+
+                <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <div className='row'>
                             <div className='col-lg-6'>
+
                                 <input type="file" onChange={(e) => handleChange(e)}
-                                    style={{ width: '200px' }} /></div>
+                                    style={{ width: '200px',marginTop: '32px' }}  />
+                            
+                            </div>
                         </div>
+
                         {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
+                        
                         <br>
                         </br>
                         <img
@@ -218,7 +256,8 @@ function AddEvent({ handleAddEvent }) {
                             }
                             src={url  || "http://via.placeholder.com/300"} alt="firebase-image" />
                     </div>
-                </div> */}
+                </div>
+
                 <div className="col-12">
                     <div className="create_report_btn mt_30">
                         <a style={{ cursor: 'pointer' }} className="btn_1 w-100"

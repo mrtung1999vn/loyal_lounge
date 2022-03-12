@@ -7,7 +7,7 @@ import Select from 'react-select'
 
 function DeleteEvent({ EditData, onHandleDelete }) {
 
-  const [IDEvent, setIDEvent] = React.useState(EditData.id_kh)
+  const [IDEvent, setIDEvent] = React.useState(EditData.id_su_kien)
   const [Email, setEmail] = React.useState(EditData.email)
   const [Password, setPassword] = React.useState('')
   const [RePassword, setRePassword] = React.useState('')
@@ -19,6 +19,17 @@ function DeleteEvent({ EditData, onHandleDelete }) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+
+  const [Price, setPrice] = React.useState(EditData.gia)
+  const [Type, setType] = React.useState(EditData.the_loai)
+  const [Actors, setActors] = React.useState(EditData.nguoi_tham_gia)
+  const [Description, setDescription] = React.useState(EditData.noi_dung)
+
+  const [DateValue, setDate] = React.useState(EditData.thoi_gian_dien.split(' ')[0])
+  const [Time, setTime] = React.useState(EditData.thoi_gian_dien.split(' ')[1])
+
+
   // 
   const options = [
     { value: '', label: 'Choose status' },
@@ -87,14 +98,14 @@ function DeleteEvent({ EditData, onHandleDelete }) {
       var mat_khau = RePassword === '' && Password === '' ? EditData.mat_khau : RePassword
       var so_dt = PhoneNumber
       var status = Status
-      var id_kh = IDEvent
+      var id_su_kien = IDEvent
       var image = url === '' ? `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460` : url
       var dia_chi = Address
 
       const res = await fetch(host.WebDashDanhSachEvent, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, mat_khau, status, dia_chi, so_dt, image, id_kh })
+        body: JSON.stringify({ id_su_kien })
       })
       const content = await res.json()
       if (content.status === 1) {

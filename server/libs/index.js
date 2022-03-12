@@ -44,7 +44,7 @@ const FunctionSqlInjection = (data) => {
             return true
         } else {
             for (let i = 0; i < SqlInjectionArray.length; i++) {
-                if (data.indexOf(SqlInjectionArray[i]) > 0) {
+                if (data.indexOf(SqlInjectionArray[i]) >= 0) {
                     return true
                 } else {
                     checkSQLInjection = false
@@ -68,7 +68,7 @@ const FunctionSqlInjectionText = (data) => {
             return true
         } else {
             for (let i = 0; i < SqlInjectionArray.length; i++) {
-                if (data.indexOf(SqlInjectionArray[i]) > 0) {
+                if (data.indexOf(SqlInjectionArray[i]) >= 0) {
                     return true
                 } else {
                     checkSQLInjection = false

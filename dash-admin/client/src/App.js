@@ -18,6 +18,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Customer from './pages/Customer';
 import Table from './pages/Table';
 import Event from './pages/Event';
+import TypeProduct from './pages/TypeProduct';
+import Product from './pages/Product';
+import CashMoney from './pages/CashMoney';
+import PayMoney from './pages/PayMoney';
 
 
 function App() {
@@ -189,7 +193,10 @@ function App() {
           <Switch>
 
             {/* <Route path='/Login' render={() => <TaiKhoan></TaiKhoan>}></Route> */}
-
+            <Route path='/CashMoney' render={() => <CashMoney></CashMoney>}></Route>
+            <Route path='/PayMoney' render={() => <PayMoney></PayMoney>}></Route>
+            <Route path='/Product' render={() => <Product></Product>}></Route>
+            <Route path='/Type-Product' render={() => <TypeProduct></TypeProduct>}></Route>
             <Route path='/Users' render={() => <Users></Users>}></Route>
             <Route path='/Event' render={() => <Event></Event>}></Route>
             <Route path='/Table' render={() => <Table></Table>}></Route>

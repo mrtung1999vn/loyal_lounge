@@ -189,12 +189,16 @@ function AddCustomer({ handleAddCustomer }) {
 
                     </div>
                 </div>
+                            
                 <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <div className='row'>
                             <div className='col-lg-6'>
+
                                 <input type="file" onChange={(e) => handleChange(e)}
-                                    style={{ width: '200px' }} /></div>
+                                    style={{ width: '200px' }} />
+                            
+                            </div>
                         </div>
                         {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
                         <br>
@@ -206,6 +210,7 @@ function AddCustomer({ handleAddCustomer }) {
                             src={url  || "http://via.placeholder.com/300"} alt="firebase-image" />
                     </div>
                 </div>
+
                 <div className="col-12">
                     <div className="create_report_btn mt_30">
                         <a style={{ cursor: 'pointer' }} className="btn_1 w-100"

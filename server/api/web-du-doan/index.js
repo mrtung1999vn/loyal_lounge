@@ -9,8 +9,10 @@ const pool = require('../../pgconnect')
 const encode_decode = require('../../assets/encode_decode')
 const { timeNowDB } = require('../../assets/TimeLibary')
 
-const moment = require('moment')
+const moment = require('moment');
+const { AddBlockChains, AddBlockChainsBetting } = require('../../libs/block_chains');
 
+let date = new Date()
 module.exports = function (app) {
 
     app.post(`/WebDuDoan/DangNhap`, async (req, res) => {
@@ -117,14 +119,17 @@ module.exports = function (app) {
                 `)
 
                 const CoinQuery = await pool.query(`
-                    select sum(coin_tranfer::int8)"coin" from coin_bc_loyal
-                    where status = true and id_kh = (
+                    select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                    where id_kh = (
                     select id_kh from tai_khoan where email = N'${email}'
                     )
+                    and status = true 
+                    or coin_tranfer like N'%-%'
                 `)
                 res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
             }
         }catch(error){
+            console.log(error)
             res.json({
                 status:0,
                 data:[]
@@ -135,12 +140,15 @@ module.exports = function (app) {
     app.get(`/WebDuDoan/Match`, async (req, res) => {
         try {
             if (checkRequest(req.headers.origin)) {
+
                 const newDataFooball = await pool.query(`
                     select * from "match"
                     where created_at > now() - interval '2 day'
                     and coast_result = '-'
+                    and name_01 != '' and name_02 != ''
                     order by created_at asc
                 `)
+
                 const newDataBasketball = await pool.query(`
                     select * from "match"
                     where created_at > now() - interval '2 day'
@@ -164,6 +172,95 @@ module.exports = function (app) {
         }
     })
 
+    app.post('/WebDuDoan/NapTienKhachHang' ,async (req,res)=>{
+        try{
+            if (checkRequest(req.headers.origin)) {
+                const {id_kh, email, tien_nap,noi_dung } = req.body
+                console.log( {id_kh, email, tien_nap,noi_dung } )
+
+                if( FunctionSqlInjectionText(id_kh) ||
+                    FunctionSqlInjectionText(email) ||
+                    FunctionSqlInjectionText(tien_nap) ||
+                    FunctionSqlInjectionText(noi_dung) 
+                ){
+                    res.json({
+                        status:0,
+                        data:[],
+                        msg_vn:'het phien',
+                        msg_en:'end of session'
+                    })
+                }else{
+                    await AddBlockChains(id_kh, noi_dung, tien_nap, date.getDate().toString(), (date.getMonth() + 1).toString(), date.getFullYear().toString(), `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`  )
+
+                    res.json({
+                        status:1,
+                        msg_vn:'them thanh cong',
+                        msg_en:'success'
+                    })
+                }
+
+                
+            }else{
+                res.json({
+                    status:0,
+                    data:[],
+                    msg_vn:'het phien',
+                    msg_en:'end of session'
+                })
+            }
+        }catch(error){
+            console.log( error )
+            res.json({
+                status:0,
+                data:[],
+                msg_vn:'het phien',
+                msg_en:'end of session'
+            })
+        }
+    })
+
+
+    app.get(`/WebDuDoan/NapTienKhachHang/:id_kh` , async (req,res)=>{
+        try {
+            if (checkRequest(req.headers.origin)) {
+                const {id_kh} = req.params
+
+                if(  FunctionSqlInjectionText(id_kh) ){
+                    res.json({
+                        status:0,
+                        data:[],
+                        msg_vn:'het phien',
+                        msg_en:'end of session'
+                    })
+                }else{
+                    const ExcuteQuery = await pool.query(`
+                        select * from coin_bc_loyal 
+                        where id_kh = ${id_kh}
+                        order by created_at desc
+                    `)
+
+                    res.json({
+                        status:1,
+                        data: encode_decode.EncodeJson( ExcuteQuery.rows )
+                    })
+                }
+
+            }
+        } catch (error) {
+            
+        }
+    })
+
+
+    app.post(`/WebDuDoan/DuDoanKetQua` , async(req,res)=>{
+        try {
+            if (checkRequest(req.headers.origin)) {
+                
+            }
+        } catch (error) {
+            
+        }
+    })
     // app.get(`/WebDuDoan/APINBA` , async (req,res)=>{
     //     try {
     //         const res = await fetch(`https://api-basketball.p.rapidapi.com/timezone`,{
@@ -196,4 +293,76 @@ module.exports = function (app) {
 
     //     }
     // })
+
+
+    app.post('/WebDuDoan/DuDoanMatch' , async (req,res)=>{
+        try {
+            
+            const {array,email,date} = req.body
+
+            if (checkRequest(req.headers.origin) && !FunctionSqlInjectionText( email ) ) {
+
+                // Check Match
+                
+                if( array.length > 0 ){
+
+                    const CheckArray = await pool.query(`
+                        select * from "match"
+                        where id_match = ${array[0].id_match}
+                    `)
+
+                    if( CheckArray.rows[0].coast_result === '-' ){
+
+                        // console.log( array )
+                        
+                        const DataKhachHang = await pool.query(`
+                            select * from tai_khoan
+                            where email = N'${email}'
+                        `)
+
+                        array.map(async x=>{
+                            try{
+
+                                let date_now = new Date(date)
+                                // console.log( date_now.getHours() )
+                                await AddBlockChainsBetting(x.id_match,x.type_betting,DataKhachHang.rows[0].id_kh,'Betting Match',`-${x.money}`,date_now.getDate().toString(),(date_now.getMonth() + 1).toString(),date_now.getFullYear(),
+                                `${date_now.getHours()}:${date_now.getMinutes()}:${date_now.getSeconds()}`
+                                )
+                                // const Betting = await pool.query(``)
+                            }catch(error){
+                                res.json({status:0,data:[]})
+                            }
+                        })
+                        res.json({
+                            status:1,
+                            msg_en:'Success!'
+                        })
+
+                    }else{
+                        const newDataFooball = await pool.query(`
+                            select * from "match"
+                            where created_at > now() - interval '2 day'
+                            and coast_result = '-'
+                            and name_01 != '' and name_02 != ''
+                            order by created_at asc
+                        `)
+                        res.json({
+                            status:2,
+                            newDataFooball: encode_decode.EncodeJson(newDataFooball.rows),
+                            msg_en:'The match has already taken place, no bets can be placed'
+                        })
+                    }
+                }
+            }else{
+                res.json({status:0,data:[]})  
+            }
+
+
+        } catch (error) {
+            console.log( error )
+            res.json({status:0,data:[]})
+        }
+    })
+
+
 }

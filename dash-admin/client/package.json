@@ -2,7 +2,7 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://quantri.bctechg.com/",
+  "homepage": "https://admin.99plus.online/",
   "dependencies": {
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
@@ -32,7 +32,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": " set port=3000 && react-scripts start",
+    "start": " set port=2999 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
