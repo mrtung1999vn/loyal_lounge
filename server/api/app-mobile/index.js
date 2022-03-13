@@ -17,6 +17,7 @@ const manchinh = require('./manchinh');
 const loaisanpham = require('./loaisanpham');
 const taikhoan = require('./taikhoan');
 const { DefautBlockChains } = require('../../libs/block_chains');
+const thuVien = require('./thu-vien');
 
 
 
@@ -189,5 +190,6 @@ module.exports = function (app) {
     manchinh(app)
     loaisanpham(app)
     taikhoan(app)
-
+    taikhoan(app)
+    thuVien(app)
 }
