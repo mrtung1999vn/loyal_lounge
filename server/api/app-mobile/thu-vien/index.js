@@ -21,11 +21,33 @@ const date = new Date()
 module.exports = function(app) {
     app.get('/App/ThuVien/:page', async(req,res)=>{
         try {
+
+            const {page} = req.params
+
             const TotalPage = await pool.query(
                 `select count(*) from thu_vien`
             )
-        } catch (error) {
+
+            const ExcuteQuery = await pool.query(`
+                select * from thu_vien 
+                order by created_at desc
+                limit ${ page === '1' ? 12 : parseInt( page )*12  } offset 0
+            `)
+
+            let PageNumber = Math.ceil( TotalPage.rows[0].count/12 )
             
+            res.json({
+                status:1,
+                page_number: PageNumber,
+                data: ExcuteQuery.rows
+            })
+            // console.log( Math.ceil( TotalPage.rows[0].count/12 )   )
+
+
+                
+
+        } catch (error) {
+            console.log(error)
         }
     })
 }
