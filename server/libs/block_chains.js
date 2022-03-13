@@ -157,7 +157,17 @@ const AddBlockChainsBetting = async (id_match,trang_thai,id_kh, noi_dung, coin_t
 
 const DefautBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian)=>{
     try {
-                // Tạo mặc định coin demo
+
+
+        
+            var next_string = '_string_next'
+            var block_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian })
+            // console.log(block_hash)
+            var json_hash = JSON.stringify({ id_kh, noi_dung, coin_tranfer, ngay, thang, nam, thoi_gian })
+            // console.log(json_hash)
+            var next_hash = EncodeJson({ id_kh, noi_dung, coin_tranfer, next_string, ngay, thang, nam, thoi_gian })
+            // console.log(next_hash)
+            // Tạo mặc định coin demo
             const CheckCoin = await pool.query(`
                 select * from tai_khoan
             `)

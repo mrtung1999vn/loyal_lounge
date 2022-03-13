@@ -22,8 +22,8 @@ module.exports = function(app) {
     app.post(`/App/SanPham` , async(req,res)=>{
         try {
             
-            const {authorization} = req.headers
-            const {email,id_loai_sp} = req.body
+            const { authorization } = req.headers
+            const {email , id_loai_sp} = req.body
 
             let check = await CheckToken( email, authorization)
             

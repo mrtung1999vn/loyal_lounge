@@ -1,7 +1,7 @@
 const { lib } = require('crypto-js')
 const fetch = require('node-fetch')
 const { EncodeJson, DecodeString_AES, DecodeJson, DecodeJsonRequest, EncodeString, EncodeString_AES, DecodeString } = require('../../assets/encode_decode')
-const { SendMailGoogle, FunctionSqlInjection, SaveError, SignToken, CheckToken } = require('../../libs')
+const { SendMailGoogle, FunctionSqlInjection, SaveError, SignToken, CheckToken, FunctionSqlInjectionText, SignAgainToken } = require('../../libs')
 var jwt = require('jsonwebtoken');
 
 var token = "Token k0iI4jjVSEtdddZkIG4naDOW4kcZLbz0"
@@ -34,19 +34,34 @@ module.exports = function (app) {
         return result;
     }
 
-    // Sau 2p hoặc hết phiên không sử dụng được api nào thì gọi API /SignAgainToken
+    // Lỗi phiên gọi lại Sign Token
     app.post('/SignAgainToken', async (req, res) => {
         try {
             const { email, token, subject, text } = req.body
-            if (FunctionSqlInjection(email)) {
+            if (FunctionSqlInjectionText(email) &&
+                ( await SignAgainToken(email) ) === true
+                ) {
                 let token_sign = jwt.sign({
                     exp: Math.floor(Date.now() / 1000) + (60 * 60),
                     data: email + makeid(10)
                 }, 'secret');
                 SignToken(email, token_sign)
+
+                res.json({
+                    status:1,
+                    token_sign: token_sign
+                })
+            }else{
+                res.json({
+                    status:0,
+                    data:[]
+                })
             }
         } catch (error) {
-
+            res.json({
+                status:0,
+                data:[]
+            })
         }
     })
 
@@ -68,6 +83,7 @@ module.exports = function (app) {
                 select * from tai_khoan
                 where email = N'${email}'
                 and mat_khau_hash = N'${EncodeString(email, mat_khau)}'
+                and status = true
             `)
 
             if (ExcuteQuery.rowCount > 0) {
@@ -115,40 +131,44 @@ module.exports = function (app) {
                     data: [],
                     msg: 'Nguoi nhap dien ki tu dac biet'
                 })
-            }
-            const checkData = await pool.query(`
-                select email from tai_khoan
-                where email = N'${email}'
-            `)
-
-            if (checkData.rowCount > 0) {
-                res.json({
-                    status: 0,
-                    data: [],
-                    msg: 'Tai khoan da ton tai'
-                })
             } else {
-                await pool.query(`
+
+                const checkData = await pool.query(`
+                    select email from tai_khoan
+                    where email = N'${email}'
+                `)
+
+                if (checkData.rowCount > 0) {
+                    res.json({
+                        status: 0,
+                        data: [],
+                        msg: 'Tai khoan da ton tai'
+                    })
+                } else {
+                    await pool.query(`
                     insert into tai_khoan (
-                        email ,created_at ,updated_at, status,dia_chi,so_dt,mat_khau_hash 
+                        email ,created_at ,updated_at, status,dia_chi,so_dt,mat_khau_hash,gio_hang
                     )
                     values(
-                        N'${email}',now(),now(),true,N'${dia_chi}',N'${so_dt}',N'${EncodeString(email, mat_khau)}'
+                        N'${email}',now(),now(),true,N'${dia_chi}',N'${so_dt}',N'${EncodeString(email, mat_khau)}',
+                        N'[]'
                     )
                 `)
 
-                const ExcuteQuery = await pool.query(`
+                    const ExcuteQuery = await pool.query(`
                         select * from tai_khoan where email = N'${email}'
                 `)
 
-                DefautBlockChains(ExcuteQuery.rows[0].id_kh,'','','','','','')
+                await DefautBlockChains(ExcuteQuery.rows[0].id_kh,'','','','','','')
 
-                res.json({
-                    status: 1,
-                    data: [],
-                    msg: 'Them tai khoan thanh cong'
-                })
+                    res.json({
+                        status: 1,
+                        data: [],
+                        msg: 'Them tai khoan thanh cong'
+                    })
+                }
             }
+
         } catch (error) {
             SaveError('app-mobile', '/DangKyTaiKhoan', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
             res.json({
@@ -193,4 +213,6 @@ module.exports = function (app) {
     sanpham(app)
     taikhoan(app)
     thuVien(app)
+
+
 }
