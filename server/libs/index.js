@@ -76,7 +76,7 @@ const FunctionSqlInjectionText = (data) => {
         // Check cái ' với cái - ( ' 1=1 -- ) check cả rỗng với underfined
         // console.log(data)
         let checkSQLInjection = false
-        console.log(data)
+        // console.log(data)
         if (data === undefined && data === null) {
             return true
         } else {

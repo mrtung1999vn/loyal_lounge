@@ -1,7 +1,7 @@
 const { lib } = require('crypto-js')
 const fetch = require('node-fetch')
 const { EncodeJson, DecodeString_AES, DecodeJson, DecodeJsonRequest, EncodeString, EncodeString_AES, DecodeString } = require('../../../assets/encode_decode')
-const { SendMailGoogle, FunctionSqlInjection, SaveError, SignToken, CheckToken } = require('../../../libs')
+const { SendMailGoogle, FunctionSqlInjection, SaveError, SignToken, CheckToken, FunctionSqlInjectionText } = require('../../../libs')
 var jwt = require('jsonwebtoken');
 
 var token = "Token k0iI4jjVSEtdddZkIG4naDOW4kcZLbz0"
@@ -17,39 +17,39 @@ const moment = require('moment')
 
 
 
-module.exports = function(app) {
+module.exports = function (app) {
 
 
-    app.post(`/App/LoaiSanPham` , async(req,res)=>{
+    app.post(`/App/LoaiSanPham`, async (req, res) => {
         try {
-            
-            const {authorization} = req.headers
-            const {email} = req.body
 
-            let check = await CheckToken( email, authorization)
+            const { authorization } = req.headers
+            const { email } = req.body
 
-            if( check ){
+            let check = await CheckToken(email, authorization)
+
+            if (check) {
                 const ExcuteQuery = await pool.query(`
                     select * from loai_sp
                 `)
 
                 res.json({
-                    status:1,
+                    status: 1,
                     data: ExcuteQuery.rows,
-                    msg_vn:'loai san pham',
-                    msg_en:'type product'
+                    msg_vn: 'loai san pham',
+                    msg_en: 'type product'
                 })
-            }else{
+            } else {
                 res.json({
-                    status:0,
-                    data:[],
-                    msg_vn:'het phien',
-                    msg_en:'end of session'
+                    status: 0,
+                    data: [],
+                    msg_vn: 'het phien',
+                    msg_en: 'end of session'
                 })
             }
 
         } catch (error) {
-            console.log( error)
+            console.log(error)
             SaveError('app-mobile', '/App/LoaiSanPham', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
             res.json({
                 status: 0,
@@ -59,19 +59,60 @@ module.exports = function(app) {
         }
     })
 
-    app.post(`/App/TimKiemSanPham`, async(req,res)=>{
+    app.post(`/App/SanPhamTheoLoai/:id_loai`, async (req, res) => {
         try {
-            const {authorization} = req.headers
-            const {query_search} = req.body
 
+            const { authorization } = req.headers
+            const { email,onChange } = req.body
+            const { id_loai } = req.params
+
+            // onChange === 'onChangeSelect' Khách hàng có thể click nhiều để chọn đồ bỏ check Token
             
-            console.log( {email,id_loai_sp} )
-            console.log( {authorization} )
 
-            let check = await CheckToken( email, authorization)
+            if (!FunctionSqlInjectionText(id_loai)) {
+                const ExcuteQuery = await pool.query(`
+                select * from san_pham where id_loai_sp = ${id_loai}
+            `)
 
-            if( check ){
-                if( !FunctionSqlInjectionText(query_search)  ){
+                res.json({
+                    status: 1,
+                    data: ExcuteQuery.rows,
+                    msg_vn: 'loai san pham',
+                    msg_en: 'type product'
+                })
+            } else {
+                res.json({
+                    status: 0,
+                    data: [],
+                    msg_vn: 'het phien',
+                    msg_en: 'end of session'
+                })
+            }
+
+        } catch (error) {
+            console.log(error)
+            SaveError('app-mobile', '/App/SanPhamTheoLoai', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
+            res.json({
+                status: 0,
+                data: [],
+                msg: 'Loi he thong'
+            })
+        }
+    })
+
+    app.post(`/App/TimKiemSanPham`, async (req, res) => {
+        try {
+            const { authorization } = req.headers
+            const { query_search } = req.body
+
+
+            console.log({ email, id_loai_sp })
+            console.log({ authorization })
+
+            let check = await CheckToken(email, authorization)
+
+            if (check) {
+                if (!FunctionSqlInjectionText(query_search)) {
 
 
                     const ExcuteQuery = await pool.query(`
@@ -80,22 +121,22 @@ module.exports = function(app) {
                     `)
 
                     res.json({
-                        status:1,
+                        status: 1,
                         data: ExcuteQuery.rows
                     })
                 }
-            }else{
-                res.json({status:0,data:[]})
+            } else {
+                res.json({ status: 0, data: [] })
             }
 
         } catch (error) {
             res.json({
-                status:0,
-                data:[]
+                status: 0,
+                data: []
             })
         }
     })
 
-    
+
 
 }
