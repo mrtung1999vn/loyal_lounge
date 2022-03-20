@@ -160,8 +160,7 @@ module.exports = function (app) {
 
             if (check) {
                 if (
-                    checkRequest(req.headers.origin)
-                    && !FunctionSqlInjectionText(email)
+                    !FunctionSqlInjectionText(email)
                 ) {
 
                     const ExcuteQuery = await pool.query(`
