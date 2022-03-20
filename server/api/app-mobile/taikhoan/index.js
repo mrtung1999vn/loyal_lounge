@@ -107,4 +107,43 @@ module.exports = function(app) {
         }
     })
 
+
+    app.put(`/App/GioHang` , async(req,res)=>{
+        try {
+            const {authorization} = req.headers
+            const {id_kh, email, gio_hang } = req.body
+            
+            let check = await CheckToken( email, authorization)
+
+            if( 
+                FunctionSqlInjectionText( email )
+            ){
+                res.json({
+                    status:0,
+                    data: [],
+                    msg_vn:'loi he thong',
+                    msg_en:'system error'
+                })
+            }else{
+
+                const GioHang = await pool.query(`
+                
+                    update from tai_khoan set gio_hang = N'${gio_hang}'
+
+                    where email = N'${email}'
+                `)
+
+                res.json({
+                    status:1,
+                    gio_hang: GioHang.rows[0].gio_hang,
+                    msg_vn:'them thanh cong',
+                    msg_en:'success'
+                })
+            }
+
+        } catch (error) {
+            
+        }
+    })
+
 }
