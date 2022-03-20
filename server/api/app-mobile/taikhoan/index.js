@@ -70,4 +70,41 @@ module.exports = function(app) {
         }
     })
 
+
+    app.post(`/App/GioHang` , async(req,res)=>{
+        try {
+            const {authorization} = req.headers
+            const {id_kh, email, tien_nap,noi_dung } = req.body
+            
+            let check = await CheckToken( email, authorization)
+
+            if( 
+                FunctionSqlInjectionText( email )
+            ){
+                res.json({
+                    status:0,
+                    data: [],
+                    msg_vn:'loi he thong',
+                    msg_en:'system error'
+                })
+            }else{
+
+                const GioHang = await pool.query(`
+                    select * from tai_khoan
+                    where email = N'${email}'
+                `)
+
+                res.json({
+                    status:1,
+                    gio_hang: GioHang.rows[0].gio_hang,
+                    msg_vn:'them thanh cong',
+                    msg_en:'success'
+                })
+            }
+
+        } catch (error) {
+            
+        }
+    })
+
 }

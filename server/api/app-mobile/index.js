@@ -38,8 +38,12 @@ module.exports = function (app) {
     app.post('/SignAgainToken', async (req, res) => {
         try {
             const { email, token, subject, text } = req.body
-            if (FunctionSqlInjectionText(email) &&
-                ( await SignAgainToken(email) ) === true
+            console.log( { email, token, subject, text } )
+
+            let checkAgainToken = await SignAgainToken(email)
+            if (
+                !FunctionSqlInjection(email)
+                && checkAgainToken === true
                 ) {
                 let token_sign = jwt.sign({
                     exp: Math.floor(Date.now() / 1000) + (60 * 60),
@@ -49,7 +53,7 @@ module.exports = function (app) {
 
                 res.json({
                     status:1,
-                    token_sign: token_sign
+                    token_sign: token_sign 
                 })
             }else{
                 res.json({

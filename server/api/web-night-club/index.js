@@ -1,7 +1,7 @@
 const { lib } = require('crypto-js')
 const fetch = require('node-fetch')
 const { EncodeJson, DecodeString_AES, DecodeJson, DecodeJsonRequest, EncodeString, EncodeString_AES, DecodeString } = require('../../assets/encode_decode')
-const { SendMailGoogle, FunctionSqlInjection, FunctionSqlInjectionText, SaveError, SignToken, CheckToken, SignAgainToken } = require('../../libs')
+const { SendMailGoogle, FunctionSqlInjection, FunctionSqlInjectionText, SaveError, SignToken, CheckToken, SignAgainToken, checkRequest } = require('../../libs')
 var jwt = require('jsonwebtoken');
 
 var token = "Token k0iI4jjVSEtdddZkIG4naDOW4kcZLbz0"
@@ -13,7 +13,7 @@ const encode_decode = require('../../assets/encode_decode')
 const { timeNowDB } = require('../../assets/TimeLibary')
 
 const moment = require('moment');
-const { DefautBlockChains } = require('../../libs/block_chains');
+const { DefautBlockChains, AddBlockChains } = require('../../libs/block_chains');
 
 module.exports = function (app) {
     function makeid(length) {
@@ -27,12 +27,22 @@ module.exports = function (app) {
         return result;
     }
 
+    app.get('/WebNightClub/HomeCenter', async (req,res)=>{
+        try {
+            
+        } catch (error) {
+            
+        }
+    })
+ 
+
     app.post('/WebNightClub/SignAgainToken', async (req, res) => {
         try {
             const { email, token, subject, text } = req.body
-            console.log( { email, token, subject, text } )
+            // console.log( { email, token, subject, text } )
 
             let checkAgainToken = await SignAgainToken(email)
+            
             if (
                 !FunctionSqlInjection(email)
                 && checkAgainToken === true
@@ -45,7 +55,7 @@ module.exports = function (app) {
 
                 res.json({
                     status:1,
-                    token_sign: encode_decode.EncodeJson([{token_sign: token_sign }])
+                    token_sign: encode_decode.EncodeJson( token_sign )
                 })
             }else{
                 res.json({
@@ -54,6 +64,7 @@ module.exports = function (app) {
                 })
             }
         } catch (error) {
+            
             res.json({
                 status:0,
                 data:[]
@@ -222,12 +233,13 @@ module.exports = function (app) {
             console.log( {authorization} )
 
             let check = await CheckToken( email, authorization)
+            // let check = true
+
             if( check ){
                 if (
                     checkRequest(req.headers.origin) 
                     && !FunctionSqlInjectionText(email) 
                     ) {
-                    const {email} = req.params
                     
                     const ExcuteQuery = await pool.query(`
                         select * from tai_khoan
@@ -242,17 +254,46 @@ module.exports = function (app) {
                         and status = true 
                         or coin_tranfer like N'%-%'
                     `)
-                    res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
+                    console.log( CoinQuery.rows )
+
+                    if(  CoinQuery.rows[0]?.coin === null){
+                        await DefautBlockChains(ExcuteQuery.rows[0].id_kh,'','','','','','')
+                        res.json({status:1,data:encode_decode.EncodeJson([{coin:0}]),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
+                    }else{
+                        res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
+                    }
+                    
                 }
             }else{
                 res.json({status:0,data:[]})
             }
         } catch (error) {
-            res.json({status:0,data:[]})
+            console.log(error)
+            // res.json({status:0,data:[]})
         }
     })
 
 
+
+
+    app.get(`/WebNightClub/LoaiDanhMuc` , async (req,res)=>{
+        try {
+            
+            const newData = await pool.query(`
+                select * from loai_sp
+            `)
+
+            res.json({
+                status: 1,
+                data: newData.rows
+            })
+        } catch (error) {
+            res.json({
+                status:0,
+                data: []
+            })
+        }
+    })
 
 }
 

@@ -188,6 +188,8 @@ const SignAgainToken = async(email)=>{
             where email = N'${email}'
             and status = true
         `)
+        
+        // console.log( email )
 
         if( User.rows[0]?.status === true ){
             // Check Number Sign Again Token
@@ -199,6 +201,8 @@ const SignAgainToken = async(email)=>{
             // console.log( DataNumber.rows )
             let Number = DataNumber.rows[0].request_again === null ? 0 : 
             parseInt( DataNumber.rows[0].request_again )
+
+            console.log( Number )
 
             //Gọi khởi tạo token lớn hơn hoặc = 2 là bị khóa
             if( Number >= parseInt( process.env.count_block_again_token ) ){
@@ -238,7 +242,7 @@ const SignAgainToken = async(email)=>{
 const CheckToken = async (email,token)=>{
     try {
         const User = await pool.query(`
-            select status from tai_khoan
+            select * from tai_khoan
             where email = N'${email}'
             and status = true
         `)
@@ -249,27 +253,33 @@ const CheckToken = async (email,token)=>{
             if( token.indexOf('Token') >= 0){
                 const CheckData = await pool.query(`
                     select * from "token"
-                    where created_at + interval '3 second' >= now() and 
+                    where created_at + interval '5 second' >= now() and 
                     "token" = N'${token.split(' ')[1]}'
                     and email = N'${email}'
                 `)
 
+                // console.log( CheckData.rows )
+
                 // Kiểm tra nếu có token còn hạn không
+
                 if( CheckData.rowCount > 0 ){ // Còn hạn
                     
                     // Gọi Token
                     const checkRequestTime = await pool.query(`
-                        select request_time from "token"
-                        where created_at + interval '3 second' >= now()
+                        select * from "token"
+                        where created_at + interval '5 second' >= now()
                         and email = '${email}'
-                        and "token" = '${token}'
+                        and "token" = '${token.split(' ')[1]}'
                     `)
                     // Request_Time
+
+                    // console.log( checkRequestTime.rows )
                     
                     let Number = checkRequestTime.rows[0].request_time === null ? 0 : 
                     parseInt( checkRequestTime.rows[0].request_time )
-    
+                    
                     // Number request time === 4 block user
+                    console.log( checkRequestTime.rows )
                     if( Number === parseInt( process.env.count_block_token ) ){
                         await pool.query(`
                             update tai_khoan set status = false 
@@ -288,9 +298,9 @@ const CheckToken = async (email,token)=>{
                         // Update request time count + 1
                         await pool.query(`
                             update "token" set request_time = N'${parseInt( Number ) + 1 }'
-                            where created_at + interval '3 second' >= now()
+                            where created_at + interval '5 second' >= now()
                             and email = '${email}'
-                            and "token" = '${token}'
+                            and "token" = '${token.split(' ')[1]}'
                         `)
                         return true
                     }
@@ -299,7 +309,7 @@ const CheckToken = async (email,token)=>{
                     await pool.query(`
                         update "token" set request_again = N'0'
                         where email = '${email}'
-                        and "token" = '${token}'
+                        and "token" = '${token.split(' ')[1]}'
                     `)
                     return false
                 }

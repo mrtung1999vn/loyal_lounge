@@ -27,13 +27,11 @@ module.exports = function(app) {
 
             const {page} = req.params
 
-
+            // Thư viện
 
             const TotalPage = await pool.query(
                 `select count(*) from thu_vien`
             )
-
-
 
             const ExcuteQuery = await pool.query(`
                 select * from thu_vien 
@@ -41,16 +39,35 @@ module.exports = function(app) {
                 limit ${ page === '1' ? 12 : parseInt( page )*12  } offset 0
             `)
 
-
-
             let PageNumber = Math.ceil( TotalPage.rows[0].count/12 )
             
+            
+            // Sự kiện 
+            const ExcuteQueryEventWeek = await pool.query(`
+                select * from su_kien 
+                where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
+                order by thoi_gian_dien asc 
+            `)
+            const ExcuteQueryEventLimit = await pool.query(`
+                select * from su_kien 
+                where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
+                order by thoi_gian_dien asc
+                limit 3 
+            `)
 
+            const TypeProduct = await pool.query(`
+                select * from loai_sp
+            `)
+
+            // Sự kiện
 
             res.json({
                 status:1,
                 page_number: PageNumber,
-                data: ExcuteQuery.rows
+                ExcuteQueryEventWeek:ExcuteQueryEventWeek.rows,
+                ExcuteQueryEventLimit: ExcuteQueryEventLimit.rows,
+                data: ExcuteQuery.rows,
+                TypeProduct: TypeProduct.rows
             })
 
 

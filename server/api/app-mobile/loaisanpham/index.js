@@ -19,6 +19,7 @@ const moment = require('moment')
 
 module.exports = function(app) {
 
+
     app.post(`/App/LoaiSanPham` , async(req,res)=>{
         try {
             
@@ -57,5 +58,44 @@ module.exports = function(app) {
             })
         }
     })
+
+    app.post(`/App/TimKiemSanPham`, async(req,res)=>{
+        try {
+            const {authorization} = req.headers
+            const {query_search} = req.body
+
+            
+            console.log( {email,id_loai_sp} )
+            console.log( {authorization} )
+
+            let check = await CheckToken( email, authorization)
+
+            if( check ){
+                if( !FunctionSqlInjectionText(query_search)  ){
+
+
+                    const ExcuteQuery = await pool.query(`
+                        select * from san_pham
+                        where lower(convertTVkdau(ten_sp)) like lower( convertTVkdau(N'%${query_search}%'))
+                    `)
+
+                    res.json({
+                        status:1,
+                        data: ExcuteQuery.rows
+                    })
+                }
+            }else{
+                res.json({status:0,data:[]})
+            }
+
+        } catch (error) {
+            res.json({
+                status:0,
+                data:[]
+            })
+        }
+    })
+
+    
 
 }
