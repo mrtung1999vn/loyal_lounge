@@ -63,8 +63,11 @@ module.exports = function (app) {
         try {
 
             const { authorization } = req.headers
+
             const { email,onChange } = req.body
+
             const { id_loai } = req.params
+
 
             // onChange === 'onChangeSelect' Khách hàng có thể click nhiều để chọn đồ bỏ check Token
             
@@ -102,16 +105,15 @@ module.exports = function (app) {
 
     app.post(`/App/TimKiemSanPham`, async (req, res) => {
         try {
+
             const { authorization } = req.headers
-            const { query_search } = req.body
 
-
-            console.log({ email, id_loai_sp })
-            console.log({ authorization })
+            const { email,query_search } = req.body
 
             let check = await CheckToken(email, authorization)
 
             if (check) {
+
                 if (!FunctionSqlInjectionText(query_search)) {
 
 
@@ -122,21 +124,60 @@ module.exports = function (app) {
 
                     res.json({
                         status: 1,
-                        data: ExcuteQuery.rows
+                        data: ExcuteQuery.rows,
+                        msg_en:'success',msg_vn:'thanh cong'
                     })
+                }else{
+                    res.json({ status: 0, data: [],msg_en:'fail',msg_vn:'that bai' })
                 }
             } else {
-                res.json({ status: 0, data: [] })
+                res.json({ status: 0, data: [],
+                    msg_en:'fail',msg_vn:'that bai' })
             }
 
         } catch (error) {
+            console.log( error )
             res.json({
                 status: 0,
-                data: []
+                data: [],
+                msg_en:'fail',msg_vn:'that bai'
             })
         }
     })
 
+    app.post(`/App/TatCaSanPham` , async(req,res)=>{
+        try {
 
+            const { authorization } = req.headers
+            const { email,query_search } = req.body
+
+
+            let check = await CheckToken(email, authorization)
+
+            if(check ){
+                const ExcuteQuery = await pool.query(`
+                    select * from san_pham
+                `)
+
+                res.json({status:1,data:ExcuteQuery.rows})
+            }else{
+                res.json({status:0,data:[],
+                msg_vn:'that bai',
+                msg_en:'fail'})
+            }
+        } catch (error) {
+            res.json({
+                status:0,data:[]
+            })
+        }
+    })
+
+    app.post(`/App/`, async(req,res)=>{
+        try {
+            
+        } catch (error) {
+            
+        }
+    })
 
 }

@@ -279,7 +279,7 @@ const CheckToken = async (email,token)=>{
                     parseInt( checkRequestTime.rows[0].request_time )
                     
                     // Number request time === 4 block user
-                    console.log( checkRequestTime.rows )
+                    // console.log( checkRequestTime.rows )
                     if( Number === parseInt( process.env.count_block_token ) ){
                         await pool.query(`
                             update tai_khoan set status = false 
@@ -297,7 +297,12 @@ const CheckToken = async (email,token)=>{
                     }else{
                         // Update request time count + 1
                         await pool.query(`
-                            update "token" set request_time = N'${parseInt( Number ) + 1 }'
+                            update "token" set request_again = N'0'
+                            where email = '${email}'
+                        `)
+                        await pool.query(`
+                            update "token" set request_time = N'${parseInt( Number ) + 1 }',
+                            request_again = N'0'
                             where created_at + interval '5 second' >= now()
                             and email = '${email}'
                             and "token" = '${token.split(' ')[1]}'

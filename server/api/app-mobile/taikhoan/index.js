@@ -42,7 +42,11 @@ module.exports = function (app) {
                     })
                 } else {
 
-                    await AddBlockChains(id_kh, noi_dung, tien_nap, date.getDate().toString(), (date.getMonth() + 1).toString(), date.getFullYear().toString(), `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+                    // tien_nap : demo   +1000
+                    await AddBlockChains(id_kh, noi_dung, 
+                        tien_nap, date.getDate().toString(), 
+                        (date.getMonth() + 1).toString(), date.getFullYear().toString(), 
+                        `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
 
                     res.json({
                         status: 1,
@@ -50,6 +54,7 @@ module.exports = function (app) {
                         msg_en: 'success'
                     })
                 }
+
             } else {
                 res.json({
                     status: 0,
@@ -116,6 +121,7 @@ module.exports = function (app) {
             let check = await CheckToken(email, authorization)
 
             if (
+                !check &&
                 FunctionSqlInjectionText(email)
             ) {
                 res.json({
@@ -184,15 +190,18 @@ module.exports = function (app) {
                     } else {
                         res.json({ status: 1, data: CoinQuery.rows, dataUser: ExcuteQuery.rows })
                     }
-
                 }
             } else {
                 res.json({ status: 0, data: [] })
             }
         } catch (error) {
+
             console.log(error)
-            // res.json({status:0,data:[]})
+            
         }
     })
+
+
+    
 
 }

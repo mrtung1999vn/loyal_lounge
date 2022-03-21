@@ -102,8 +102,6 @@ module.exports = function (app) {
         }
     })
 
-
-
     app.post(`/WebNightClub/DangNhap`, async (req, res) => {
         try {
             const { email, mat_khau, subject, text } = req.body
@@ -272,9 +270,6 @@ module.exports = function (app) {
             // res.json({status:0,data:[]})
         }
     })
-
-
-
 
     app.get(`/WebNightClub/LoaiDanhMuc` , async (req,res)=>{
         try {
