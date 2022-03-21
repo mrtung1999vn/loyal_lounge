@@ -186,7 +186,6 @@ const SignAgainToken = async(email)=>{
         const User = await pool.query(`
             select status from tai_khoan
             where email = N'${email}'
-            and status = true
         `)
         
         // console.log( email )
@@ -245,7 +244,6 @@ const CheckToken = async (email,token)=>{
         const User = await pool.query(`
             select * from tai_khoan
             where email = N'${email}'
-            and status = true
         `)
 
         // Kiểm tra người dùng đã bị block hay chưa?
