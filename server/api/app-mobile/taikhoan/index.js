@@ -30,7 +30,7 @@ module.exports = function (app) {
             let check = await CheckToken(email, authorization)
 
             // let check = true
-            
+
             console.log( check )
   
             if (check) {
@@ -120,6 +120,8 @@ module.exports = function (app) {
         }
     })
 
+
+    
 
     app.put(`/App/GioHang`, async (req, res) => {
         try {
