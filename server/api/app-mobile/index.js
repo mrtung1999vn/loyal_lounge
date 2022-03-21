@@ -38,7 +38,7 @@ module.exports = function (app) {
     app.post('/SignAgainToken', async (req, res) => {
         try {
             const { email, token, subject, text } = req.body
-            console.log( { email, token, subject, text } )
+            // console.log( { email, token, subject, text } )
 
             let checkAgainToken = await SignAgainToken(email)
             if (

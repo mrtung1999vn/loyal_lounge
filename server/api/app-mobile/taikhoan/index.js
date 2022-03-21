@@ -25,9 +25,14 @@ module.exports = function (app) {
 
             const { authorization } = req.headers
             const { id_kh, email, tien_nap, noi_dung } = req.body
+            console.log( {id_kh, email, tien_nap, noi_dung} )
 
             let check = await CheckToken(email, authorization)
 
+            // let check = true
+            
+            console.log( check )
+  
             if (check) {
                 if (
                     FunctionSqlInjectionText(tien_nap) ||
@@ -43,6 +48,7 @@ module.exports = function (app) {
                 } else {
 
                     // tien_nap : demo   +1000
+                    // tien_rut : demo   -1000
                     await AddBlockChains(id_kh, noi_dung, 
                         tien_nap, date.getDate().toString(), 
                         (date.getMonth() + 1).toString(), date.getFullYear().toString(), 
@@ -74,6 +80,8 @@ module.exports = function (app) {
             })
         }
     })
+
+    
 
 
     app.post(`/App/GioHang`, async (req, res) => {

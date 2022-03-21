@@ -223,7 +223,8 @@ const SignAgainToken = async(email)=>{
             }else{ 
                 // Khởi tạo token thành công, không có dấu hiệu spam api
                 await pool.query(`
-                    update "token" set request_again = N'${parseInt( Number ) + 1 }'
+                    update "token" set request_again = N'${parseInt( Number ) + 1 }',
+                    request_time = N'0'
                     where email = '${email}'
                 `)
                 return true
@@ -253,7 +254,7 @@ const CheckToken = async (email,token)=>{
             if( token.indexOf('Token') >= 0){
                 const CheckData = await pool.query(`
                     select * from "token"
-                    where created_at + interval '5 second' >= now() and 
+                    where created_at + interval '10 second' >= now() and 
                     "token" = N'${token.split(' ')[1]}'
                     and email = N'${email}'
                 `)
@@ -267,47 +268,58 @@ const CheckToken = async (email,token)=>{
                     // Gọi Token
                     const checkRequestTime = await pool.query(`
                         select * from "token"
-                        where created_at + interval '5 second' >= now()
+                        where created_at + interval '10 second' >= now()
                         and email = '${email}'
                         and "token" = '${token.split(' ')[1]}'
                     `)
                     // Request_Time
 
                     // console.log( checkRequestTime.rows )
-                    
-                    let Number = checkRequestTime.rows[0].request_time === null ? 0 : 
-                    parseInt( checkRequestTime.rows[0].request_time )
-                    
-                    // Number request time === 4 block user
-                    // console.log( checkRequestTime.rows )
-                    if( Number === parseInt( process.env.count_block_token ) ){
-                        await pool.query(`
-                            update tai_khoan set status = false 
-                            where email = N'${email}'
-                        `)
-
-                        // Nội dung block_user do người dùng sử dụng token trái phép quá >= 4 lần, ghi ngờ là sử dụng bot
-
-                        await pool.query(`
-                            insert into block_user (noi_dung, email, created_at, updated_at, type_block)
-                            values( N'Accessing the api from another source and using the token illegally', N'${email}', now(), now(), N'1001. Token')
-                        `)
-
-                        return false
-                    }else{
-                        // Update request time count + 1
+                    try{
+                        let Number = checkRequestTime.rows[0]?.request_time === null ? 0 : 
+                        parseInt( checkRequestTime.rows[0]?.request_time )
+                        
+                        // Number request time === 4 block user
+                        console.log("Number iss", Number )
+                        if( Number === parseInt( process.env.count_block_token ) ){
+                            await pool.query(`
+                                update tai_khoan set status = false 
+                                where email = N'${email}'
+                            `)
+    
+                            // Nội dung block_user do người dùng sử dụng token trái phép quá >= 4 lần, ghi ngờ là sử dụng bot
+    
+                            await pool.query(`
+                                insert into block_user (noi_dung, email, created_at, updated_at, type_block)
+                                values( N'Accessing the api from another source and using the token illegally', N'${email}', now(), now(), N'1001. Token')
+                            `)
+    
+                            return false
+                        }else{
+                            console.log( parseInt( Number ) + 1 )
+                            // Update request time count + 1
+                            await pool.query(`
+                                update "token" set request_again = N'0'
+                                where email = '${email}'
+                            `)
+                            await pool.query(`
+    
+                                update "token" set request_time = N'${parseInt( Number ) + 1 }',
+                                request_again = N'0'
+                                where created_at + interval '10 second' >= now()
+                                and email = '${email}'
+                                
+                            `)
+                            return true
+                        }
+                    }catch(error){
+                        // Thay đổi token và restart lại request again token
                         await pool.query(`
                             update "token" set request_again = N'0'
                             where email = '${email}'
-                        `)
-                        await pool.query(`
-                            update "token" set request_time = N'${parseInt( Number ) + 1 }',
-                            request_again = N'0'
-                            where created_at + interval '5 second' >= now()
-                            and email = '${email}'
                             and "token" = '${token.split(' ')[1]}'
                         `)
-                        return true
+                        return false
                     }
                 }else{ // Hết hạn token
                     // Thay đổi token và restart lại request again token
