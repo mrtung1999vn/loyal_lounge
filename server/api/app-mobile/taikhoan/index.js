@@ -14,6 +14,7 @@ const { timeNowDB } = require('../../../assets/TimeLibary')
 
 const moment = require('moment');
 const { AddBlockChains } = require('../../../libs/block_chains');
+// const { response } = require('express');
 
 const date = new Date()
 
@@ -47,9 +48,9 @@ module.exports = function (app) {
                     })
                 } else {
 
-                    // tien_nap : demo   +1000
+                    // tien_nap : demo   +1000 // Parrams
 
-                    // tien_rut : demo   -1000
+                    // tien_nap : demo   -1000 // -200
 
                     await AddBlockChains(id_kh, noi_dung, 
                         tien_nap, date.getDate().toString(), 
@@ -199,7 +200,6 @@ module.exports = function (app) {
 
                     // console.log(CoinQuery.rows)
 
-
                     if (CoinQuery.rows[0]?.coin === null) {
                         await DefautBlockChains(ExcuteQuery.rows[0].id_kh, '', '', '', '', '', '')
                         res.json({ status: 1, data: [{ coin: 0 }], dataUser: ExcuteQuery.rows })
@@ -211,9 +211,50 @@ module.exports = function (app) {
                 res.json({ status: 0, data: [] })
             }
         } catch (error) {
-
+            res.json({ status: 0, data: [] })
             console.log(error)
             
+        }
+    })
+
+    app.post(`/App/DoiMatKhau` , async(req,res)=>{
+        try {
+            const { authorization } = req.headers
+            const { email, password,password_confirm } = req.body
+
+
+            let check = await CheckToken(email, authorization)
+            // let check = true
+
+            if (check) {
+                if (
+                    !FunctionSqlInjectionText(email) ||
+                    !FunctionSqlInjectionText(password) ||
+                    !FunctionSqlInjectionText(password_confirm) 
+                ) {
+
+
+                    await pool.query(`
+                        update tai_khoan set mat_khau_hash = N'${EncodeString(email, password)}'
+                        where email = N'${email}'
+                    `)
+
+                    res.json({
+                        status:1,
+                        data:[],
+                        msg_en:'success',
+                        msg_vn:'thanh cong'
+                    })
+                    // console.log(CoinQuery.rows)
+
+                    
+                }
+            } else {
+                res.json({ status: 0, data: [] })
+            }
+
+        } catch (error) {
+            res.json({ status: 0, data: [] })
         }
     })
 
