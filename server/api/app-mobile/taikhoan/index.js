@@ -130,6 +130,7 @@ module.exports = function (app) {
     app.put(`/App/GioHang`, async (req, res) => {
         try {
             const { authorization } = req.headers
+            // gio_hang string 
             const { id_kh, email, gio_hang } = req.body
 
             let check = await CheckToken(email, authorization)
@@ -146,20 +147,38 @@ module.exports = function (app) {
                 })
             } else {
 
-                const GioHang = await pool.query(`
+                // status 2 không cập nhập hàng được do dữ liệu gio_hang lớn hơn số tiền nạp
 
-                    update from tai_khoan set gio_hang = N'${gio_hang}'
+                try{
+                    // [{"id_sp":"2","ten_sp":"Ace of Spades Gold","gia_sp":500,"hinh_anh":"","so_luong_sp":1}]
 
-                    where email = N'${email}'
 
-                `)
+                    await pool.query(`
 
-                res.json({
-                    status: 1,
-                    gio_hang: GioHang.rows[0].gio_hang,
-                    msg_vn: 'them thanh cong',
-                    msg_en: 'success'
-                })
+                        update from tai_khoan set gio_hang = N'${gio_hang}'
+
+                        where email = N'${email}'
+
+                    `)
+
+                    const SelectGioHang = await pool.query(`
+                        select * from tai_khoan
+                        where email = N'${email}'
+                        `)
+                    res.json({
+                        status: 1,
+                        gio_hang: gio_hang,
+                        msg_vn: 'them thanh cong',
+                        msg_en: 'success'
+                    })
+                    
+                }catch(error){
+                    res.json({
+                        status:0,
+                        msg_vn: 'that bai',
+                        msg_en: 'fail'
+                    })
+                }
             }
 
         } catch (error) {
@@ -225,7 +244,7 @@ module.exports = function (app) {
 
             let check = await CheckToken(email, authorization)
             // let check = true
-
+            console.log( { email, password,password_confirm } )
             if (check) {
                 if (
                     !FunctionSqlInjectionText(email) ||

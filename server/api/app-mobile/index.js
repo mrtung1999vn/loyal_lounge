@@ -82,7 +82,7 @@ module.exports = function (app) {
                     msg: "Ten dang nhap hoac password chua ky tu dac biet"
                 })
             }
-
+            
             const ExcuteQuery = await pool.query(`
                 select * from tai_khoan
                 where email = N'${email}'
