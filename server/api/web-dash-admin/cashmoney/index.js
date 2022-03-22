@@ -125,8 +125,8 @@ module.exports = function (app) {
     app.put(`/WebDash/DanhSachCashMoney`, async (req, res) => {
         try {
             const { IDCashMoney, Description, TypeStatus, PriceVND, userName } = req.body
-
-            console.log({ IDCashMoney, Description, TypeStatus, PriceVND, userName })
+            // console.log("Babababab")
+            // console.log({ IDCashMoney, Description, TypeStatus, PriceVND, userName })
             if (
                 !checkRequest(req.headers.origin) ||
                 FunctionSqlInjectionText(Description) ||
@@ -142,14 +142,23 @@ module.exports = function (app) {
                     msg_en: 'User version error!'
                 })
             } else {
+
+                // console.log( TypeStatus )
                 const ExcuteQuery = await pool.query(`
-                update cashmoney set ghi_chu = N'${Description}',
-                trang_thai = N'${TypeStatus}',
-                ten_nguoi_dung = N'${userName}'
-                where id_cash = ${IDCashMoney}
-                
+                    update cashmoney set ghi_chu = N'${Description}',
+                    trang_thai = N'${TypeStatus}',
+                    ten_nguoi_dung = N'${userName}'
+                    where id_cash = ${IDCashMoney}
                 `)
 
+                if( TypeStatus === 'Success' ){
+                    await pool.query(`
+                    update coin_bc_loyal set status = true 
+                    where id_coin_bc = (
+                        select id_coin from cashmoney where id_cash = ${IDCashMoney}
+                    )
+                    `)
+                }
                 res.json({
                     status: 1,
                     data: [],
@@ -158,6 +167,7 @@ module.exports = function (app) {
                 })
             }
         } catch (error) {
+            console.log( error )
             SaveError('web-dash-admin', '/WebDash/DanhSachCashMoney', error, 'PUT', JSON.stringify(req.headers), req.socket.remoteAddress)
             res.json({
                 status: 0,
@@ -171,6 +181,8 @@ module.exports = function (app) {
     app.delete(`/WebDash/DanhSachCashMoney`, async (req, res) => {
         try {
             const { IDCashMoney } = req.body
+
+            console.log(  IDCashMoney ) 
             if (
                 !checkRequest(req.headers.origin) ||
                 FunctionSqlInjection(IDCashMoney)) {

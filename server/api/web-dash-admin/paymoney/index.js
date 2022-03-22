@@ -144,12 +144,20 @@ module.exports = function (app) {
                 })
             } else {
                 const ExcuteQuery = await pool.query(`
-                update cashmoney set ghi_chu = N'${Description}',
-                trang_thai = N'${TypeStatus}',
-                ten_nguoi_dung = N'${userName}'
-                where id_cash = ${IDPayMoney}
-                
+                    update cashmoney set ghi_chu = N'${Description}',
+                    trang_thai = N'${TypeStatus}',
+                    ten_nguoi_dung = N'${userName}'
+                    where id_cash = ${IDPayMoney}
                 `)
+
+                if( TypeStatus === 'Success' ){
+                    await pool.query(`
+                    update coin_bc_loyal set status = true 
+                    where id_coin_bc = (
+                        select id_coin from cashmoney where id_cash = ${IDCashMoney}
+                    )
+                    `)
+                }
 
                 res.json({
                     status: 1,
