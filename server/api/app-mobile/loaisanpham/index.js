@@ -172,12 +172,12 @@ module.exports = function (app) {
         }
     })
 
-    app.post(`/App/`, async(req,res)=>{
-        try {
+    // app.post(`/App/`, async(req,res)=>{
+    //     try {
             
-        } catch (error) {
+    //     } catch (error) {
             
-        }
-    })
+    //     }
+    // })
 
 }

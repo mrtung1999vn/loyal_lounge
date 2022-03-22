@@ -48,7 +48,9 @@ module.exports = function (app) {
                 } else {
 
                     // tien_nap : demo   +1000
+
                     // tien_rut : demo   -1000
+
                     await AddBlockChains(id_kh, noi_dung, 
                         tien_nap, date.getDate().toString(), 
                         (date.getMonth() + 1).toString(), date.getFullYear().toString(), 
@@ -59,6 +61,7 @@ module.exports = function (app) {
                         msg_vn: 'them thanh cong',
                         msg_en: 'success'
                     })
+
                 }
 
             } else {
@@ -147,6 +150,7 @@ module.exports = function (app) {
                     update from tai_khoan set gio_hang = N'${gio_hang}'
 
                     where email = N'${email}'
+
                 `)
 
                 res.json({
@@ -168,8 +172,6 @@ module.exports = function (app) {
             const { authorization } = req.headers
             const { email, id_loai_sp } = req.body
 
-            console.log({ email, id_loai_sp })
-            console.log({ authorization })
 
             let check = await CheckToken(email, authorization)
             // let check = true
@@ -185,14 +187,18 @@ module.exports = function (app) {
                     `)
 
                     const CoinQuery = await pool.query(`
+                    
                         select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
                         where id_kh = (
                         select id_kh from tai_khoan where email = N'${email}'
                         )
                         and status = true 
                         or coin_tranfer like N'%-%'
+
                     `)
-                    console.log(CoinQuery.rows)
+
+                    // console.log(CoinQuery.rows)
+
 
                     if (CoinQuery.rows[0]?.coin === null) {
                         await DefautBlockChains(ExcuteQuery.rows[0].id_kh, '', '', '', '', '', '')

@@ -294,18 +294,22 @@ const CheckToken = async (email,token)=>{
     
                             return false
                         }else{
-                            console.log( parseInt( Number ) + 1 )
-                            // Update request time count + 1
+
                             await pool.query(`
+                                
                                 update "token" set request_again = N'0'
-                                where email = '${email}'
+                                
+                                where email = N'${email}'
+
                             `)
+                            
+
                             await pool.query(`
     
                                 update "token" set request_time = N'${parseInt( Number ) + 1 }',
                                 request_again = N'0'
                                 where created_at + interval '10 second' >= now()
-                                and email = '${email}'
+                                and email = N'${email}'
                                 
                             `)
                             return true
@@ -314,7 +318,7 @@ const CheckToken = async (email,token)=>{
                         // Thay đổi token và restart lại request again token
                         await pool.query(`
                             update "token" set request_again = N'0'
-                            where email = '${email}'
+                            where email = N'${email}'
                             and "token" = '${token.split(' ')[1]}'
                         `)
                         return false
