@@ -1,9 +1,9 @@
 const { lib } = require('crypto-js')
 const fetch = require('node-fetch')
 const { EncodeJson, DecodeString_AES, DecodeJson, DecodeJsonRequest, EncodeString, EncodeString_AES, DecodeString } = require('../../../assets/encode_decode')
-const { SendMailGoogle, FunctionSqlInjection, SaveError, SignToken, CheckToken,FunctionSqlInjectionText } = require('../../../libs')
+const { SendMailGoogle, FunctionSqlInjection, SaveError, SignToken, CheckToken, FunctionSqlInjectionText } = require('../../../libs')
 
-const { AddBlockChains,CheckBlockChains } = require('../../../libs/block_chains')
+const { AddBlockChains, CheckBlockChains } = require('../../../libs/block_chains')
 var jwt = require('jsonwebtoken');
 
 var token = "Token k0iI4jjVSEtdddZkIG4naDOW4kcZLbz0"
@@ -16,119 +16,210 @@ const { timeNowDB } = require('../../../assets/TimeLibary')
 
 const moment = require('moment')
 
+let date = new Date()
 
 
-
-module.exports = function(app) {
-    app.get(`/SuKienChiTiet/:id_ev`,async(req,res)=>{
+module.exports = function (app) {
+    app.get(`/SuKienChiTiet/:id_ev`, async (req, res) => {
         try {
             const { id_ev } = req.params
-            
-            console.log( id_ev )
 
-            if( !FunctionSqlInjectionText( id_ev ) ){
+            console.log(id_ev)
+
+            // console.log(`Su kien chi tiet`)
+
+            if (!FunctionSqlInjectionText(id_ev)) {
 
                 const newData = await pool.query(`
                     select * from su_kien
                     where id_su_kien = ${id_ev}
                 `)
 
+                // Xử lý còn bàn
+                const BanDat = await pool.query(`
+                    select * from booking_su_kien
+                    where id_su_kien = ${id_ev}
+                `)
+
                 const Ban = await pool.query(`
                     select * from ban
                 `)
+              
+                const SoLuongBanConLai = []
+                for(let i=0;i<Ban.rowCount;i++){
+                    if( BanDat.rowCount > 0 ){
+                        console.log( BanDat.rows.findIndex( value => value.ten_ban === Ban.rows[i].ten_ban.toString( ) )  )
+                        if( BanDat.rows.findIndex( value => value.ten_ban === Ban.rows[i].ten_ban.toString() &&  value.ten_ban !== 'Entrance ticket' ) >= 0 ){
+                            // console.log( `dat vip 1` )
+                        }else{
+                            SoLuongBanConLai.push({
+                                id_ban: Ban.rows[i].id_ban,
+                                ten_ban: Ban.rows[i].ten_ban,
+                                created_at: Ban.rows[i].created_at,
+                                updated_at: Ban.rows[i].updated_at,
+                            })
+                        }
+                    }
+                }
+                
+
+                // Xử lý check_open
+
+                const check_open = await pool.query(`
+                    select       
+                    ( select so_luong_tham_gia from su_kien where id_su_kien = 2)
+                        >
+                    ( 
+                        select sum( so_luong_dat )"so_luong_dat" from booking_su_kien
+                    where id_su_kien = 2
+                    )"check_open"
+                `)
 
                 res.json({
-                    status:1,
+                    status: 1,
                     data: newData.rows,
-                    ban_booking: Ban.rows
+                    ban_booking: SoLuongBanConLai,
+                    check_open: check_open.rows[0]?.check_open
                 })
 
             }
         } catch (error) {
-            console.log( error )
+            console.log(error)
             res.json({
-                status:0,
-                data:[]
+                status: 0,
+                data: []
             })
         }
     })
 
-    app.post(`/DatBooking` , async(req,res)=>{
+    app.post(`/App/DatBooking`, async (req, res) => {
         try {
             // so_luong_dat : số lượng khách đặt sự kiện
             // choose_booking : khách chọn bàn đặt
-            const { email, so_luong_dat, choose_booking,id_su_kien,gia_dat } = req.body
+            const { email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien,id_kh } = req.body
 
             const { authorization } = req.headers
 
             let check = await CheckToken(email, authorization)
+            
+            console.log( check )
 
-            if( check ){
-                if( !FunctionSqlInjectionText(email) ||
-                !FunctionSqlInjectionText(so_luong_dat) ||
-                !FunctionSqlInjectionText(choose_booking) ||
-                !FunctionSqlInjectionText(id_su_kien) 
-                ){
+            if (check) {
+                if (
+                    !FunctionSqlInjectionText(email) ||
+                    !FunctionSqlInjectionText(so_luong_dat) ||
+                    !FunctionSqlInjectionText(choose_booking) ||
+                    !FunctionSqlInjectionText(id_su_kien) ||
+                    !FunctionSqlInjectionText(gia_dat) ||
+                    !FunctionSqlInjectionText(ten_su_kien) ||
+                    !FunctionSqlInjectionText(id_kh) 
+
+                ) {
+                    
+
                     const checkBooking = await pool.query(`
                         select * from booking_su_kien
                         where id_kh = ( select id_kh  from tai_khoan where email = N'${email}')
                         and id_su_kien = ${id_su_kien}
                     `)
-                    if( checkBooking.rowCount > 0 ){
+
+                    if (checkBooking.rowCount > 0) {
                         res.json({
-                            status:1,
-                            msg_vn:'Người dùng đã đặt lịch',
-                            msg_en:'User has successfully booked'
+                            status: 1,
+                            msg_vn: 'Người dùng đã đặt lịch',
+                            msg_en: 'User has successfully booked'
                         })
-                    }else{
-                    
-                    let coin = 0 
-                    console.log( 
-                      parseFloat(  
-                        parseInt(so_luong_dat) *parseFloat(gia_dat)
-                      )  
-                     )
-                    let coin_tranfer = ``
-                        // await AddBlockChains(id_kh, noi_dung, 
-                        //     tien_nap, date.getDate().toString(), 
-                        //     (date.getMonth() + 1).toString(), date.getFullYear().toString(), 
-                        //     `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
-                    //     await pool.query(`
-                    //     insert into booking_su_kien (id_su_kien,ten_su_kien,gia,created_at,updated_at,id_kh,status,so_luong_dat,so_luong_quet,ten_ban)
-                    //     values( ${id_su_kien},
-                    //     (
-                    //         select ten_su_kien from su_kien where id_su_kien = ${id_su_kien}
-                    //     ),(
-                    //         select gia from su_kien where id_su_kien = ${id_su_kien}
-                    //     ),now(),now(),
-                    //     ( select id_kh  from tai_khoan where email = N'${email}')
-                    //     ,false,so_luong_dat ,0,N'${choose_booking}')
-                    // `)
+                    } else {
+
+
+                        const CoinQuery = await pool.query(`
+                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                            where id_kh = (
+                            select id_kh from tai_khoan where email = N'${email}'
+                            )
+                            and status = true 
+                            or coin_tranfer like N'%-%'
+
+                        `)
+
+                        // console.log({ email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien })
+
+                        if( 
+                            parseFloat(
+                                parseInt(so_luong_dat) * parseFloat(gia_dat)
+                            ) >
+                            parseFloat( CoinQuery[0]?.coin )  ){
+                            res.json({
+                                status: 1,
+                                msg_vn: 'Số tiền không đủ vui lòng nạp thêm',
+                                msg_en: 'The amount is not enough, please add more'
+                            })
+                        }else{
+                            console.log(
+                                parseFloat(
+                                    parseInt(so_luong_dat) * parseFloat(gia_dat)
+                                )
+                            )
+    
+                            let coin_tranfer = `-${ parseFloat(
+                                parseInt(so_luong_dat) * parseFloat(gia_dat)
+                            )}`
+    
+                            const checkBlock = await AddBlockChains(id_kh, `Booking ${ten_su_kien}`,
+                                coin_tranfer, date.getDate().toString(),
+                                (date.getMonth() + 1).toString(), date.getFullYear().toString(),
+                                `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+    
+                            if (checkBlock === true) {
+                                await pool.query(`
+                                    insert into booking_su_kien (id_su_kien,ten_su_kien,gia,created_at,updated_at,id_kh,status,so_luong_dat,so_luong_quet,ten_ban,tong_tien)
+                                    values( ${id_su_kien},
+                                    (
+                                        select ten_su_kien from su_kien where id_su_kien = ${id_su_kien}
+                                    ),(
+                                        select gia from su_kien where id_su_kien = ${id_su_kien}
+                                    ),now(),now(),
+                                    ( select id_kh  from tai_khoan where email = N'${email}')
+                                    ,false,${so_luong_dat} ,0,N'${choose_booking}',${parseFloat(
+                                        parseInt(so_luong_dat) * parseFloat(gia_dat)
+                                    )})
+                                `)
+                            }else{
+                                res.json({
+                                    status: 0,
+                                    msg_vn: 'that bai',
+                                    msg_en: 'fail'
+                                })
+                            }
+                        }
                     }
-                }else{
+                } else {
                     res.json({
-                        status:0,
-                        msg_vn:'that bai',
-                        msg_en:'fail'
+                        status: 0,
+                        msg_vn: 'that bai',
+                        msg_en: 'fail'
                     })
                 }
 
-            }else{
+            } else {
                 res.json({
-                    status:0,
-                    msg_vn:'that bai',
-                    msg_en:'fail'
+                    status: 0,
+                    msg_vn: 'that bai',
+                    msg_en: 'fail'
                 })
             }
 
-            
+
         } catch (error) {
-            res.json({
-                status:0,
-                msg_vn:'that bai',
-                msg_en:'fail'
-            })
+            console.log( error )
+            // res.json({
+            //     status: 0,
+            //     msg_vn: 'that bai',
+            //     msg_en: 'fail'
+            // })
         }
     })
+
+    let ban = ['a','b','c']
 
 }

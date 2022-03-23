@@ -67,6 +67,7 @@ const AddBlockChains = async (id_kh, noi_dung, coin_tranfer, ngay, thang, nam, t
         }
         // Tạo block-chains
     } catch (error) {
+        return false
         console.log(error)
     }
 }
@@ -151,7 +152,7 @@ const AddBlockChainsBetting = async (id_match,trang_thai,id_kh, noi_dung, coin_t
         }
         // Tạo block-chains
     } catch (error) {
-        
+        return false
     }
 }
 
