@@ -160,7 +160,7 @@ const SignToken = async (email,token)=>{
         if( CheckToken.rowCount > 0 ){
             const UpdateData = await pool.query(`
             update "token" set "token" = N'${token}',
-            created_at = now(),updated_at= now(),
+            created_at = now(), updated_at = now(),
             request_time = N'0',
             email =N'${email}'
             where id_token = (
@@ -279,7 +279,7 @@ const CheckToken = async (email,token)=>{
                             parseInt( checkRequestTime.rows[0]?.request_time )
                             
                             // Number request time === 4 block user
-                            console.log("Number iss", Number )
+                            // console.log("Number iss", Number )
                             if( Number === parseInt( process.env.count_block_token ) ){
                                 await pool.query(`
                                     update tai_khoan set status = false 

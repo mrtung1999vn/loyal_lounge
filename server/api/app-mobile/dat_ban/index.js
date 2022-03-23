@@ -192,6 +192,7 @@ module.exports = function (app) {
                                     msg_vn: 'Đặt lịch thành công!',
                                     msg_en: 'Booking success!'
                                 })
+
                             }else{
                                 res.json({
                                     status: 0,
@@ -227,6 +228,13 @@ module.exports = function (app) {
             // })
         }
     })
+
+
+    // app.post(`/App/LichSuDat`, async(req,res)=>{
+    //     try{
+
+    //     }catch(error)
+    // } )
 
     let ban = ['a','b','c']
 
