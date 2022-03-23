@@ -3,6 +3,8 @@ import { Button, Modal } from 'react-bootstrap';
 import host from '../../service/host';
 import { storage } from '../../firebase'
 import Select from 'react-select'
+import $ from 'jquery'
+
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -28,8 +30,8 @@ function EditPayMoney({ EditData, onHandleEdit, ListTypePayMoney, handleChangeTy
   const [PriceVND, setPriceVND] = React.useState(EditData.money_vnd)
   const [Type, setType] = React.useState(EditData.kieu_thanh_toan)
   const [Amount, setAmount] = React.useState(0)
-  const [userName,setUserName] = React.useState(EditData.ten_nguoi_dung)
-  const [TypePayMoney,setTypePayMoney] = React.useState('')
+  const [userName, setUserName] = React.useState(EditData.ten_nguoi_dung)
+  const [TypePayMoney, setTypePayMoney] = React.useState('')
 
   // 
   //#region Image
@@ -146,106 +148,139 @@ function EditPayMoney({ EditData, onHandleEdit, ListTypePayMoney, handleChangeTy
 
       }
       setOptions(newData)
+
+      setOptions(newData)
+
+      setIDPayMoney(EditData.id_cash)
+
+      setPrice(EditData.money)
+
+      setTypeStatus(EditData.trang_thai)
+
+      setPriceVND(EditData.money_vnd)
+
+      setType(EditData.kieu_thanh_toan)
+
+      setUserName(EditData.ten_nguoi_dung)
+
+      setUrl(EditData.hinh_anh)
+
+
+
     } catch (error) {
 
     }
-  }, [ListTypePayMoney])
+  }, [
+    ListTypePayMoney,
+    EditData.id_cash, EditData.money,
+    EditData.trang_thai, EditData.money_vnd,
+    EditData.kieu_thanh_toan, EditData.ten_nguoi_dung,
+    EditData.hinh_anh])
 
   return (
     <>
-      <Button variant="warning" onClick={handleShow}>
-        Edit
-      </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit PayMoney id {EditData.id_cash} </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
 
-          <div className='row'>
-          <div className="col-lg-6">
+      <div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-danger" data-toggle="modal" data-target={`#pay_id_edit${EditData.id_cash}`}
+          onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
+        >
+          Edit
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`pay_id_edit${EditData.id_cash}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Edit PayMoney id {EditData.id_cash} </h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className='row'>
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Type PayMoney </label>
-                        <Select options={options}
-                            onChange={(e)=>setTypePayMoney(e)}
-                            styles={{
-                                width: '100%',
-                                height: '100px'
-                            }} />
+                      <label>Type PayMoney </label>
+                      <Select options={options}
+                        onChange={(e) => setTypePayMoney(e)}
+                        styles={{
+                          width: '100%',
+                          height: '100px'
+                        }} />
 
                     </div>
-                </div>
+                  </div>
 
-                <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <label>User Name </label>
                     <div className="common_input mb_20">
-                        <input type="text" placeholder="User Name"
-                            value={userName}
-                            onChange={e => setUserName(e.target.value)}
-                        />
+                      <input type="text" placeholder="User Name"
+                        value={userName}
+                        onChange={e => setUserName(e.target.value)}
+                      />
                     </div>
-                </div>
+                  </div>
 
-                <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <label>Money ({formatter.format(Price)}) x 21.000đ = {
-                    parseInt(parseInt(Price)*21000).toLocaleString('vi', {style : 'currency', currency : 'VND'}) } </label>
+                      parseInt(parseInt(Price) * 21000).toLocaleString('vi', { style: 'currency', currency: 'VND' })} </label>
                     <div className="common_input mb_20">
-                        <input type="text" placeholder="Money"
-                            value={Price}
-                            onChange={e => setPrice(e.target.value)}
-                        />
+                      <input type="text" placeholder="Money"
+                        value={Price}
+                        onChange={e => setPrice(e.target.value)}
+                      />
                     </div>
-                </div>
-                
-                <div className="col-lg-6">
+                  </div>
+
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Description</label>
-                        <input type="text" placeholder="Description"
-                            style={{marginTop:'22px'}}
-                            value={Description}
-                            onChange={e => setDescription(e.target.value)}
-                        />
+                      <label>Description</label>
+                      <input type="text" placeholder="Description"
+                        style={{ marginTop: '22px' }}
+                        value={Description}
+                        onChange={e => setDescription(e.target.value)}
+                      />
                     </div>
+                  </div>
+
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Status </label>
+                      <select
+                        className='form-control'
+                        style={{ marginTop: '22px' }}
+                        // onSelect={TypeStatus}
+                        onChange={e => setTypeStatus(e.target.value)}
+                      >
+                        {/* <option value={TypeStatus}>{TypeStatus}</option> */}
+                        {/* <option value=''>Choose value</option> */}
+                        <option value='Waiting for progressing'>Waiting for progressing</option>
+                        <option value='Success'>Success</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <div className="create_report_btn mt_30">
+                      <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
+                        onClick={() => onClickSave()}
+                      >Edit PayMoney</a>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="col-lg-6">
-                    <div className="common_input mb_20">
-                        <label>Status </label>
-                        <select 
-                          className='form-control' 
-                            style={{marginTop:'22px'}}
-                            // onSelect={TypeStatus}
-                            onChange={e => setTypeStatus(e.target.value)}
-                        >
-                          {/* <option value={TypeStatus}>{TypeStatus}</option> */}
-                          {/* <option value=''>Choose value</option> */}
-                          <option value='Waiting for progressing'>Waiting for progressing</option>
-                          <option value='Success'>Success</option>
-                        </select>
-                    </div>
-                </div>
-
-            <div className="col-12">
-              <div className="create_report_btn mt_30">
-                <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
-                  onClick={() => onClickSave()}
-                >Edit PayMoney</a>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                {/* <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => onClickSave()}>Yes</button> */}
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          {/* <Button variant="primary" onClick={() => onClickSave()}>
-            Save Changes
-          </Button> */}
-        </Modal.Footer>
-      </Modal>
     </>
   )
 }

@@ -5,7 +5,7 @@ import { storage } from '../../firebase'
 import Select from 'react-select'
 
 function EditTable({ EditData, onHandleEdit }) {
-  const [IDTable, setIDTable] = React.useState(EditData.id_kh)
+  const [IDTable, setIDTable] = React.useState(EditData.id_ban)
   const [Email, setEmail] = React.useState(EditData.email)
   const [Password, setPassword] = React.useState('')
   const [RePassword, setRePassword] = React.useState('')

@@ -1,7 +1,7 @@
 import React ,{useState} from 'react'
 import { Button,Modal } from 'react-bootstrap';
 import host from '../../service/host';
-
+import $ from 'jquery'
 
 function DeleteUsers({EditData,onHandleDelete}) {
 
@@ -41,32 +41,49 @@ function DeleteUsers({EditData,onHandleDelete}) {
 
   React.useEffect(async ()=>{
     try{
-      console.log( EditData )
+
+      setIdUsers( EditData.id_tk_admin )
     }catch(error){
 
     }
-  },[])
+  },[
+    EditData.id_tk_admin
+  ])
 
   return (
     <>
-      <Button variant="danger" onClick={handleShow}>
-        Delete
-      </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete user id { EditData.id_tk_admin } </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Do you want to delete user { AccountName } (ID: { IdUsers }) ?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            No
-          </Button>
-          <Button variant="primary" onClick={()=>onClickSave()}>
-            Yes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+<div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-danger" data-toggle="modal" data-target={`#user_delete${EditData.id_tk_admin}`}
+          onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
+        >
+          Delete
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`user_delete${EditData.id_tk_admin}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Delete user id { EditData.id_tk_admin }</h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+
+              Do you want to delete user { AccountName } (ID: { IdUsers }) ?
+
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={()=>onClickSave()}>Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </>
   )
 }

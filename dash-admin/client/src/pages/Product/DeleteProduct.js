@@ -3,11 +3,11 @@ import { Button, Modal } from 'react-bootstrap';
 import host from '../../service/host';
 import { storage } from '../../firebase'
 import Select from 'react-select'
-
+import $ from 'jquery'
 
 function DeleteProduct({ EditData, onHandleDelete }) {
 
-  const [IDProduct, setIDProduct] = React.useState(EditData.id_kh)
+  const [IDProduct, setIDProduct] = React.useState(EditData.id_sp)
   const [Email, setEmail] = React.useState(EditData.email)
   const [Password, setPassword] = React.useState('')
   const [RePassword, setRePassword] = React.useState('')
@@ -111,31 +111,46 @@ function DeleteProduct({ EditData, onHandleDelete }) {
   React.useEffect(async () => {
     try {
       // console.log(EditData.status)
+
+      setIDProduct( EditData.id_sp )
+      setEmail( EditData.email )
+
     } catch (error) {
 
     }
-  }, [])
+  }, [EditData.id_sp])
 
   return (
     <>
-      <Button variant="danger" onClick={handleShow}>
-        Delete
-      </Button>
+          <div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-danger" data-toggle="modal" data-target={`#id_sp_delete${EditData.id_sp}`}
+        onClick={()=> setTimeout(()=>$('.modal-backdrop').remove(),500) }
+        >
+          Delete
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`id_sp_delete${EditData.id_sp}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                  Do you want to delete Product (ID: {IDProduct}) ?
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={()=>onClickSave()}>Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete Product id {EditData.id_kh} </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Do you want to delete Product {Email} (ID: {IDProduct}) ?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            No
-          </Button>
-          <Button variant="primary" onClick={() => onClickSave()}>
-            Yes
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   )
 }

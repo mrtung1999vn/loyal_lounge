@@ -3,6 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import host from '../../service/host';
 import { storage } from '../../firebase'
 import Select from 'react-select'
+import $ from 'jquery'
 
 function EditEvent({ EditData, onHandleEdit }) {
 
@@ -56,7 +57,7 @@ function EditEvent({ EditData, onHandleEdit }) {
             charactersLength));
         }
         return `${result}_${date.getSeconds()}_${date.getDate()}_${date.getMonth()}`;
-      
+
       }
       var randomString = makeid(5)
       var url_image = `images/${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}/${randomString}/${image.name}`
@@ -108,15 +109,15 @@ function EditEvent({ EditData, onHandleEdit }) {
         var so_dt = PhoneNumber
         var status = Status
         var id_su_kien = IDEvent
-        var image = url === '' ? 
-        `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460` 
-        : url
+        var image = url === '' ?
+          `https://firebasestorage.googleapis.com/v0/b/loyal-lounge.appspot.com/o/User_font_awesome.svg.png?alt=media&token=2d674b84-1646-4d51-a862-9c780e0a3460`
+          : url
         var dia_chi = Address
 
         const res = await fetch(host.WebDashDanhSachEvent, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ NameEvent, Type, Price, Actors, Description, DateValue, Time, image, url, id_su_kien,status })
+          body: JSON.stringify({ NameEvent, Type, Price, Actors, Description, DateValue, Time, image, url, id_su_kien, status })
         })
         const content = await res.json()
         if (content.status === 1) {
@@ -133,107 +134,137 @@ function EditEvent({ EditData, onHandleEdit }) {
 
   React.useEffect(async () => {
     try {
-      // console.log(EditData.status)
+
+      setIDEvent(EditData.id_su_kien)
+
+      setNameEvent(EditData.ten_su_kien)
+
+      setPrice(EditData.gia)
+
+      setType(EditData.the_loai)
+
+      setActors(EditData.nguoi_tham_gia)
+
+      setDescription(EditData.noi_dung)
+
+      setDate(EditData.thoi_gian_dien.split(' ')[0])
+
+      setTime(EditData.thoi_gian_dien.split(' ')[1])
+
     } catch (error) {
 
     }
-  }, [])
+  }, [
+    EditData.id_su_kien, EditData.ten_su_kien,
+    EditData.gia, EditData.the_loai,
+    EditData.nguoi_tham_gia, EditData.noi_dung,
+    EditData.thoi_gian_dien.split(' ')[0], EditData.thoi_gian_dien.split(' ')[1],
+  ])
 
   return (
     <>
-      <Button variant="warning" onClick={handleShow}>
-        Edit
-      </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Event id {EditData.id_tk_admin} </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-
-            <div className="row">
-                <div className="col-lg-6">
+      <div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-warning" data-toggle="modal" data-target={`#event_id_edit${EditData.id_su_kien}`}
+          onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
+        >
+          Edit
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`event_id_edit${EditData.id_su_kien}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Edit event id {EditData.id_su_kien} </h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-lg-6">
                     <label>Name Event</label>
                     <div className="common_input mb_20">
-                        <input type="text" placeholder="Name Event"
-                            value={NameEvent}
-                            onChange={e => setNameEvent(e.target.value)}
-                        />
+                      <input type="text" placeholder="Name Event"
+                        value={NameEvent}
+                        onChange={e => setNameEvent(e.target.value)}
+                      />
                     </div>
-                </div>
-                <div className="col-lg-6">
+                  </div>
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Price</label>
-                        <input type="text" placeholder=""
-                            value={Price}
-                            onChange={e => setPrice(e.target.value)}
-                        />
+                      <label>Price</label>
+                      <input type="text" placeholder=""
+                        value={Price}
+                        onChange={e => setPrice(e.target.value)}
+                      />
                     </div>
                     {`${Price} $`}
-                </div>
-                <div className="col-lg-6">
+                  </div>
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Date</label>
-                        <input type="date" placeholder="Date"
-                            value={DateValue}
-                            onChange={e => setDate(e.target.value)}
-                        />
+                      <label>Date</label>
+                      <input type="date" placeholder="Date"
+                        value={DateValue}
+                        onChange={e => setDate(e.target.value)}
+                      />
                     </div>
-                </div>
-                <div className="col-lg-6">
+                  </div>
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Time</label>
-                        <input type="time" placeholder="Time"
-                            value={Time}
-                            onChange={e => setTime(e.target.value)}
-                        />
+                      <label>Time</label>
+                      <input type="time" placeholder="Time"
+                        value={Time}
+                        onChange={e => setTime(e.target.value)}
+                      />
                     </div>
-                </div>
+                  </div>
 
-                <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Actors</label>
-                        <input type="text" placeholder="Actors"
-                            value={Actors}
-                            onChange={e => setActors(e.target.value)}
-                        />
+                      <label>Actors</label>
+                      <input type="text" placeholder="Actors"
+                        value={Actors}
+                        onChange={e => setActors(e.target.value)}
+                      />
                     </div>
-                </div>
+                  </div>
 
-                <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Description</label>
-                        <input type="text" placeholder="Description"
-                            value={Description}
-                            onChange={e => setDescription(e.target.value)}
-                        />
+                      <label>Description</label>
+                      <input type="text" placeholder="Description"
+                        value={Description}
+                        onChange={e => setDescription(e.target.value)}
+                      />
                     </div>
-                </div>
+                  </div>
 
-                <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Type</label>
-                        <input type="text" placeholder="Type"
-                            value={Type}
-                            onChange={e => setType(e.target.value)}
-                        />
+                      <label>Type</label>
+                      <input type="text" placeholder="Type"
+                        value={Type}
+                        onChange={e => setType(e.target.value)}
+                      />
                     </div>
-                </div>
+                  </div>
 
-                <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <label>Status { Status.toString() }</label>
-                        <Select options={options}
-                            onChange={e => setStatus(e.value)}
-                            styles={{
-                                width: '100%',
-                                height: '100px'
-                            }} />
+                      <label>Status {Status.toString()}</label>
+                      <Select options={options}
+                        onChange={e => setStatus(e.value)}
+                        styles={{
+                          width: '100%',
+                          height: '100px'
+                        }} />
 
                     </div>
-                </div>
+                  </div>
 
-                {/* <div className="col-lg-6">
+                  {/* <div className="col-lg-6">
                     <div className="common_input mb_20">
                         <label>Status :{Status}</label>
                         <Select options={options}
@@ -246,49 +277,48 @@ function EditEvent({ EditData, onHandleEdit }) {
                     </div>
                 </div> */}
 
-                <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <div className="common_input mb_20">
-                        <div className='row'>
-                            <div className='col-lg-6'>
+                      <div className='row'>
+                        <div className='col-lg-6'>
 
-                                <input type="file" onChange={(e) => handleChange(e)}
-                                    style={{ width: '200px',marginTop: '32px' }} 
-                                    
-                                    />
-                            
-                            </div>
+                          <input type="file" onChange={(e) => handleChange(e)}
+                            style={{ width: '200px', marginTop: '32px' }}
+
+                          />
+
                         </div>
-                        {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
-                        <br>
-                        </br>
-                        <img
-                            style={window.innerWidth <= 800 ? { width: '100%', height: '100%' } :
-                                { width: '50%', height: '50%' }
-                            }
-                            src={url  || "http://via.placeholder.com/300"} alt="firebase-image" />
+                      </div>
+                      {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
+                      <br>
+                      </br>
+                      <img
+                        style={window.innerWidth <= 800 ? { width: '100%', height: '100%' } :
+                          { width: '50%', height: '50%' }
+                        }
+                        src={url || "http://via.placeholder.com/300"} alt="firebase-image" />
                     </div>
-                </div>
+                  </div>
 
-                <div className="col-12">
+                  <div className="col-12">
                     <div className="create_report_btn mt_30">
-                        <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
-                            onClick={() => onClickSave()}
-                        >Save Event</a>
+                      <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
+                        onClick={() => onClickSave()}
+                      >Save Event</a>
                     </div>
+                  </div>
                 </div>
+
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                {/* <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => onClickSave()}>Yes</button> */}
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          {/* <Button variant="primary" onClick={() => onClickSave()}>
-            Save Changes
-          </Button> */}
-        </Modal.Footer>
-      </Modal>
     </>
   )
 }

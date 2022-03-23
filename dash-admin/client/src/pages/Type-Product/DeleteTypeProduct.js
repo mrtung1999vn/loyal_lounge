@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import host from '../../service/host';
 import { storage } from '../../firebase'
 import Select from 'react-select'
-
+import $ from 'jquery'
 
 function DeleteTypeProduct({ EditData, onHandleDelete }) {
 
@@ -121,31 +121,47 @@ function DeleteTypeProduct({ EditData, onHandleDelete }) {
   React.useEffect(async () => {
     try {
       // console.log(EditData.status)
+
+      setIDTypeProduct( EditData.id_loai_sp )
     } catch (error) {
 
     }
-  }, [])
+  }, [
+    EditData.id_loai_sp
+  ])
 
   return (
     <>
-      <Button variant="danger" onClick={handleShow}>
-        Delete
-      </Button>
+      <div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-danger" data-toggle="modal" data-target={`#type_product_id_delete${EditData.id_cash}`}
+          onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
+        >
+          Delete
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`type_product_id_delete${EditData.id_cash}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Edit TypeProduct id {EditData.id_loai_sp}  </h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                Do you want to delete TypeProduct {Email} (ID: {IDTypeProduct}) ?
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete TypeProduct id {EditData.id_kh} </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Do you want to delete TypeProduct {Email} (ID: {IDTypeProduct}) ?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            No
-          </Button>
-          <Button variant="primary" onClick={() => onClickSave()}>
-            Yes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => onClickSave()}>Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </>
   )
 }

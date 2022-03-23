@@ -4,6 +4,9 @@ import host from '../../service/host';
 import { storage } from '../../firebase'
 import Select from 'react-select'
 
+
+import $ from 'jquery'
+
 function EditProduct({ EditData, onHandleEdit, ListTypeProduct, handleChangeTypeProduct }) {
   const [IDProduct, setIDProduct] = React.useState(EditData.id_sp)
   const [NameProduct, setNameProduct] = React.useState(EditData.ten_sp)
@@ -91,7 +94,6 @@ function EditProduct({ EditData, onHandleEdit, ListTypeProduct, handleChangeType
         }
       );
     }
-
   };
 
 
@@ -136,116 +138,144 @@ function EditProduct({ EditData, onHandleEdit, ListTypeProduct, handleChangeType
 
       }
       setOptions(newData)
+      
+      setIDProduct( EditData.id_sp )
+      setNameProduct( EditData.ten_sp )
+      setIDTypeProduct( EditData.id_loai_sp )
+      setDescription( EditData.noi_dung )
+      setPrice( EditData.gia_sp )
+      setUrl( EditData.hinh_anh )
+      setAmount( EditData.so_luong )
+
+      // console.log( EditData )
+
     } catch (error) {
 
     }
-  }, [ListTypeProduct])
+  }, [  
+    ListTypeProduct, EditData.id_sp,
+        EditData.ten_sp, EditData.id_loai_sp,
+        EditData.noi_dung, EditData.gia_sp,
+        EditData.hinh_anh, EditData.so_luong,
+        EditData
+  
+  ])
 
   return (
     <>
-      <Button variant="warning" onClick={handleShow}>
-        Edit
-      </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Product id {EditData.id_tk_admin} </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
 
-          <div className='row'>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Type Product ({IDTypeProduct}){EditData.ten_loai_sp}</label>
-                <Select options={options}
-                  // value={IDTypeProduct}
-                  onChange={(e) => setIDTypeProduct(e.value)}
-                  styles={{
-                    width: '100%',
-                    height: '100px'
-                  }} />
-
+      <div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-warning" data-toggle="modal" data-target={`#id_sp_demo${EditData.id_sp}`}
+        onClick={()=> setTimeout(()=>$('.modal-backdrop').remove(),500) }
+        >
+          Edit
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`id_sp_demo${EditData.id_sp}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-            </div>
-
-            <div className="col-lg-6">
-              <label>Name Product </label>
-              <div className="common_input mb_20">
-                <input type="text" placeholder="NameProduct"
-                  value={NameProduct}
-                  onChange={e => setNameProduct(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="col-lg-6">
-              <label>Description</label>
-              <div className="common_input mb_20">
-                <input type="text" placeholder="Description"
-                  value={Description}
-                  onChange={e => setDescription(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Price</label>
-                <input type="text" placeholder="Price"
-                  value={Price}
-                  onChange={e => setPrice(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Amount</label>
-                <input type="text" placeholder="Amount"
-                  value={Amount}
-                  onChange={e => setAmount(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
+              <div className="modal-body">
                 <div className='row'>
-                  <div className='col-lg-6'>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Type Product ({IDTypeProduct}){EditData.ten_loai_sp}</label>
+                      <Select options={options}
+                        // value={IDTypeProduct}
+                        onChange={(e) => setIDTypeProduct(e.value)}
+                        styles={{
+                          width: '100%',
+                          height: '100px'
+                        }} />
 
-                    <input type="file" onChange={(e) => handleChange(e)}
-                      style={{ width: '200px', marginTop: '32px' }} />
-
+                    </div>
                   </div>
+
+                  <div className="col-lg-6">
+                    <label>Name Product </label>
+                    <div className="common_input mb_20">
+                      <input type="text" placeholder="NameProduct"
+                        value={NameProduct}
+                        onChange={e => setNameProduct(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-lg-6">
+                    <label>Description</label>
+                    <div className="common_input mb_20">
+                      <input type="text" placeholder="Description"
+                        value={Description}
+                        onChange={e => setDescription(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Price</label>
+                      <input type="text" placeholder="Price"
+                        value={Price}
+                        onChange={e => setPrice(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Amount</label>
+                      <input type="text" placeholder="Amount"
+                        value={Amount}
+                        onChange={e => setAmount(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <div className='row'>
+                        <div className='col-lg-6'>
+
+                          <input type="file" onChange={(e) => handleChange(e)}
+                            style={{ width: '200px', marginTop: '32px' }} />
+
+                        </div>
+                      </div>
+                      {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
+                      <br>
+                      </br>
+                      <img
+                        style={window.innerWidth <= 800 ? { width: '100%', height: '100%' } :
+                          { width: '50%', height: '50%' }
+                        }
+                        src={url || "http://via.placeholder.com/300"} alt="firebase-image" />
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <div className="create_report_btn mt_30">
+                      <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
+                        onClick={() => onClickSave()}
+                      >Edit Product</a>
+                    </div>
+                  </div>
+
+
                 </div>
-                {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
-                <br>
-                </br>
-                <img
-                  style={window.innerWidth <= 800 ? { width: '100%', height: '100%' } :
-                    { width: '50%', height: '50%' }
-                  }
-                  src={url || "http://via.placeholder.com/300"} alt="firebase-image" />
               </div>
-            </div>
-            <div className="col-12">
-              <div className="create_report_btn mt_30">
-                <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
-                  onClick={() => onClickSave()}
-                >Edit Product</a>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary">Save changes</button>
               </div>
             </div>
           </div>
-
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          {/* <Button variant="primary" onClick={() => onClickSave()}>
-            Save Changes
-          </Button> */}
-        </Modal.Footer>
-      </Modal>
+        </div>
+      </div>
     </>
   )
 }

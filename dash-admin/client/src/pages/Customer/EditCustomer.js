@@ -3,6 +3,8 @@ import { Button, Modal } from 'react-bootstrap';
 import host from '../../service/host';
 import { storage } from '../../firebase'
 import Select from 'react-select'
+import $ from 'jquery'
+
 
 function EditCustomer({ EditData, onHandleEdit }) {
   const [IDCustomer, setIDCustomer] = React.useState(EditData.id_kh)
@@ -120,24 +122,51 @@ function EditCustomer({ EditData, onHandleEdit }) {
   React.useEffect(async () => {
     try {
       // console.log(EditData.status)
+
+      setIDCustomer( EditData.id_kh )
+      setEmail( EditData.email )
+
+      setAddress( EditData.dia_chi )
+
+      setPhoneNumber( EditData.so_dt )
+
+      setStatus( EditData.status.toString() )
+
+      setUrl( EditData.image )
+
     } catch (error) {
 
     }
-  }, [])
+  }, [
+    
+    EditData.id_kh, EditData.email,
+    EditData.dia_chi, EditData.so_dt,
+    EditData.status.toString(), EditData.image
+
+  ])
 
   return (
     <>
-      <Button variant="warning" onClick={handleShow}>
-        Edit
-      </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Customer id {EditData.id_tk_admin} </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-
-          <div className='row'>
+<div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-warning" data-toggle="modal" data-target={`#customer_id_edit${EditData.id_cash}`}
+          onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
+        >
+          Edit
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`customer_id_edit${EditData.id_cash}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">CashMoney id {EditData.id_cash} </h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+              <div className='row'>
             <div className="col-lg-6">
               <label>Email</label>
               <div className="common_input mb_20">
@@ -223,17 +252,18 @@ function EditCustomer({ EditData, onHandleEdit }) {
             </div>
           </div>
 
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                {/* <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={()=>onClickSave()}>Yes</button> */}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          {/* <Button variant="primary" onClick={() => onClickSave()}>
-            Save Changes
-          </Button> */}
-        </Modal.Footer>
-      </Modal>
+
+
     </>
   )
 }

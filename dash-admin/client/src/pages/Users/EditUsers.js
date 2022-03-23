@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Button, Modal } from 'react-bootstrap';
 import host from '../../service/host';
+import $ from 'jquery'
 
-
-function EditUsers({ EditData,onHandleEdit }) {
+function EditUsers({ EditData, onHandleEdit }) {
 
   const [IdUsers, setIdUsers] = React.useState(EditData.id_tk_admin)
   const [AccountName, setAccountName] = React.useState(EditData.ten_tai_khoan)
@@ -31,7 +31,7 @@ function EditUsers({ EditData,onHandleEdit }) {
         const res = await fetch(host.WebDashDanhSachUsers, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body:JSON.stringify({id_tk_admin,ten_tai_khoan,mat_khau})
+          body: JSON.stringify({ id_tk_admin, ten_tai_khoan, mat_khau })
         })
         const content = await res.json()
 
@@ -49,86 +49,111 @@ function EditUsers({ EditData,onHandleEdit }) {
 
   React.useEffect(async () => {
     try {
-      console.log(EditData)
+      // console.log(EditData)
+
+      setIdUsers( EditData.id_tk_admin )
+      setAccountName( EditData.ten_tai_khoan )
+      setDefaultPassword( EditData.mat_khau  )
+
+
+      
     } catch (error) {
 
     }
-  }, [])
+  }, [
+    EditData.id_tk_admin,
+    EditData.ten_tai_khoan,
+    EditData.mat_khau
+  ])
 
   return (
     <>
-      <Button variant="warning" onClick={handleShow}>
-        Edit
-      </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit user id {EditData.id_tk_admin}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
 
-          <div className="row">
-            <div className="col-lg-6">
-              <label>Account name</label>
-              <div className="common_input mb_20">
-                <input type="text" placeholder="Account name"
-                  value={AccountName}
-                  onChange={e => setAccountName(e.target.value)}
-                />
+
+
+      <div>
+        {/* Button trigger modal */}
+        <button type="button" className="btn btn-warning" data-toggle="modal" data-target={`#user_edit${EditData.id_tk_admin}`}
+          onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
+        >
+          Edit
+        </button>
+        {/* Modal */}
+        <div className="modal fade" id={`user_edit${EditData.id_tk_admin}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Edit user id {EditData.id_tk_admin}</h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Password</label>
-                <input type="password" placeholder="Password"
-                  value={Password}
-                  onChange={e => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                {/* <label>Password</label>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-lg-6">
+                    <label>Account name</label>
+                    <div className="common_input mb_20">
+                      <input type="text" placeholder="Account name"
+                        value={AccountName}
+                        onChange={e => setAccountName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Password</label>
+                      <input type="password" placeholder="Password"
+                        value={Password}
+                        onChange={e => setPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      {/* <label>Password</label>
                           <input type="password" placeholder="Password" /> */}
-              </div>
-              {/* <label>Expire Month</label>
+                    </div>
+                    {/* <label>Expire Month</label>
                       <select className="nice_Select2 nice_Select_line wide mb_20" style={{ display: 'none' }}>
                           <option value={1}>Expire Month</option>
                           <option value={1}>jan</option>
                           <option value={1}>Feb</option>
                       </select> */}
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Re-Password</label>
-                <input type="password" placeholder="Password"
-                  value={RePassword}
-                  onChange={e => setRePassword(e.target.value)}
-                />
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Re-Password</label>
+                      <input type="password" placeholder="Password"
+                        value={RePassword}
+                        onChange={e => setRePassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                  </div>
+                  <div className="col-12">
+                    <div className="create_report_btn mt_30">
+                      <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
+                        onClick={() => onClickSave()}
+                      >Save</a>
+                    </div>
+                  </div>
+                </div>
+
+
+
               </div>
-            </div>
-            <div className="col-lg-6">
-            </div>
-            <div className="col-12">
-              <div className="create_report_btn mt_30">
-                <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
-                  onClick={() => onClickSave()}
-                >Save</a>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary">Save changes</button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
 
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          {/* <Button variant="primary" onClick={() => onClickSave()}>
-            Save Changes
-          </Button> */}
-        </Modal.Footer>
-      </Modal>
     </>
   )
 }
