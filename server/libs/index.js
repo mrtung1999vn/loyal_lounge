@@ -252,7 +252,7 @@ const CheckToken = async (email,token)=>{
             if( token.indexOf('Token') >= 0){
                 const CheckData = await pool.query(`
                     select * from "token"
-                    where created_at + interval '10 second' >= now() and 
+                    where created_at + interval '${process.env.time_out_token} second' >= now() and 
                     "token" = N'${token.split(' ')[1]}'
                     and email = N'${email}'
                 `)
@@ -266,7 +266,7 @@ const CheckToken = async (email,token)=>{
                     // Gọi Token
                     const checkRequestTime = await pool.query(`
                         select * from "token"
-                        where created_at + interval '10 second' >= now()
+                        where created_at + interval '${process.env.time_out_token} second' >= now()
                         and email = '${email}'
                         and "token" = '${token.split(' ')[1]}'
                     `)
@@ -308,7 +308,7 @@ const CheckToken = async (email,token)=>{
     
                                 update "token" set request_time = N'${parseInt( Number ) + 1 }',
                                 request_again = N'0'
-                                where created_at + interval '10 second' >= now()
+                                where created_at + interval '${process.env.time_out_token} second' >= now()
                                 and email = N'${email}'
                                 
                             `)

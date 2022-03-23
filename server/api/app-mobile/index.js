@@ -19,6 +19,7 @@ const taikhoan = require('./taikhoan');
 const { DefautBlockChains } = require('../../libs/block_chains');
 const thuVien = require('./thu-vien');
 const sanpham = require('./sanpham');
+const dat_ban = require('./dat_ban');
 
 
 
@@ -218,5 +219,6 @@ module.exports = function (app) {
     taikhoan(app)
     thuVien(app)
 
+    dat_ban( app)
 
 }
