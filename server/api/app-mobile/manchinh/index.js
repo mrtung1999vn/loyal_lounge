@@ -31,12 +31,12 @@ module.exports = function(app) {
                 const ExcuteQueryEventWeek = await pool.query(`
                     select * from su_kien 
                     where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
-                    order by thoi_gian_dien asc 
+                    order by thoi_gian_dien desc 
                 `)
                 const ExcuteQueryEventLimit = await pool.query(`
                     select * from su_kien 
                     where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
-                    order by thoi_gian_dien asc
+                    order by thoi_gian_dien desc
                     limit 3 
                 `)
 

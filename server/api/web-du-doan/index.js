@@ -146,14 +146,14 @@ module.exports = function (app) {
                     where created_at > now() - interval '2 day'
                     and coast_result = '-'
                     and name_01 != '' and name_02 != ''
-                    order by created_at asc
+                    order by created_at desc
                 `)
 
                 const newDataBasketball = await pool.query(`
                     select * from "match"
                     where created_at > now() - interval '2 day'
                     and coast_result = '-'
-                    order by created_at asc
+                    order by created_at desc
                 `)
 
                 res.json({ status: 1, newDataFooball: encode_decode.EncodeJson(newDataFooball.rows) })
@@ -344,7 +344,7 @@ module.exports = function (app) {
                             where created_at > now() - interval '2 day'
                             and coast_result = '-'
                             and name_01 != '' and name_02 != ''
-                            order by created_at asc
+                            order by created_at desc
                         `)
                         res.json({
                             status:2,

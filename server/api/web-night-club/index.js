@@ -82,12 +82,12 @@ module.exports = function (app) {
             const ExcuteQueryEventWeek = await pool.query(`
             select * from su_kien 
             where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
-            order by thoi_gian_dien asc 
+            order by thoi_gian_dien desc 
         `)
             const ExcuteQueryEventLimit = await pool.query(`
             select * from su_kien 
             where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
-            order by thoi_gian_dien asc
+            order by thoi_gian_dien desc
             limit 3 
         `)
 
@@ -289,6 +289,114 @@ module.exports = function (app) {
             })
         }
     })
+
+
+
+    app.post(`/WebNightClub/LichSuDatBan` , async(req,res)=>{
+        try{
+            const { email } = req.body
+
+            const { authorization } = req.headers
+
+            let check = await CheckToken(email, authorization)
+
+            
+            if( check ){
+                if( !FunctionSqlInjectionText(email) ){
+                    const ExcuteQuery = await pool.query(`
+                        select to_date(to_char(created_at, 'YYYY/MM/DD'), 'YYYY/MM/DD')"day_time",* from booking_su_kien
+                        where id_kh = (
+                        select id_kh from tai_khoan where email = N'${email}'
+                        )
+                        order by created_at desc
+                    `)
+                    res.json({
+                        status:1,
+                        data: ExcuteQuery.rows
+                    })
+                }else{
+                    res.json({
+                        status:0,
+                        data:0,
+                        msg_en:'data error',
+                        msg_vn:'sai du lieu'
+                    })
+                }
+            }else{
+                res.json({
+                    status:0,
+                    data:0,
+                    msg_en:'fail',
+                    msg_vn:'het han token'
+                })
+            }
+
+        }catch(error){
+            res.json({
+                status:0,
+                data:0,
+                msg_en:'error',
+                msg_vn:'Lỗi hệ thống'
+            })
+        }
+    })
+
+
+    app.post(`/WebNightClub/LichSuNapRut` , async(req,res)=>{
+        try{
+            const { email } = req.body
+
+            const { authorization } = req.headers
+
+            let check = await CheckToken(email, authorization)
+
+            
+            if( check ){
+                if( !FunctionSqlInjectionText(email) ){
+                    const ExcuteQuery = await pool.query(`
+                        select to_date(to_char(created_at, 'YYYY/MM/DD'), 'YYYY/MM/DD')"day_time",* from cashmoney
+                        where ten_nguoi_dung = N'${email}'
+                        order by created_at desc
+                    `)
+                    res.json({
+                        status:1,
+                        data: ExcuteQuery.rows
+                    })
+                }else{
+                    res.json({
+                        status:0,
+                        data:0,
+                        msg_en:'data error',
+                        msg_vn:'sai du lieu'
+                    })
+                }
+            }else{
+                res.json({
+                    status:0,
+                    data:0,
+                    msg_en:'fail',
+                    msg_vn:'het han token'
+                })
+            }
+
+        }catch(error){
+            res.json({
+                status:0,
+                data:0,
+                msg_en:'error',
+                msg_vn:'Lỗi hệ thống'
+            })
+        }
+    })
+
+
+
+
+
+
+
+
+
 
 }
 

@@ -186,6 +186,23 @@ module.exports = function (app) {
         }
     })
 
+    app.post(`/App/DatHang` , async(req,res)=>{
+        try {
+            const { authorization } = req.headers
+            // gio_hang string 
+            const { id_kh, email, gio_hang } = req.body
+
+            let check = await CheckToken(email, authorization)
+
+            if( check ){
+
+            }else{
+                res.json({ status: 0, data: [] })
+            }
+        } catch (error) {
+            res.json({ status: 0, data: [] })
+        }
+    })
 
     app.post(`/App/CoinEmail`, async (req, res) => {
         try {

@@ -68,11 +68,11 @@ module.exports = function (app) {
 
                 const check_open = await pool.query(`
                     select       
-                    ( select so_luong_tham_gia from su_kien where id_su_kien = 2)
+                    ( select so_luong_tham_gia from su_kien where id_su_kien = ${id_ev})
                         >
                     ( 
                         select sum( so_luong_dat )"so_luong_dat" from booking_su_kien
-                    where id_su_kien = 2
+                    where id_su_kien = ${id_ev}
                     )"check_open"
                 `)
 
@@ -80,7 +80,7 @@ module.exports = function (app) {
                     status: 1,
                     data: newData.rows,
                     ban_booking: SoLuongBanConLai,
-                    check_open: check_open.rows[0]?.check_open
+                    check_open: check_open.rows[0]?.check_open === null || check_open.rows[0]?.check_open === true ? true : false
                 })
 
             }
@@ -235,6 +235,145 @@ module.exports = function (app) {
 
     //     }catch(error)
     // } )
+
+
+    // Lịch sử đặt bàn
+
+    app.post(`/App/LichSuDatBan/:page` , async(req,res)=>{
+        try{
+            const { page } = req.params
+            const { email } = req.body
+
+            const { authorization } = req.headers
+
+            let check = await CheckToken(email, authorization)
+
+            
+            if( check ){
+                if( !FunctionSqlInjectionText(email) ||
+                !FunctionSqlInjectionText(page) 
+                ){
+                    const TotalPage = await pool.query(
+                        ` 
+                        select count(*) from booking_su_kien
+                        where id_kh = (
+                        select id_kh from tai_khoan where email = N'${email}'
+                        )`
+                    )
+
+                    let PageNumber = Math.ceil( TotalPage.rows[0].count/12 )
+
+                    const ExcuteQuery = await pool.query(`
+                        select * from booking_su_kien
+                        where id_kh = (
+                        select id_kh from tai_khoan where email = N'${email}'
+                        )
+                        order by created_at desc
+                        limit ${ page === '1' ? 12 : parseInt( page )*12  } offset 0
+                        
+                    `)
+
+                    res.json({
+                        status:1,
+                        page_number: PageNumber,
+                        data: ExcuteQuery.rows
+                    })
+
+                }else{
+                    res.json({
+                        status:0,
+                        data:0,
+                        msg_en:'data error',
+                        msg_vn:'sai du lieu'
+                    })
+                }
+
+            }else{
+                res.json({
+                    status:0,
+                    data:0,
+                    msg_en:'fail',
+                    msg_vn:'het han token'
+                })
+            }
+
+        }catch(error){
+            res.json({
+                status:0,
+                data:0,
+                msg_en:'error',
+                msg_vn:'Lỗi hệ thống'
+            })
+        }
+    })
+
+
+    app.post(`/App/LichSuNapRut/:page`, async(req,res)=>{
+        try{
+            const { page } = req.params
+            const { email } = req.body
+
+            const { authorization } = req.headers
+
+            let check = await CheckToken(email, authorization)
+
+            
+            if( check ){
+                if( !FunctionSqlInjectionText(email) ||
+                !FunctionSqlInjectionText(page) 
+                ){
+                    const TotalPage = await pool.query(
+                        ` 
+                        select * from cashmoney
+                        where ten_nguoi_dung = N'${email}'
+                        `
+                    )
+
+                    let PageNumber = Math.ceil( TotalPage.rows[0].count/12 )
+
+                    const ExcuteQuery = await pool.query(`
+                        select * from cashmoney
+                        where ten_nguoi_dung = N'${email}'
+                        order by created_at desc
+                        limit ${ page === '1' ? 12 : parseInt( page )*12  } offset 0
+                        
+                    `)
+
+                    res.json({
+                        status:1,
+                        page_number: PageNumber,
+                        data: ExcuteQuery.rows
+                    })
+
+                }else{
+                    res.json({
+                        status:0,
+                        data:0,
+                        msg_en:'data error',
+                        msg_vn:'sai du lieu'
+                    })
+                }
+
+            }else{
+                res.json({
+                    status:0,
+                    data:0,
+                    msg_en:'fail',
+                    msg_vn:'het han token'
+                })
+            }
+
+        }catch(error){
+            res.json({
+                status:0,
+                data:0,
+                msg_en:'error',
+                msg_vn:'Lỗi hệ thống'
+            })
+        }
+    })
+    
+
 
     let ban = ['a','b','c']
 
