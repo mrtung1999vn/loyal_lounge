@@ -22,9 +22,10 @@ let date = new Date()
 module.exports = function (app) {
     app.get(`/SuKienChiTiet/:id_ev`, async (req, res) => {
         try {
+            // /
             const { id_ev } = req.params
 
-            console.log(id_ev)
+            // console.log(id_ev)
 
             // console.log(`Su kien chi tiet`)
 
@@ -96,6 +97,7 @@ module.exports = function (app) {
         try {
             // so_luong_dat : số lượng khách đặt sự kiện
             // choose_booking : khách chọn bàn đặt
+            // 
             const { email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien,id_kh } = req.body
 
             const { authorization } = req.headers
@@ -184,6 +186,12 @@ module.exports = function (app) {
                                         parseInt(so_luong_dat) * parseFloat(gia_dat)
                                     )})
                                 `)
+
+                                res.json({
+                                    status: 1,
+                                    msg_vn: 'Đặt lịch thành công!',
+                                    msg_en: 'Booking success!'
+                                })
                             }else{
                                 res.json({
                                     status: 0,
