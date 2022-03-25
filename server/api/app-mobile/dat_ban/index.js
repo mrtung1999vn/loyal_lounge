@@ -45,24 +45,25 @@ module.exports = function (app) {
                 const Ban = await pool.query(`
                     select * from ban
                 `)
-              
+
+                // console.log( Ban.rows )
+
                 const SoLuongBanConLai = []
-                for(let i=0;i<Ban.rowCount;i++){
-                    if( BanDat.rowCount > 0 ){
-                        console.log( BanDat.rows.findIndex( value => value.ten_ban === Ban.rows[i].ten_ban.toString( ) )  )
-                        if( BanDat.rows.findIndex( value => value.ten_ban === Ban.rows[i].ten_ban.toString() &&  value.ten_ban !== 'Entrance ticket' ) >= 0 ){
-                            // console.log( `dat vip 1` )
-                        }else{
-                            SoLuongBanConLai.push({
-                                id_ban: Ban.rows[i].id_ban,
-                                ten_ban: Ban.rows[i].ten_ban,
-                                created_at: Ban.rows[i].created_at,
-                                updated_at: Ban.rows[i].updated_at,
-                            })
-                        }
+
+
+                for (let i = 0; i < Ban.rowCount; i++) {
+                    if (BanDat.rows.findIndex(value => value.ten_ban === Ban.rows[i].ten_ban.toString() && value.ten_ban !== 'Entrance ticket') >= 0) {
+                        // console.log( `dat vip 1` )
+                    } else {
+                        SoLuongBanConLai.push({
+                            id_ban: Ban.rows[i].id_ban,
+                            ten_ban: Ban.rows[i].ten_ban,
+                            created_at: Ban.rows[i].created_at,
+                            updated_at: Ban.rows[i].updated_at,
+                        })
                     }
                 }
-                
+
 
                 // Xử lý check_open
 
@@ -75,6 +76,8 @@ module.exports = function (app) {
                     where id_su_kien = ${id_ev}
                     )"check_open"
                 `)
+
+                console.log(SoLuongBanConLai)
 
                 res.json({
                     status: 1,
@@ -98,13 +101,13 @@ module.exports = function (app) {
             // so_luong_dat : số lượng khách đặt sự kiện
             // choose_booking : khách chọn bàn đặt
             // 
-            const { email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien,id_kh } = req.body
+            const { email, so_luong_dat, choose_booking, id_su_kien, gia_dat, ten_su_kien, id_kh } = req.body
 
             const { authorization } = req.headers
 
             let check = await CheckToken(email, authorization)
-            
-            console.log( check )
+
+            console.log(check)
 
             if (check) {
                 if (
@@ -114,10 +117,10 @@ module.exports = function (app) {
                     !FunctionSqlInjectionText(id_su_kien) ||
                     !FunctionSqlInjectionText(gia_dat) ||
                     !FunctionSqlInjectionText(ten_su_kien) ||
-                    !FunctionSqlInjectionText(id_kh) 
+                    !FunctionSqlInjectionText(id_kh)
 
                 ) {
-                    
+
 
                     const checkBooking = await pool.query(`
                         select * from booking_su_kien
@@ -146,32 +149,32 @@ module.exports = function (app) {
 
                         // console.log({ email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien })
 
-                        if( 
+                        if (
                             parseFloat(
                                 parseInt(so_luong_dat) * parseFloat(gia_dat)
                             ) >
-                            parseFloat( CoinQuery[0]?.coin )  ){
+                            parseFloat(CoinQuery[0]?.coin)) {
                             res.json({
                                 status: 1,
                                 msg_vn: 'Số tiền không đủ vui lòng nạp thêm',
                                 msg_en: 'The amount is not enough, please add more'
                             })
-                        }else{
+                        } else {
                             console.log(
                                 parseFloat(
                                     parseInt(so_luong_dat) * parseFloat(gia_dat)
                                 )
                             )
-    
-                            let coin_tranfer = `-${ parseFloat(
+
+                            let coin_tranfer = `-${parseFloat(
                                 parseInt(so_luong_dat) * parseFloat(gia_dat)
                             )}`
-    
+
                             const checkBlock = await AddBlockChains(id_kh, `Booking ${ten_su_kien}`,
                                 coin_tranfer, date.getDate().toString(),
                                 (date.getMonth() + 1).toString(), date.getFullYear().toString(),
                                 `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
-    
+
                             if (checkBlock === true) {
                                 await pool.query(`
                                     insert into booking_su_kien (id_su_kien,ten_su_kien,gia,created_at,updated_at,id_kh,status,so_luong_dat,so_luong_quet,ten_ban,tong_tien)
@@ -183,8 +186,8 @@ module.exports = function (app) {
                                     ),now(),now(),
                                     ( select id_kh  from tai_khoan where email = N'${email}')
                                     ,false,${so_luong_dat} ,0,N'${choose_booking}',${parseFloat(
-                                        parseInt(so_luong_dat) * parseFloat(gia_dat)
-                                    )})
+                                    parseInt(so_luong_dat) * parseFloat(gia_dat)
+                                )})
                                 `)
 
                                 res.json({
@@ -193,7 +196,7 @@ module.exports = function (app) {
                                     msg_en: 'Booking success!'
                                 })
 
-                            }else{
+                            } else {
                                 res.json({
                                     status: 0,
                                     msg_vn: 'that bai',
@@ -220,7 +223,7 @@ module.exports = function (app) {
 
 
         } catch (error) {
-            console.log( error )
+            console.log(error)
             // res.json({
             //     status: 0,
             //     msg_vn: 'that bai',
@@ -239,8 +242,8 @@ module.exports = function (app) {
 
     // Lịch sử đặt bàn
 
-    app.post(`/App/LichSuDatBan/:page` , async(req,res)=>{
-        try{
+    app.post(`/App/LichSuDatBan/:page`, async (req, res) => {
+        try {
             const { page } = req.params
             const { email } = req.body
 
@@ -248,11 +251,11 @@ module.exports = function (app) {
 
             let check = await CheckToken(email, authorization)
 
-            
-            if( check ){
-                if( !FunctionSqlInjectionText(email) ||
-                !FunctionSqlInjectionText(page) 
-                ){
+
+            if (check) {
+                if (!FunctionSqlInjectionText(email) ||
+                    !FunctionSqlInjectionText(page)
+                ) {
                     const TotalPage = await pool.query(
                         ` 
                         select count(*) from booking_su_kien
@@ -261,7 +264,7 @@ module.exports = function (app) {
                         )`
                     )
 
-                    let PageNumber = Math.ceil( TotalPage.rows[0].count/12 )
+                    let PageNumber = Math.ceil(TotalPage.rows[0].count / 12)
 
                     const ExcuteQuery = await pool.query(`
                         select * from booking_su_kien
@@ -269,47 +272,47 @@ module.exports = function (app) {
                         select id_kh from tai_khoan where email = N'${email}'
                         )
                         order by created_at desc
-                        limit ${ page === '1' ? 12 : parseInt( page )*12  } offset 0
+                        limit ${page === '1' ? 12 : parseInt(page) * 12} offset 0
                         
                     `)
 
                     res.json({
-                        status:1,
+                        status: 1,
                         page_number: PageNumber,
                         data: ExcuteQuery.rows
                     })
 
-                }else{
+                } else {
                     res.json({
-                        status:0,
-                        data:0,
-                        msg_en:'data error',
-                        msg_vn:'sai du lieu'
+                        status: 0,
+                        data: 0,
+                        msg_en: 'data error',
+                        msg_vn: 'sai du lieu'
                     })
                 }
 
-            }else{
+            } else {
                 res.json({
-                    status:0,
-                    data:0,
-                    msg_en:'fail',
-                    msg_vn:'het han token'
+                    status: 0,
+                    data: 0,
+                    msg_en: 'fail',
+                    msg_vn: 'het han token'
                 })
             }
 
-        }catch(error){
+        } catch (error) {
             res.json({
-                status:0,
-                data:0,
-                msg_en:'error',
-                msg_vn:'Lỗi hệ thống'
+                status: 0,
+                data: 0,
+                msg_en: 'error',
+                msg_vn: 'Lỗi hệ thống'
             })
         }
     })
 
 
-    app.post(`/App/LichSuNapRut/:page`, async(req,res)=>{
-        try{
+    app.post(`/App/LichSuNapRut/:page`, async (req, res) => {
+        try {
             const { page } = req.params
             const { email } = req.body
 
@@ -317,11 +320,11 @@ module.exports = function (app) {
 
             let check = await CheckToken(email, authorization)
 
-            
-            if( check ){
-                if( !FunctionSqlInjectionText(email) ||
-                !FunctionSqlInjectionText(page) 
-                ){
+
+            if (check) {
+                if (!FunctionSqlInjectionText(email) ||
+                    !FunctionSqlInjectionText(page)
+                ) {
                     const TotalPage = await pool.query(
                         ` 
                         select * from cashmoney
@@ -329,52 +332,52 @@ module.exports = function (app) {
                         `
                     )
 
-                    let PageNumber = Math.ceil( TotalPage.rows[0].count/12 )
+                    let PageNumber = Math.ceil(TotalPage.rows[0].count / 12)
 
                     const ExcuteQuery = await pool.query(`
                         select * from cashmoney
                         where ten_nguoi_dung = N'${email}'
                         order by created_at desc
-                        limit ${ page === '1' ? 12 : parseInt( page )*12  } offset 0
+                        limit ${page === '1' ? 12 : parseInt(page) * 12} offset 0
                         
                     `)
 
                     res.json({
-                        status:1,
+                        status: 1,
                         page_number: PageNumber,
                         data: ExcuteQuery.rows
                     })
 
-                }else{
+                } else {
                     res.json({
-                        status:0,
-                        data:0,
-                        msg_en:'data error',
-                        msg_vn:'sai du lieu'
+                        status: 0,
+                        data: 0,
+                        msg_en: 'data error',
+                        msg_vn: 'sai du lieu'
                     })
                 }
 
-            }else{
+            } else {
                 res.json({
-                    status:0,
-                    data:0,
-                    msg_en:'fail',
-                    msg_vn:'het han token'
+                    status: 0,
+                    data: 0,
+                    msg_en: 'fail',
+                    msg_vn: 'het han token'
                 })
             }
 
-        }catch(error){
+        } catch (error) {
             res.json({
-                status:0,
-                data:0,
-                msg_en:'error',
-                msg_vn:'Lỗi hệ thống'
+                status: 0,
+                data: 0,
+                msg_en: 'error',
+                msg_vn: 'Lỗi hệ thống'
             })
         }
     })
-    
 
 
-    let ban = ['a','b','c']
+
+    let ban = ['a', 'b', 'c']
 
 }

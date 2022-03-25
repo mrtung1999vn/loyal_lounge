@@ -191,7 +191,7 @@ module.exports = function (app) {
             const { authorization } = req.headers
             // gio_hang string 
             const { id_kh, email, gio_hang } = req.body
-
+            
             let check = await CheckToken(email, authorization)
 
             if( check ){
