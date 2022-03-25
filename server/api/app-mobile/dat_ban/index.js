@@ -378,6 +378,34 @@ module.exports = function (app) {
 
 
 
+
+
+
+
+
+
+
+
+    // app.post(`/App/DatHang` , async(req,res)=>{
+    //     try {
+    //         // const { page } = req.params
+    //         const { email } = req.body
+
+    //         const { authorization, gio_hang_dat } = req.headers
+
+    //         // let check = await CheckToken(email, authorization)
+
+    //         console.log( "a" )
+    //         // if( true ){
+    //         //     console.log( gio_hang_dat )
+    //         // }
+    //     } catch (error) {
+    //         console.log( error )
+    //     }
+    // })
+
+
+
     let ban = ['a', 'b', 'c']
 
 }

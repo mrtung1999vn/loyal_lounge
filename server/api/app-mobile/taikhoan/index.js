@@ -190,17 +190,47 @@ module.exports = function (app) {
         try {
             const { authorization } = req.headers
             // gio_hang string 
-            const { id_kh, email, gio_hang } = req.body
+            const { id_kh, email, gio_hang_dat } = req.body
             
-            let check = await CheckToken(email, authorization)
+            console.log({ id_kh, email, gio_hang_dat })
 
-            if( check ){
+            // let check = await CheckToken(email, authorization)
 
-            }else{
-                res.json({ status: 0, data: [] })
-            }
+            // if( check ){
+                
+                const date = new Date()
+
+                function makeid(length) {
+                    var result           = '';
+                    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    var charactersLength = characters.length;
+                    for ( var i = 0; i < length; i++ ) {
+                      result += characters.charAt(Math.floor(Math.random() * 
+                 charactersLength));
+                   }
+                   return result + `${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`;
+                }
+                
+                let string_don = makeid(10)
+                console.log(makeid(5));
+
+                await pool.query(`
+                
+                    insert into don_hang ( tong_tien,created_at,updated_at,ghi_chu,id_kh,string_don,status)
+                    values(
+                        123,now(),
+                        now(),N'',
+                        (select id_kh from tai_khoan where email=N'quachthanhtung1999@gmail.com'),
+                        N'${string_don}',
+                        false 
+                    )
+      
+                `)
+            // }else{
+            //     res.json({ status: 0, data: [] })
+            // }
         } catch (error) {
-            res.json({ status: 0, data: [] })
+            // res.json({ status: 0, data: [] })
         }
     })
 
