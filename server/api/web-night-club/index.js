@@ -252,6 +252,7 @@ module.exports = function (app) {
                         and status = true 
                         or coin_tranfer like N'%-%'
                     `)
+                    
                     console.log( CoinQuery.rows )
 
                     if(  CoinQuery.rows[0]?.coin === null){

@@ -19,6 +19,8 @@ const type_product = require('./type_product');
 const product = require('./product');
 const cashmoney = require('./cashmoney');
 const paymoney = require('./paymoney');
+const booking = require('./booking');
+const gio_hang = require('./gio_hang');
 
 module.exports = function(app) {
 
@@ -27,7 +29,7 @@ module.exports = function(app) {
     user(app);custom(app);table(app);event(app);type_product(app);product(app)
 
 
-    cashmoney(app);paymoney(app)
+    cashmoney(app);paymoney(app);booking(app);gio_hang(app)
     // 
 
     // API get, post, put, delete

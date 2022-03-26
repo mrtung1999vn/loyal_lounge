@@ -153,7 +153,7 @@ module.exports = function (app) {
                             parseFloat(
                                 parseInt(so_luong_dat) * parseFloat(gia_dat)
                             ) >
-                            parseFloat(CoinQuery[0]?.coin)) {
+                            parseFloat(CoinQuery.rows[0]?.coin)) {
                             res.json({
                                 status: 1,
                                 msg_vn: 'Số tiền không đủ vui lòng nạp thêm',
@@ -372,6 +372,27 @@ module.exports = function (app) {
                 data: 0,
                 msg_en: 'error',
                 msg_vn: 'Lỗi hệ thống'
+            })
+        }
+    })
+
+
+    app.get(`/App/SuKienChinh`, async(req,res)=>{
+        try {
+            const newData = await pool.query(`
+                select to_char(created_at, 'YYYY/MM/DD HH24:MI:SS')"day_time",* from su_kien
+                where status = true
+                order by created_at desc
+            `)
+            res.json({
+                status:1,
+                data: newData.rows
+            })
+        } catch (error) {
+            
+            res.json({
+                status:0,
+                data: []
             })
         }
     })

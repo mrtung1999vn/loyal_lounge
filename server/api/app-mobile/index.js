@@ -134,7 +134,8 @@ module.exports = function (app) {
                 res.json({
                     status: 0,
                     data: [],
-                    msg: 'Nguoi nhap dien ki tu dac biet'
+                    msg: 'Nguoi nhap dien ki tu dac biet',
+                    msg_en: 'error'
                 })
             } else {
 
@@ -147,7 +148,8 @@ module.exports = function (app) {
                     res.json({
                         status: 0,
                         data: [],
-                        msg: 'Tai khoan da ton tai'
+                        msg: 'Tai khoan da ton tai',
+                        msg_en: 'Account already exists'
                     })
                 } else {
                     await pool.query(`
@@ -169,7 +171,8 @@ module.exports = function (app) {
                     res.json({
                         status: 1,
                         data: [],
-                        msg: 'Them tai khoan thanh cong'
+                        msg: 'Them tai khoan thanh cong',
+                        msg_en: 'Success'
                     })
                 }
             }
@@ -179,7 +182,9 @@ module.exports = function (app) {
             res.json({
                 status: 0,
                 data: [],
-                msg: 'Loi he thong'
+                msg: 'Loi he thong',
+                msg_en: 'error'
+                
             })
         }
     })
