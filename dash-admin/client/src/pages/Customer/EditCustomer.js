@@ -123,22 +123,22 @@ function EditCustomer({ EditData, onHandleEdit }) {
     try {
       // console.log(EditData.status)
 
-      setIDCustomer( EditData.id_kh )
-      setEmail( EditData.email )
+      setIDCustomer(EditData.id_kh)
+      setEmail(EditData.email)
 
-      setAddress( EditData.dia_chi )
+      setAddress(EditData.dia_chi)
 
-      setPhoneNumber( EditData.so_dt )
+      setPhoneNumber(EditData.so_dt)
 
-      setStatus( EditData.status.toString() )
+      setStatus(EditData.status.toString())
 
-      setUrl( EditData.image )
+      setUrl(EditData.image)
 
     } catch (error) {
 
     }
   }, [
-    
+
     EditData.id_kh, EditData.email,
     EditData.dia_chi, EditData.so_dt,
     EditData.status.toString(), EditData.image
@@ -148,109 +148,109 @@ function EditCustomer({ EditData, onHandleEdit }) {
   return (
     <>
 
-<div>
+      <div>
         {/* Button trigger modal */}
-        <button type="button" className="btn btn-warning" data-toggle="modal" data-target={`#customer_id_edit${EditData.id_cash}`}
+        <button type="button" className="btn btn-warning" data-toggle="modal" data-target={`#customer_id_edit${EditData.id_kh}`}
           onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
         >
           Edit
         </button>
         {/* Modal */}
-        <div className="modal fade" id={`customer_id_edit${EditData.id_cash}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal fade" id={`customer_id_edit${EditData.id_kh}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">CashMoney id {EditData.id_cash} </h5>
+                <h5 className="modal-title" id="exampleModalLabel">CashMoney id {EditData.id_kh} </h5>
                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span>
                 </button>
               </div>
               <div className="modal-body">
-              <div className='row'>
-            <div className="col-lg-6">
-              <label>Email</label>
-              <div className="common_input mb_20">
-                <input type="text" placeholder="Email"
-                  value={Email}
-                  onChange={e => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Password</label>
-                <input type="password" placeholder="Password"
-                  value={Password}
-                  onChange={e => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Address</label>
-                <input type="text" placeholder="Address"
-                  value={Address}
-                  onChange={e => setAddress(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Re-Password</label>
-                <input type="password" placeholder="RePassword"
-                  value={RePassword}
-                  onChange={e => setRePassword(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Phone Number</label>
-                <input type="text" placeholder="Phone Number"
-                  value={PhoneNumber}
-                  onChange={e => setPhoneNumber(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
-                <label>Status: {Status}</label>
-                <Select options={options}
-                  // defaultInputValue={Status}
-                  value={Status}
-                  onChange={e => setStatus(e.value)}
-                  styles={{
-                    width: '100%',
-                    height: '100px'
-                  }} />
-
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="common_input mb_20">
                 <div className='row'>
-                  <div className='col-lg-6'>
-                    <input type="file" onChange={(e) => handleChange(e)}
-                      style={{ width: '200px' }} /></div>
+                  <div className="col-lg-6">
+                    <label>Email</label>
+                    <div className="common_input mb_20">
+                      <input type="text" placeholder="Email"
+                        value={Email}
+                        onChange={e => setEmail(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Password</label>
+                      <input type="password" placeholder="Password"
+                        value={Password}
+                        onChange={e => setPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Address</label>
+                      <input type="text" placeholder="Address"
+                        value={Address}
+                        onChange={e => setAddress(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Re-Password</label>
+                      <input type="password" placeholder="RePassword"
+                        value={RePassword}
+                        onChange={e => setRePassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Phone Number</label>
+                      <input type="text" placeholder="Phone Number"
+                        value={PhoneNumber}
+                        onChange={e => setPhoneNumber(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <label>Status: {Status}</label>
+                      <Select options={options}
+                        // defaultInputValue={Status}
+                        value={Status}
+                        onChange={e => setStatus(e.value)}
+                        styles={{
+                          width: '100%',
+                          height: '100px'
+                        }} />
+
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="common_input mb_20">
+                      <div className='row'>
+                        <div className='col-lg-6'>
+                          <input type="file" onChange={(e) => handleChange(e)}
+                            style={{ width: '200px' }} /></div>
+                      </div>
+                      {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
+                      <br>
+                      </br>
+                      <img
+                        style={window.innerWidth <= 800 ? { width: '100%', height: '100%' } :
+                          { width: '50%', height: '50%' }
+                        }
+                        src={url || "http://via.placeholder.com/300"} alt="firebase-image" />
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <div className="create_report_btn mt_30">
+                      <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
+                        onClick={() => onClickSave()}
+                      >Edit Customer</a>
+                    </div>
+                  </div>
                 </div>
-                {progress > 0 && progress < 100 ? <>Loading ... {progress}%</> : <></>}
-                <br>
-                </br>
-                <img
-                  style={window.innerWidth <= 800 ? { width: '100%', height: '100%' } :
-                    { width: '50%', height: '50%' }
-                  }
-                  src={url || "http://via.placeholder.com/300" } alt="firebase-image" />
-              </div>
-            </div>
-            <div className="col-12">
-              <div className="create_report_btn mt_30">
-                <a style={{ cursor: 'pointer' }} className="btn_1 w-100"
-                  onClick={() => onClickSave()}
-                >Edit Customer</a>
-              </div>
-            </div>
-          </div>
 
               </div>
               <div className="modal-footer">

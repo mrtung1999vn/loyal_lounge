@@ -125,13 +125,13 @@ function DeleteCustomer({ EditData, onHandleDelete }) {
 
       <div>
         {/* Button trigger modal */}
-        <button type="button" className="btn btn-danger" data-toggle="modal" data-target={`#customer_id_delete${EditData.id_cash}`}
+        <button type="button" className="btn btn-danger" data-toggle="modal" data-target={`#customer_id_delete${EditData.id_kh}`}
           onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
         >
           Delete
         </button>
         {/* Modal */}
-        <div className="modal fade" id={`customer_id_delete${EditData.id_cash}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal fade" id={`customer_id_delete${EditData.id_kh}`} tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
@@ -144,7 +144,7 @@ function DeleteCustomer({ EditData, onHandleDelete }) {
                 <div className='row'>
 
                   Do you want to delete customer {Email} (ID: {IDCustomer}) ?
-
+                  
                 </div>
 
               </div>

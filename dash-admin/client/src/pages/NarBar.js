@@ -66,6 +66,8 @@ function NarBar() {
                         </div>
                     </a>
                     <ul>
+                        <Link to="/Cart" style={{ backgroundColor: '#091023', color: 'white' }}>Cart</Link>
+                        <Link to="/Booking" style={{ backgroundColor: '#091023', color: 'white' }}>Booking</Link>
                         <Link to="/CashMoney" style={{ backgroundColor: '#091023', color: 'white' }}>Nạp tiền</Link>
                         <Link to="/PayMoney" style={{ backgroundColor: '#091023', color: 'white' }}>Khách rút</Link>
                         <Link to="/Event" style={{ backgroundColor: '#091023', color: 'white' }}>Event</Link>

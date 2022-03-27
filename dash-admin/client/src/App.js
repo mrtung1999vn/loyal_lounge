@@ -22,6 +22,9 @@ import TypeProduct from './pages/TypeProduct';
 import Product from './pages/Product';
 import CashMoney from './pages/CashMoney';
 import PayMoney from './pages/PayMoney';
+import Booking from './pages/Booking';
+// import GioHang from './pages/Cart';
+import Cart from './pages/Cart';
 
 
 function App() {
@@ -193,6 +196,9 @@ function App() {
           <Switch>
 
             {/* <Route path='/Login' render={() => <TaiKhoan></TaiKhoan>}></Route> */}
+            
+            <Route path='/Cart' render={() => <Cart></Cart>}></Route>
+            <Route path='/Booking' render={() => <Booking></Booking>}></Route>
             <Route path='/CashMoney' render={() => <CashMoney></CashMoney>}></Route>
             <Route path='/PayMoney' render={() => <PayMoney></PayMoney>}></Route>
             <Route path='/Product' render={() => <Product></Product>}></Route>

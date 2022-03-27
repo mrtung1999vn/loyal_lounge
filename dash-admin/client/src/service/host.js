@@ -1,5 +1,5 @@
-var host = "http://127.0.0.1:1999"
-// var host = "https://demovaction.99plus.online:1999"
+// var host = "http://127.0.0.1:1999"
+var host = "https://botanicspahaiphong.com:1999"
 var SHOP = "*Dịch vụ web thiết bị_ThanhTung0936563013"
 // var host = "http://103.82.20.44:3004"
 
@@ -172,7 +172,37 @@ var WebDashDanhSachCashMoney = host + `/WebDash/DanhSachCashMoney`
 var WebDashDanhSachPayMoney = host + `/WebDash/DanhSachPayMoney`
 
 
+var WebDashDanhSachBooking = host + `/WebDash/DanhSachBooking`
+
+
+var WebDashsuKienHienTai = host + `/WebDash/suKienHienTai`
+
+var WebDashDanhSachBookingTheoSuKien = host + `/WebDash/DanhSachBookingTheoSuKien`
+
+
+var WebDashDanhSachCart = host + `/WebDash/DanhSachCart`
+
+
+var WebDashChiTietDanhSachCart = host + `/WebDash/ChiTietDanhSachCart`
+
+
+
+var ChooseCheckDon = host + `/ChooseCheckDon`
+
+
+var AppQuetKhachHang = host + `/App/QuetKhachHang`
+
 export default {
+    AppQuetKhachHang,
+    ChooseCheckDon,
+    WebDashChiTietDanhSachCart,
+    WebDashDanhSachCart,
+
+    WebDashDanhSachBookingTheoSuKien,
+
+    WebDashsuKienHienTai,
+    WebDashDanhSachBooking,
+
     WebDashDangNhap,
     WebDuDoanDangNhap,
     WebDashDanhSachUsers,

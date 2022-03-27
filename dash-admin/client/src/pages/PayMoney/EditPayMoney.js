@@ -183,7 +183,7 @@ function EditPayMoney({ EditData, onHandleEdit, ListTypePayMoney, handleChangeTy
 
       <div>
         {/* Button trigger modal */}
-        <button type="button" className="btn btn-danger" data-toggle="modal" data-target={`#pay_id_edit${EditData.id_cash}`}
+        <button type="button" className="btn btn-warning" data-toggle="modal" data-target={`#pay_id_edit${EditData.id_cash}`}
           onClick={() => setTimeout(() => $('.modal-backdrop').remove(), 500)}
         >
           Edit

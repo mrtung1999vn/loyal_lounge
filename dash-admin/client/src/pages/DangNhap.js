@@ -16,7 +16,7 @@ function DangNhap() {
 
     const onClickDangNhap = async ()=>{
         try {
-            console.log( { taiKhoan,matKhau })
+            // console.log( { taiKhoan,matKhau })
             var val = Math.floor(1000 + Math.random() * 9000);
             var ten_tai_khoan = taiKhoan
             var mat_khau = matKhau
@@ -125,15 +125,15 @@ function DangNhap() {
                                                             />
                                                         </div> */}
                                                         <div className="form-group">
-                                                            <input  className="form-control" placeholder="Password"
+                                                            <input  className="form-control" placeholder="OTP confirm"
                                                             value={otpConfirm} 
                                                             onChange={e=>setOtpConfirm(e.target.value)}
                                                             />
                                                         </div>
-                                                        <a className="btn_1 full_width text-center"
+                                                        <button className="btn_1 full_width text-center"
                                                         style={{cursor:'pointer'}}
                                                         onClick={()=>onClickOTP()}
-                                                        >Continue</a>
+                                                        >Continue</button>
                                                         {/* <p>
                                                             Need an account?
                                                         </p> */}
@@ -225,10 +225,10 @@ function DangNhap() {
                                                             onChange={e=>setMatKhau(e.target.value)}
                                                             />
                                                         </div>
-                                                        <a className="btn_1 full_width text-center"
+                                                        <button className="btn_1 full_width text-center"
                                                         style={{cursor:'pointer'}}
                                                         onClick={()=>onClickDangNhap()}
-                                                        >Log in</a>
+                                                        >Log in</button>
                                                         {/* <p>
                                                             Need an account?
                                                         </p> */}
