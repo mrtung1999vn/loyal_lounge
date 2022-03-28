@@ -81,4 +81,73 @@ module.exports = function(app) {
             console.log(error)
         }
     })
+
+
+
+
+
+    app.get(`/App/ThuVien/LoadMore/:page`, async(req,res)=>{
+        try {
+
+            const {page} = req.params
+
+            // Thư viện
+
+            const TotalPage = await pool.query(
+                `select count(*) from thu_vien`
+            )
+
+            const ExcuteQuery = await pool.query(`
+                select * from thu_vien 
+                order by created_at asc
+                limit 12 offset ${ page === '1' ? 0 : parseInt( parseInt(page) - 1 )*12  }
+            `)
+
+
+            // console.log(  ExcuteQuery.rows)
+
+            let PageNumber = Math.ceil( TotalPage.rows[0].count/12 )
+            
+            
+            // Sự kiện 
+            const ExcuteQueryEventWeek = await pool.query(`
+                select * from su_kien 
+                where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
+                order by thoi_gian_dien desc 
+            `)
+            const ExcuteQueryEventLimit = await pool.query(`
+                select * from su_kien 
+                where to_timestamp(thoi_gian_dien, 'YYYY-MM-DD hh24:mi:ss')::timestamp >= now()
+                order by thoi_gian_dien desc
+                limit 3 
+            `)
+
+            const TypeProduct = await pool.query(`
+                select * from loai_sp
+            `)
+
+            // Sự kiện
+
+            res.json({
+                status:1,
+                page_number: PageNumber,
+                ExcuteQueryEventWeek:ExcuteQueryEventWeek.rows,
+                ExcuteQueryEventLimit: ExcuteQueryEventLimit.rows,
+                data: ExcuteQuery.rows,
+                TypeProduct: TypeProduct.rows
+            })
+
+
+
+            // console.log( Math.ceil( TotalPage.rows[0].count/12 )   )
+
+
+                
+        } catch (error) {
+            
+        }
+    })
+
+
+
 }
