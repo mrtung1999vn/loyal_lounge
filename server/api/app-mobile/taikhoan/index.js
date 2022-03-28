@@ -213,7 +213,7 @@ module.exports = function (app) {
             // console.log({ id_kh, email, gio_hang_kh })
 
             // Array => string ( Array ep kieu ve string )
-            // gio_hang_kh : [{"id_sp":"3","ten_sp":"Dom Perignon","gia_sp":300,"hinh_anh":"","so_luong_sp":"2"},{"id_sp":"7","ten_sp":"Belaire Gold","gia_sp":130,"hinh_anh":"","so_luong_sp":"3"}]
+            // gio_hang_kh : `[{"id_sp":"3","ten_sp":"Dom Perignon","gia_sp":300,"hinh_anh":"","so_luong_sp":"2"},{"id_sp":"7","ten_sp":"Belaire Gold","gia_sp":130,"hinh_anh":"","so_luong_sp":"3"}]`
 
 
             let check = await CheckToken(email, authorization)
@@ -264,9 +264,6 @@ module.exports = function (app) {
                         where id_kh = (
                         select id_kh from tai_khoan where email = N'${email}'
                         )
-                        and status = true 
-                        or coin_tranfer like N'%-%'
-
                     `)
                     console.log(tong_tien)
                     console.log(parseFloat(CoinQuery.rows[0]?.coin))
@@ -448,8 +445,6 @@ module.exports = function (app) {
                         where id_kh = (
                         select id_kh from tai_khoan where email = N'${email}'
                         )
-                        and status = true 
-                        or coin_tranfer like N'%-%'
 
                     `)
 

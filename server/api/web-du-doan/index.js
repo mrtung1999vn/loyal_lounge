@@ -123,8 +123,6 @@ module.exports = function (app) {
                     where id_kh = (
                     select id_kh from tai_khoan where email = N'${email}'
                     )
-                    and status = true 
-                    or coin_tranfer like N'%-%'
                 `)
                 res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
             }

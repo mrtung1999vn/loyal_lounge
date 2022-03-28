@@ -249,8 +249,6 @@ module.exports = function (app) {
                         where id_kh = (
                         select id_kh from tai_khoan where email = N'${email}'
                         )
-                        and status = true 
-                        or coin_tranfer like N'%-%'
                     `)
                     
                     console.log( CoinQuery.rows )

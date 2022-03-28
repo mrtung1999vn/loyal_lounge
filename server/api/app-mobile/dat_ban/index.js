@@ -142,9 +142,6 @@ module.exports = function (app) {
                             where id_kh = (
                             select id_kh from tai_khoan where email = N'${email}'
                             )
-                            and status = true 
-                            or coin_tranfer like N'%-%'
-
                         `)
 
                         // console.log({ email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien })
