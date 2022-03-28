@@ -125,7 +125,21 @@ module.exports = function (app) {
         }
     })
 
+    const CheckArray = (array) => {
+        try {
 
+            if (array === '' || array === undefined || array === null) {
+                return false
+            }
+            if (JSON.parse(array) >= 0) {
+                return true
+            } else {
+                return true
+            }
+        } catch (error) {
+            return false
+        }
+    }
 
 
     app.put(`/App/GioHang`, async (req, res) => {
@@ -138,7 +152,8 @@ module.exports = function (app) {
 
             if (
                 !check &&
-                FunctionSqlInjectionText(email)
+                FunctionSqlInjectionText(email) &&
+                !CheckArray(gio_hang)
             ) {
                 res.json({
                     status: 0,
@@ -147,16 +162,20 @@ module.exports = function (app) {
                     msg_en: 'system error'
                 })
             } else {
-
+                // console.log("a")
                 // status 2 không cập nhập hàng được do dữ liệu gio_hang lớn hơn số tiền nạp
 
                 try {
                     // [{"id_sp":"2","ten_sp":"Ace of Spades Gold","gia_sp":500,"hinh_anh":"","so_luong_sp":1}]
 
+                    /*
+                        `[{"id_sp":"2","ten_sp":"Ace of Spades Gold","gia_sp":500,"hinh_anh":"","so_luong_sp":1},{"id_sp":"3","ten_sp":"Ace of Spades Gold","gia_sp":500,"hinh_anh":"","so_luong_sp":4}]`
+                    */
+
 
                     await pool.query(`
 
-                        update from tai_khoan set gio_hang = N'${gio_hang}'
+                        update tai_khoan set gio_hang = N'${gio_hang}'
 
                         where email = N'${email}'
 
@@ -166,6 +185,7 @@ module.exports = function (app) {
                         select * from tai_khoan
                         where email = N'${email}'
                         `)
+
                     res.json({
                         status: 1,
                         gio_hang: gio_hang,
@@ -174,6 +194,7 @@ module.exports = function (app) {
                     })
 
                 } catch (error) {
+                    console.log( error )
                     res.json({
                         status: 0,
                         msg_vn: 'that bai',
@@ -183,27 +204,16 @@ module.exports = function (app) {
             }
 
         } catch (error) {
-
+            console.log( error )
+            res.json({
+                status: 0,
+                msg_vn: 'that bai',
+                msg_en: 'fail'
+            })
         }
     })
 
-
-    const CheckArray = (array) => {
-        try {
-
-            if (array === '' || array === undefined || array === null) {
-                return false
-            }
-            if (JSON.parse(array) > 0) {
-                return true
-            } else {
-                return true
-            }
-        } catch (error) {
-            return false
-        }
-    }
-
+    
     app.post(`/App/DatHang`, async (req, res) => {
         try {
             const { authorization } = req.headers
@@ -278,7 +288,11 @@ module.exports = function (app) {
                  )
                  "coin"
                     `)
+
+                    console.log(CoinQuery.rows  )
+                    
                     console.log(tong_tien)
+
                     console.log(parseFloat(CoinQuery.rows[0]?.coin))
                     if (
                         tong_tien >
