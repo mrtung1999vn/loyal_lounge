@@ -138,10 +138,23 @@ module.exports = function (app) {
 
 
                         const CoinQuery = await pool.query(`
+                        select (
                             select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                            where id_kh = (
-                            select id_kh from tai_khoan where email = N'${email}'
-                            )
+                       where id_kh = (
+                           select id_kh from tai_khoan where email = N'${email}'
+                       )
+                          and status = true
+                
+                     ) 
+                     +
+                     (
+                       select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                       where id_kh = (
+                           select id_kh from tai_khoan where email = N'${email}'
+                       )
+                          and coin_tranfer like N'%-%'
+                     )
+                     "coin"
                         `)
 
                         // console.log({ email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien })

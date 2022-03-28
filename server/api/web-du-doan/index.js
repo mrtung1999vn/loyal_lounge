@@ -30,10 +30,23 @@ module.exports = function (app) {
 
                     SendMailGoogle(email, subject, text)
                     const CoinQuery = await pool.query(`
-                        select sum(coin_tranfer::int8)"coin" from coin_bc_loyal
-                        where status = true and id_kh = (
-                        select id_kh from tai_khoan where email = N'${email}'
-                        )
+                    select (
+                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                   where id_kh = (
+                       select id_kh from tai_khoan where email = N'${email}'
+                   )
+                      and status = true
+            
+                 ) 
+                 +
+                 (
+                   select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                   where id_kh = (
+                       select id_kh from tai_khoan where email = N'${email}'
+                   )
+                      and coin_tranfer like N'%-%'
+                 )
+                 "coin"
                     `)
 
                     const DataCoin = await pool.query(`
@@ -119,10 +132,23 @@ module.exports = function (app) {
                 `)
 
                 const CoinQuery = await pool.query(`
+                select (
                     select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                    where id_kh = (
-                    select id_kh from tai_khoan where email = N'${email}'
-                    )
+               where id_kh = (
+                   select id_kh from tai_khoan where email = N'${email}'
+               )
+                  and status = true
+        
+             ) 
+             +
+             (
+               select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+               where id_kh = (
+                   select id_kh from tai_khoan where email = N'${email}'
+               )
+                  and coin_tranfer like N'%-%'
+             )
+             "coin"
                 `)
                 res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
             }

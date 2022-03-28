@@ -27,14 +27,14 @@ module.exports = function (app) {
         return result;
     }
 
-    app.get('/WebNightClub/HomeCenter', async (req,res)=>{
+    app.get('/WebNightClub/HomeCenter', async (req, res) => {
         try {
-            
+
         } catch (error) {
-            
+
         }
     })
- 
+
 
     app.post('/WebNightClub/SignAgainToken', async (req, res) => {
         try {
@@ -42,11 +42,11 @@ module.exports = function (app) {
             // console.log( { email, token, subject, text } )
 
             let checkAgainToken = await SignAgainToken(email)
-            
+
             if (
                 !FunctionSqlInjection(email)
                 && checkAgainToken === true
-                ) {
+            ) {
                 let token_sign = jwt.sign({
                     exp: Math.floor(Date.now() / 1000) + (60 * 60),
                     data: email + makeid(10)
@@ -54,22 +54,22 @@ module.exports = function (app) {
                 SignToken(email, token_sign)
 
                 res.json({
-                    status:1,
-                    token_sign: encode_decode.EncodeJson( token_sign )
+                    status: 1,
+                    token_sign: encode_decode.EncodeJson(token_sign)
                 })
-            }else{
+            } else {
                 res.json({
-                    status:0,
-                    data:[]
+                    status: 0,
+                    data: []
                 })
             }
         } catch (error) {
-            
+
             res.json({
-                status:0,
-                data:[]
+                status: 0,
+                data: []
             })
-            console.log(  error )
+            console.log(error)
         }
     })
 
@@ -160,8 +160,8 @@ module.exports = function (app) {
 
             const { email, mat_khau, dia_chi, so_dt } = req.body
 
-            
-            console.log( { email, mat_khau, dia_chi, so_dt } )
+
+            console.log({ email, mat_khau, dia_chi, so_dt })
             if (
                 FunctionSqlInjectionText(email) ||
                 FunctionSqlInjectionText(mat_khau) ||
@@ -172,10 +172,10 @@ module.exports = function (app) {
                     data: [],
                     msg: 'Nguoi nhap dien ki tu dac biet'
                 })
-                console.log( { email, mat_khau, dia_chi, so_dt } )
+                console.log({ email, mat_khau, dia_chi, so_dt })
             } else {
                 console.log('run')
-                console.log( { email, mat_khau, dia_chi, so_dt } )
+                console.log({ email, mat_khau, dia_chi, so_dt })
                 const checkData = await pool.query(`
                     select email from tai_khoan
                     where email = N'${email}'
@@ -202,7 +202,7 @@ module.exports = function (app) {
                         select * from tai_khoan where email = N'${email}'
                     `)
 
-                    await DefautBlockChains(ExcuteQuery.rows[0].id_kh,'','','','','','')
+                    await DefautBlockChains(ExcuteQuery.rows[0].id_kh, '', '', '', '', '', '')
 
                     res.json({
                         status: 1,
@@ -222,47 +222,60 @@ module.exports = function (app) {
         }
     })
 
-    app.post(`/WebNightClub/CoinEmail`, async (req,res)=>{
+    app.post(`/WebNightClub/CoinEmail`, async (req, res) => {
         try {
-            const {authorization} = req.headers
-            const {email,id_loai_sp} = req.body
+            const { authorization } = req.headers
+            const { email, id_loai_sp } = req.body
 
-            console.log( {email,id_loai_sp} )
-            console.log( {authorization} )
+            console.log({ email, id_loai_sp })
+            console.log({ authorization })
 
-            let check = await CheckToken( email, authorization)
+            let check = await CheckToken(email, authorization)
             // let check = true
 
-            if( check ){
+            if (check) {
                 if (
-                    checkRequest(req.headers.origin) 
-                    && !FunctionSqlInjectionText(email) 
-                    ) {
-                    
+                    checkRequest(req.headers.origin)
+                    && !FunctionSqlInjectionText(email)
+                ) {
+
                     const ExcuteQuery = await pool.query(`
                         select * from tai_khoan
                         where email = N'${email}'
                     `)
-    
-                    const CoinQuery = await pool.query(`
-                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                        where id_kh = (
-                        select id_kh from tai_khoan where email = N'${email}'
-                        )
-                    `)
-                    
-                    console.log( CoinQuery.rows )
 
-                    if(  CoinQuery.rows[0]?.coin === null){
-                        await DefautBlockChains(ExcuteQuery.rows[0].id_kh,'','','','','','')
-                        res.json({status:1,data:encode_decode.EncodeJson([{coin:0}]),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
-                    }else{
-                        res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
+                    const CoinQuery = await pool.query(`
+                    select (
+                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                   where id_kh = (
+                       select id_kh from tai_khoan where email = N'${email}'
+                   )
+                      and status = true
+            
+                 ) 
+                 +
+                 (
+                   select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                   where id_kh = (
+                       select id_kh from tai_khoan where email = N'${email}'
+                   )
+                      and coin_tranfer like N'%-%'
+                 )
+                 "coin"
+                    `)
+
+                    console.log(CoinQuery.rows)
+
+                    if (CoinQuery.rows[0]?.coin === null) {
+                        await DefautBlockChains(ExcuteQuery.rows[0].id_kh, '', '', '', '', '', '')
+                        res.json({ status: 1, data: encode_decode.EncodeJson([{ coin: 0 }]), dataUser: encode_decode.EncodeJson(ExcuteQuery.rows) })
+                    } else {
+                        res.json({ status: 1, data: encode_decode.EncodeJson(CoinQuery.rows), dataUser: encode_decode.EncodeJson(ExcuteQuery.rows) })
                     }
-                    
+
                 }
-            }else{
-                res.json({status:0,data:[]})
+            } else {
+                res.json({ status: 0, data: [] })
             }
         } catch (error) {
             console.log(error)
@@ -270,9 +283,9 @@ module.exports = function (app) {
         }
     })
 
-    app.get(`/WebNightClub/LoaiDanhMuc` , async (req,res)=>{
+    app.get(`/WebNightClub/LoaiDanhMuc`, async (req, res) => {
         try {
-            
+
             const newData = await pool.query(`
                 select * from loai_sp
             `)
@@ -283,7 +296,7 @@ module.exports = function (app) {
             })
         } catch (error) {
             res.json({
-                status:0,
+                status: 0,
                 data: []
             })
         }
@@ -291,17 +304,17 @@ module.exports = function (app) {
 
 
 
-    app.post(`/WebNightClub/LichSuDatBan` , async(req,res)=>{
-        try{
+    app.post(`/WebNightClub/LichSuDatBan`, async (req, res) => {
+        try {
             const { email } = req.body
 
             const { authorization } = req.headers
 
             let check = await CheckToken(email, authorization)
 
-            
-            if( check ){
-                if( !FunctionSqlInjectionText(email) ){
+
+            if (check) {
+                if (!FunctionSqlInjectionText(email)) {
                     const ExcuteQuery = await pool.query(`
                         select to_date(to_char(created_at, 'YYYY/MM/DD'), 'YYYY/MM/DD')"day_time",* from booking_su_kien
                         where id_kh = (
@@ -310,80 +323,80 @@ module.exports = function (app) {
                         order by created_at desc
                     `)
                     res.json({
-                        status:1,
+                        status: 1,
                         data: ExcuteQuery.rows
                     })
-                }else{
+                } else {
                     res.json({
-                        status:0,
-                        data:0,
-                        msg_en:'data error',
-                        msg_vn:'sai du lieu'
+                        status: 0,
+                        data: 0,
+                        msg_en: 'data error',
+                        msg_vn: 'sai du lieu'
                     })
                 }
-            }else{
+            } else {
                 res.json({
-                    status:0,
-                    data:0,
-                    msg_en:'fail',
-                    msg_vn:'het han token'
+                    status: 0,
+                    data: 0,
+                    msg_en: 'fail',
+                    msg_vn: 'het han token'
                 })
             }
 
-        }catch(error){
+        } catch (error) {
             res.json({
-                status:0,
-                data:0,
-                msg_en:'error',
-                msg_vn:'Lỗi hệ thống'
+                status: 0,
+                data: 0,
+                msg_en: 'error',
+                msg_vn: 'Lỗi hệ thống'
             })
         }
     })
 
 
-    app.post(`/WebNightClub/LichSuNapRut` , async(req,res)=>{
-        try{
+    app.post(`/WebNightClub/LichSuNapRut`, async (req, res) => {
+        try {
             const { email } = req.body
 
             const { authorization } = req.headers
 
             let check = await CheckToken(email, authorization)
 
-            
-            if( check ){
-                if( !FunctionSqlInjectionText(email) ){
+
+            if (check) {
+                if (!FunctionSqlInjectionText(email)) {
                     const ExcuteQuery = await pool.query(`
                         select to_date(to_char(created_at, 'YYYY/MM/DD'), 'YYYY/MM/DD')"day_time",* from cashmoney
                         where ten_nguoi_dung = N'${email}'
                         order by created_at desc
                     `)
                     res.json({
-                        status:1,
+                        status: 1,
                         data: ExcuteQuery.rows
                     })
-                }else{
+                } else {
                     res.json({
-                        status:0,
-                        data:0,
-                        msg_en:'data error',
-                        msg_vn:'sai du lieu'
+                        status: 0,
+                        data: 0,
+                        msg_en: 'data error',
+                        msg_vn: 'sai du lieu'
                     })
                 }
-            }else{
+            } else {
                 res.json({
-                    status:0,
-                    data:0,
-                    msg_en:'fail',
-                    msg_vn:'het han token'
+                    status: 0,
+                    data: 0,
+                    msg_en: 'fail',
+                    msg_vn: 'het han token'
                 })
             }
 
-        }catch(error){
+        } catch (error) {
             res.json({
-                status:0,
-                data:0,
-                msg_en:'error',
-                msg_vn:'Lỗi hệ thống'
+                status: 0,
+                data: 0,
+                msg_en: 'error',
+                msg_vn: 'Lỗi hệ thống'
             })
         }
     })
