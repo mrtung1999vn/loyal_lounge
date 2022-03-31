@@ -289,11 +289,12 @@ module.exports = function (app) {
                  "coin"
                     `)
 
-                    console.log(CoinQuery.rows  )
+                    // console.log(CoinQuery.rows  )
                     
-                    console.log(tong_tien)
+                    // console.log(tong_tien)
 
-                    console.log(parseFloat(CoinQuery.rows[0]?.coin))
+                    // console.log(parseFloat(CoinQuery.rows[0]?.coin))
+
                     if (
                         tong_tien >
                         parseFloat(CoinQuery.rows[0]?.coin)) {
@@ -321,9 +322,17 @@ module.exports = function (app) {
                 
                             `)
 
+                        let coin_tranfer = `-${tong_tien}`
+
+                        await AddBlockChains(id_kh, `Cart ID Bill ${string_don}`,
+                            coin_tranfer, date.getDate().toString(),
+                            (date.getMonth() + 1).toString(), date.getFullYear().toString(),
+                            `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+    
+
 
                         for (let i = 0; i < gio_hang.length; i++) {
-                            tong_tien += parseFloat(gio_hang[i].gia_sp) * parseFloat(gio_hang[i].so_luong_sp)
+                            // tong_tien += parseFloat(gio_hang[i].gia_sp) * parseFloat(gio_hang[i].so_luong_sp)
 
                             await pool.query(
                                 `
@@ -338,13 +347,6 @@ module.exports = function (app) {
                                     `
                             )
                         }
-
-                        let coin_tranfer = `-${tong_tien}`
-
-                        await AddBlockChains(id_kh, `Cart ID Bill ${string_don}`,
-                            coin_tranfer, date.getDate().toString(),
-                            (date.getMonth() + 1).toString(), date.getFullYear().toString(),
-                            `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
 
                         res.json({
                             status: 1,
