@@ -270,23 +270,33 @@ module.exports = function (app) {
 
                     const CoinQuery = await pool.query(`
                     
-                    select (
-                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                   where id_kh = (
-                       select id_kh from tai_khoan where email = N'${email}'
-                   )
-                      and status = true
-            
-                 ) 
-                 +
-                 (
-                   select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                   where id_kh = (
-                       select id_kh from tai_khoan where email = N'${email}'
-                   )
-                      and coin_tranfer like N'%-%'
-                 )
-                 "coin"
+                        select 
+                        (
+                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                            where id_kh = (
+                                select id_kh from tai_khoan where email = N'${email}'
+                            )
+                                and status = true
+                        ) 
+                        +(
+                        
+                            select
+                                case when (
+                                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                        where id_kh = (
+                                            select id_kh from tai_khoan where email = N'${email}'
+                                        )
+                                        and coin_tranfer like N'%-%'
+                                    ) is null then 0
+                                    else (
+                                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                        where id_kh = (
+                                            select id_kh from tai_khoan where email = N'${email}'
+                                        )
+                                        and coin_tranfer like N'%-%'
+                                    )
+                            end
+                        ) "coin"
                     `)
 
                     // console.log(CoinQuery.rows  )
@@ -470,23 +480,33 @@ module.exports = function (app) {
 
                     const CoinQuery = await pool.query(`
                     
-                    select (
-                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                   where id_kh = (
-                       select id_kh from tai_khoan where email = N'${email}'
-                   )
-                      and status = true
-            
-                 ) 
-                 +
-                 (
-                   select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                   where id_kh = (
-                       select id_kh from tai_khoan where email = N'${email}'
-                   )
-                      and coin_tranfer like N'%-%'
-                 )
-                 "coin"
+                        select 
+                        (
+                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                            where id_kh = (
+                                select id_kh from tai_khoan where email = N'${email}'
+                            )
+                                and status = true
+                        ) 
+                        +(
+                        
+                            select
+                                case when (
+                                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                        where id_kh = (
+                                            select id_kh from tai_khoan where email = N'${email}'
+                                        )
+                                        and coin_tranfer like N'%-%'
+                                    ) is null then 0
+                                    else (
+                                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                        where id_kh = (
+                                            select id_kh from tai_khoan where email = N'${email}'
+                                        )
+                                        and coin_tranfer like N'%-%'
+                                    )
+                            end
+                        ) "coin"
 
                     `)
 
@@ -551,6 +571,58 @@ module.exports = function (app) {
     })
 
 
+    app.get(`/App/ListCoinKhachHang`, async(req,res)=>{
+        try {
 
+
+            const ExcuteQuery = await pool.query(`
+                select * from tai_khoan
+            `)
+            const newData = []
+            for(let i=0 ; i < ExcuteQuery.rowCount ; i++){
+                
+                const CoinEmail = await pool.query(`
+                    select 
+                    (
+                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                        where id_kh = (
+                            select id_kh from tai_khoan where email = N'${ExcuteQuery.rows[i]?.email}'
+                        )
+                            and status = true
+                    ) 
+                    +
+                    (
+                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                        where id_kh = (
+                            select id_kh from tai_khoan where email = N'${ExcuteQuery.rows[i]?.email}'
+                        )
+                        and coin_tranfer like N'%-%'
+                    )
+                    "coin"
+           
+                `)
+
+                newData.push({
+                    id_kh: ExcuteQuery.rows[i]?.id_kh,
+                    coin: CoinEmail.rows[0]?.coin,
+                    email: ExcuteQuery.rows[i]?.email,
+                    email: ExcuteQuery.rows[i]?.status,
+                    email: ExcuteQuery.rows[i]?.status,
+                })
+                console.log(
+                    ExcuteQuery.rows[i]
+                )
+            }
+
+        } catch (error) {
+            res.json({
+                status:1,
+                data:[]
+            })
+        }
+    })
+
+
+    app.post(`/`)
 
 }

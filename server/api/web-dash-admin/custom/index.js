@@ -16,7 +16,27 @@ module.exports = function (app) {
             if (checkRequest(req.headers.origin)) {
 
                 const ExcuteQuery = await pool.query(`
-                    select * from tai_khoan
+                    select *,
+                    (
+                        (
+                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                        where id_kh = (
+                            select id_kh from tai_khoan where email = tai_khoan_01.email 
+                        )
+                            and status = true
+                    ) 
+                    +
+                    (
+                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                        where id_kh = (
+                            select id_kh from tai_khoan where email = tai_khoan_01.email 
+                        )
+                        and coin_tranfer like N'%-%'
+                    )
+                    )
+                    "coin"
+                    
+                    from tai_khoan as tai_khoan_01
                 `)
 
                 res.json({
@@ -26,13 +46,16 @@ module.exports = function (app) {
 
             }
         } catch (error) {
+
             SaveError('web-dash-admin', '/WebDash/DanhSachCustomer', error, 'GET', JSON.stringify(req.headers), req.socket.remoteAddress)
+
             res.json({
                 status: 0,
                 data: [],
                 msg_vn: 'Lỗi hệ thống',
                 msg_en: 'System error'
             })
+
         }
     })
 
@@ -42,6 +65,7 @@ module.exports = function (app) {
             const { email,mat_khau,created_at,updated_at,status,dia_chi,so_dt,mat_khau_hash,image } = req.body
             
             if (
+
                 !checkRequest(req.headers.origin) ||
                 FunctionSqlInjection(email) ||
                 FunctionSqlInjection(mat_khau) ||
@@ -86,14 +110,17 @@ module.exports = function (app) {
                 }
             }
         } catch (error) {
-            console.log( error )
+            // console.log( error )
+
             SaveError('web-dash-admin', '/WebDash/DanhSachCustomer', error, 'POST', JSON.stringify(req.headers), req.socket.remoteAddress)
+            
             res.json({
                 status: 0,
                 data: [],
                 msg_vn: 'Lỗi hệ thống',
                 msg_en: 'System error'
             })
+            
         }
     })
 
@@ -132,14 +159,17 @@ module.exports = function (app) {
                 })
             }
         } catch (error) {
-            console.log(error)
+            // console.log(error)
+
             SaveError('web-dash-admin', '/WebDash/DanhSachCustomer', error, 'PUT', JSON.stringify(req.headers), req.socket.remoteAddress)
+
             res.json({
                 status: 0,
                 data: [],
                 msg_vn: 'Lỗi hệ thống',
                 msg_en: 'System error'
             })
+
         }
     })
 
@@ -173,13 +203,16 @@ module.exports = function (app) {
                 })
             }
         } catch (error) {
+
             SaveError('web-dash-admin', '/WebDash/DanhSachCustomer', error, 'DELETE', JSON.stringify(req.headers), req.socket.remoteAddress)
+            
             res.json({
                 status: 0,
                 data: [],
                 msg_vn: 'Lỗi hệ thống',
                 msg_en: 'System error'
             })
+
         }
     })
 

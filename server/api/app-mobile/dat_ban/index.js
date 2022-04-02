@@ -99,7 +99,7 @@ module.exports = function (app) {
     app.post(`/App/DatBooking`, async (req, res) => {
         try {
             // so_luong_dat : số lượng khách đặt sự kiện
-            // choose_booking : khách chọn bàn đặt
+            // choose_booking : khách chọn bàn đặt 
             // 
             const { email, so_luong_dat, choose_booking, id_su_kien, gia_dat, ten_su_kien, id_kh } = req.body
 
@@ -138,23 +138,33 @@ module.exports = function (app) {
 
 
                         const CoinQuery = await pool.query(`
-                        select (
-                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                            where id_kh = (
-                                select id_kh from tai_khoan where email = N'${email}'
-                            )
-                                and status = true
-                        ) 
-                        +
-                        (
-                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                            where id_kh = (
-                                select id_kh from tai_khoan where email = N'${email}'
-                            )
-                            and coin_tranfer like N'%-%'
-                        )
-                        "coin"
-
+                            select 
+                            (
+                                select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                where id_kh = (
+                                    select id_kh from tai_khoan where email = N'${email}'
+                                )
+                                    and status = true
+                            ) 
+                            +(
+                            
+                                select
+                                    case when (
+                                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                            where id_kh = (
+                                                select id_kh from tai_khoan where email = N'${email}'
+                                            )
+                                            and coin_tranfer like N'%-%'
+                                        ) is null then 0
+                                        else (
+                                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                            where id_kh = (
+                                                select id_kh from tai_khoan where email = N'${email}'
+                                            )
+                                            and coin_tranfer like N'%-%'
+                                        )
+                                end
+                            ) "coin"
                         `)
 
                         // console.log({ email, so_luong_dat, choose_booking, id_su_kien, gia_dat,ten_su_kien })
@@ -170,48 +180,87 @@ module.exports = function (app) {
                                 msg_en: 'The amount is not enough, please add more'
                             })
                         } else {
-                            console.log(
-                                parseFloat(
-                                    parseInt(so_luong_dat) * parseFloat(gia_dat)
-                                )
-                            )
+                            const BanDat = await pool.query(`
+                                select * from booking_su_kien
+                                where id_su_kien = ${id_su_kien}
+                                and ten_ban = N'${choose_booking}'
+                            `)
+                            if(BanDat.rowCount > 0  ){
+                                // 
 
-                            let coin_tranfer = `-${parseFloat(
-                                parseInt(so_luong_dat) * parseFloat(gia_dat)
-                            )}`
-
-                            const checkBlock = await AddBlockChains(id_kh, `Booking ${ten_su_kien}`,
-                                coin_tranfer, date.getDate().toString(),
-                                (date.getMonth() + 1).toString(), date.getFullYear().toString(),
-                                `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
-
-                            if (checkBlock === true) {
-                                await pool.query(`
-                                    insert into booking_su_kien (id_su_kien,ten_su_kien,gia,created_at,updated_at,id_kh,status,so_luong_dat,so_luong_quet,ten_ban,tong_tien)
-                                    values( ${id_su_kien},
-                                    (
-                                        select ten_su_kien from su_kien where id_su_kien = ${id_su_kien}
-                                    ),(
-                                        select gia from su_kien where id_su_kien = ${id_su_kien}
-                                    ),now(),now(),
-                                    ( select id_kh  from tai_khoan where email = N'${email}')
-                                    ,false,${so_luong_dat} ,0,N'${choose_booking}',${parseFloat(
-                                    parseInt(so_luong_dat) * parseFloat(gia_dat)
-                                )})
+                                // Xử lý còn bàn
+                                const BanDatNew = await pool.query(`
+                                    select * from booking_su_kien
+                                    where id_su_kien = ${id_ev}
                                 `)
 
-                                res.json({
-                                    status: 1,
-                                    msg_vn: 'Đặt lịch thành công!',
-                                    msg_en: 'Booking success!'
-                                })
+                                const Ban = await pool.query(`
+                                    select * from ban
+                                `)
 
-                            } else {
+                                // console.log( Ban.rows )
+
+                                const SoLuongBanConLai = []
+
+
+                                for (let i = 0; i < Ban.rowCount; i++) {
+                                    if (BanDatNew.rows.findIndex(value => value.ten_ban === Ban.rows[i].ten_ban.toString() && value.ten_ban !== 'Entrance ticket') >= 0) {
+                                        // console.log( `dat vip 1` )
+                                    } else {
+                                        SoLuongBanConLai.push({
+                                            id_ban: Ban.rows[i].id_ban,
+                                            ten_ban: Ban.rows[i].ten_ban,
+                                            created_at: Ban.rows[i].created_at,
+                                            updated_at: Ban.rows[i].updated_at,
+                                        })
+                                    }
+                                }
+                                // trang thai dong bo hoa
                                 res.json({
-                                    status: 0,
-                                    msg_vn: 'that bai',
-                                    msg_en: 'fail'
+                                    status: 2,
+                                    msg_vn: 'Bàn này đã có người đặt mới',
+                                    msg_en: 'This table has been booked',
+                                    ban_con_lai: SoLuongBanConLai
                                 })
+                            }else{
+                                // Check ban
+                                let coin_tranfer = `-${parseFloat(
+                                    parseInt(so_luong_dat) * parseFloat(gia_dat)
+                                )}`
+
+                                const checkBlock = await AddBlockChains(id_kh, `Booking ${ten_su_kien}`,
+                                    coin_tranfer, date.getDate().toString(),
+                                    (date.getMonth() + 1).toString(), date.getFullYear().toString(),
+                                    `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+
+                                if (checkBlock === true) {
+                                    await pool.query(`
+                                        insert into booking_su_kien (id_su_kien,ten_su_kien,gia,created_at,updated_at,id_kh,status,so_luong_dat,so_luong_quet,ten_ban,tong_tien)
+                                        values( ${id_su_kien},
+                                        (
+                                            select ten_su_kien from su_kien where id_su_kien = ${id_su_kien}
+                                        ),(
+                                            select gia from su_kien where id_su_kien = ${id_su_kien}
+                                        ),now(),now(),
+                                        ( select id_kh  from tai_khoan where email = N'${email}')
+                                        ,false,${so_luong_dat} ,0,N'${choose_booking}',${parseFloat(
+                                        parseInt(so_luong_dat) * parseFloat(gia_dat)
+                                    )})
+                                    `)
+
+                                    res.json({
+                                        status: 1,
+                                        msg_vn: 'Đặt lịch thành công!',
+                                        msg_en: 'Booking success!'
+                                    })
+
+                                } else {
+                                    res.json({
+                                        status: 0,
+                                        msg_vn: 'that bai',
+                                        msg_en: 'fail'
+                                    })
+                                }
                             }
                         }
                     }

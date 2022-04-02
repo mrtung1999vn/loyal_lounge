@@ -30,23 +30,33 @@ module.exports = function (app) {
 
                     SendMailGoogle(email, subject, text)
                     const CoinQuery = await pool.query(`
-                    select (
-                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                   where id_kh = (
-                       select id_kh from tai_khoan where email = N'${email}'
-                   )
-                      and status = true
-            
-                 ) 
-                 +
-                 (
-                   select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-                   where id_kh = (
-                       select id_kh from tai_khoan where email = N'${email}'
-                   )
-                      and coin_tranfer like N'%-%'
-                 )
-                 "coin"
+                        select 
+                        (
+                            select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                            where id_kh = (
+                                select id_kh from tai_khoan where email = N'${email}'
+                            )
+                                and status = true
+                        ) 
+                        +(
+                        
+                            select
+                                case when (
+                                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                        where id_kh = (
+                                            select id_kh from tai_khoan where email = N'${email}'
+                                        )
+                                        and coin_tranfer like N'%-%'
+                                    ) is null then 0
+                                    else (
+                                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                        where id_kh = (
+                                            select id_kh from tai_khoan where email = N'${email}'
+                                        )
+                                        and coin_tranfer like N'%-%'
+                                    )
+                            end
+                        ) "coin"
                     `)
 
                     const DataCoin = await pool.query(`
@@ -132,23 +142,33 @@ module.exports = function (app) {
                 `)
 
                 const CoinQuery = await pool.query(`
-                select (
-                    select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-               where id_kh = (
-                   select id_kh from tai_khoan where email = N'${email}'
-               )
-                  and status = true
-        
-             ) 
-             +
-             (
-               select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
-               where id_kh = (
-                   select id_kh from tai_khoan where email = N'${email}'
-               )
-                  and coin_tranfer like N'%-%'
-             )
-             "coin"
+                    select 
+                    (
+                        select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                        where id_kh = (
+                            select id_kh from tai_khoan where email = N'${email}'
+                        )
+                            and status = true
+                    ) 
+                    +(
+                    
+                        select
+                            case when (
+                                    select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                    where id_kh = (
+                                        select id_kh from tai_khoan where email = N'${email}'
+                                    )
+                                    and coin_tranfer like N'%-%'
+                                ) is null then 0
+                                else (
+                                    select sum(coin_tranfer::float8)"coin" from coin_bc_loyal
+                                    where id_kh = (
+                                        select id_kh from tai_khoan where email = N'${email}'
+                                    )
+                                    and coin_tranfer like N'%-%'
+                                )
+                        end
+                    ) "coin"
                 `)
                 res.json({status:1,data:encode_decode.EncodeJson(CoinQuery.rows),dataUser: encode_decode.EncodeJson(  ExcuteQuery.rows )  })
             }
