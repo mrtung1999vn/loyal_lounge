@@ -191,7 +191,7 @@ module.exports = function (app) {
                                 // Xử lý còn bàn
                                 const BanDatNew = await pool.query(`
                                     select * from booking_su_kien
-                                    where id_su_kien = ${id_ev}
+                                    where id_su_kien = ${id_su_kien}
                                 `)
 
                                 const Ban = await pool.query(`
