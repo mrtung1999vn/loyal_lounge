@@ -1,0 +1,10 @@
+--- public. 
+    index.html (div id="root") / Hiển thị lên cái giao diện web app
+
+--- src
+
+
+
+
+
+    ++ root lấy từ src/index.js (render App.js) {/* APP giao diện code xử lý để hiện thị giao diện web app */}
